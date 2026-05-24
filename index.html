@@ -546,13 +546,27 @@ window.renderPrograms=function(){
   let html='';
   SECTIONS.forEach(secName=>{
     if(grouped[secName]){
-      html+=`<div class="seclbl">${secName} Section</div>${grouped[secName].map(p=>`<div class="card">
+      html+=`<div class="seclbl">${secName} Section</div>`+grouped[secName].map(p=>{
+        const isEnabled = p.registrationEnabled !== false;
+        return `<div class="card" style="${!isEnabled?'border-color:#fecaca;background:#fff5f5;':''}">
           <div class="pcode">${String(p.code||'')}</div>
-          <div class="cinfo"><div class="cname">${String(p.name||'')}</div><div class="cmeta"><span class="ptyp ptyp-${p.type.charAt(0)}">${p.type}</span> &middot; Limit ${p.candidateLimit||3}/house</div></div>
-          <div class="cacts">
-            <button class="ibtn" onclick="openProgramModal('${p.id}')"><span class="material-symbols-rounded">edit</span></button>
-            <button class="ibtn delete" onclick="deleteProgram('${p.id}')"><span class="material-symbols-rounded">delete</span></button>
-          </div></div>`).join('')}`;
+          <div class="cinfo">
+            <div class="cname">${String(p.name||'')}</div>
+            <div class="cmeta"><span class="ptyp ptyp-${p.type.charAt(0)}">${p.type}</span> &middot; Limit ${p.candidateLimit||3}/house</div>
+          </div>
+          <div class="cacts" style="flex-direction:column;align-items:center;gap:6px;">
+            <div style="display:flex;gap:6px;">
+              <button class="ibtn" onclick="openProgramModal('${p.id}')"><span class="material-symbols-rounded">edit</span></button>
+              <button class="ibtn delete" onclick="deleteProgram('${p.id}')"><span class="material-symbols-rounded">delete</span></button>
+            </div>
+            <label class="toggle" style="margin:0;" title="Registration ${isEnabled?'Open — click to close':'Closed — click to open'}">
+              <input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)">
+              <span class="toggle-slider" style="background-color:${isEnabled?'var(--success)':'#e5e7eb'};"></span>
+            </label>
+            <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:${isEnabled?'var(--success)':'var(--danger)'};">${isEnabled?'Open':'Closed'}</span>
+          </div>
+        </div>`;
+      }).join('');
     }
   });
   document.getElementById('prog-list').innerHTML=html;
