@@ -112,7 +112,7 @@ input.uppercase { text-transform: uppercase; }
 .mclose { background: var(--r100); border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--r600); transition: background 0.2s; }
 .mbody { overflow-y: auto; flex: 1; padding: 20px; }
 .mfoot { padding: 16px 20px; border-top: 1px solid var(--r100); display: flex; gap: 12px; background: var(--r50); }
-.mfoot button { flex: 1; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+.mfoot button { flex: 1; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
 .mcancl { background: #fff; color: var(--r700); border: 1.5px solid var(--r200); }
 .msave { background: var(--pri); color: #fff; border: 1.5px solid var(--pri); }
 .mdanger { background: var(--red); color: #fff; border: 1.5px solid var(--red); }
@@ -197,6 +197,41 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 .hint-txt { font-size: 11px; font-weight: 700; margin-top: 4px; padding-left: 4px; min-height: 16px; transition: color 0.2s; }
 .hint-ok { color: var(--success); }
 .hint-err { color: var(--danger); }
+
+/* ================= PRINT SETUP MODAL STYLES ================= */
+.print-setup-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+.print-setup-table th { background: var(--r50); padding: 8px; text-align: left; font-weight: 800; border-bottom: 1px solid var(--r200); }
+.print-setup-table td { padding: 8px; border-bottom: 1px solid var(--r100); }
+.print-setup-table .t-code { font-weight: 900; color: var(--pri); }
+
+/* ================= PRINT MEDIA QUERIES (A4 Landscape B&W) ================= */
+#print-container { display: none; }
+@media print {
+  @page { size: A4 landscape; margin: 10mm 20mm; } /* Left & Right margin 20mm for reduced width */
+  body { background: #fff; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; color: #000; -webkit-print-color-adjust: exact; }
+  #app, .bottom-nav, .hdr, .overlay, .toasts { display: none !important; }
+  #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: #fff; z-index: 9999; }
+  
+  .print-page { width: 100%; height: 100%; page-break-after: always; display: flex; gap: 20mm; position: relative; } /* Gap 20mm */
+  .print-half { flex: 1; width: 50%; }
+  
+  .print-header { text-align: center; font-weight: 900; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 4px; }
+  .print-header-sub { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+  
+  .print-meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 11px; font-weight: 700; margin-bottom: 10px; border: 1px solid #000; padding: 4px; text-transform: uppercase; }
+  .print-meta-grid > div { border-right: 1px solid #000; padding: 0 4px; }
+  .print-meta-grid > div:last-child { border-right: none; }
+  
+  .print-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .print-table th, .print-table td { border: 1px solid #000; padding: 9px 4px; text-align: center; color: #000; } /* Padding increased for taller rows */
+  .print-table th { font-weight: 800; text-transform: uppercase; font-size: 10px; background: #f0f0f0 !important; }
+  .print-table td.t-left { text-align: left; padding-left: 6px; }
+  
+  .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; z-index: -1; pointer-events: none; }
+  .watermark img { width: 400px; filter: grayscale(100%); }
+  
+  .print-footer { margin-top: 10px; font-size: 10px; display: flex; justify-content: space-between; font-weight: 600; }
+}
 </style>
 </head>
 <body>
@@ -276,7 +311,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
     </div>
     <div style="margin-bottom: 10px; font-size: 12px; color: var(--r500);">* Enter Chest No. to assign candidates to slots.</div>
 
-    <!-- HOUSE MISMATCH CHECK -->
     <div style="margin-bottom: 16px;">
       <button class="btn btn-out" id="btn-house-check" onclick="checkHouseMismatch()" style="width:100%; border-color: #f59e0b; color: #92400e; background: #fffbeb;">
         <span class="material-symbols-rounded" style="color:#f59e0b;">rule</span> Check House Mismatch
@@ -406,6 +440,23 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
     <div class="mfoot">
       <button class="mcancl" onclick="closeModal('modal-program')">Cancel</button>
       <button class="msave" onclick="saveProgram()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="print-container"></div>
+
+<div class="overlay" id="modal-print-setup">
+  <div class="modal">
+    <div class="mhdr">
+      <span class="mtitle" id="print-modal-title">Print Setup</span>
+      <button class="mclose" onclick="closeModal('modal-print-setup')"><span class="material-symbols-rounded">close</span></button>
+    </div>
+    <div class="mbody" id="print-setup-body" style="padding:16px;">
+      </div>
+    <div class="mfoot">
+      <button class="mcancl" onclick="closeModal('modal-print-setup')">Cancel</button>
+      <button class="msave" onclick="triggerPrint()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">print</span> Print Sheet</button>
     </div>
   </div>
 </div>
@@ -701,6 +752,9 @@ function renderAdminProgList() {
               <div class="admin-prog-meta">${toTitle(p.section)} &middot; <span style="color:var(--pri); font-weight:800;">${registeredCount} registered</span></div>
             </div>
             <div class="admin-prog-actions">
+              <button class="ibtn" onclick="openPrintSetup('${p.id}')" title="Print Judgement Sheet" style="margin-right:8px;">
+                <span class="material-symbols-rounded">print</span>
+              </button>
               <div class="toggle-wrap">
                 <span class="toggle-lbl ${isEnabled?'on-lbl':'off-lbl'}">${isEnabled?'ON':'OFF'}</span>
                 <label class="toggle"><input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)"><span class="toggle-slider"></span></label>
@@ -731,7 +785,7 @@ window.toggleStatus = async function(pid, house, slot, currentStatus) {
   } catch(e) { setSyncState('err'); }
 };
 
-/* ================= MANUAL SUBSTITUTION SCRIPT (WITH STRICT VALIDATIONS) ================= */
+/* ================= MANUAL SUBSTITUTION SCRIPT ================= */
 
 window.checkSubProg = function() {
     const val = document.getElementById('man-prog-code').value.trim().toUpperCase();
@@ -742,7 +796,6 @@ window.checkSubProg = function() {
     el.textContent = prog ? `✓ ${prog.name}` : '✗ Program code not found';
     el.className = prog ? 'hint-txt hint-ok' : 'hint-txt hint-err';
     
-    // Trigger old chest validation again since program changed
     if(document.getElementById('man-old-chest').value) checkSubOld();
 };
 
@@ -752,32 +805,18 @@ window.checkSubOld = function() {
     const el = document.getElementById('man-old-name');
     if(!val) { el.textContent = ''; return; }
     
-    // 1. Check if student exists
     const stu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val);
-    if(!stu) { 
-        el.textContent = '✗ Student not found'; 
-        el.className = 'hint-txt hint-err'; 
-        return; 
-    }
+    if(!stu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; }
     
-    // 2. If Program Code is entered, strictly check if they are registered for it
     if(pCode) {
         const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode);
         if(prog) {
             const isRegistered = Object.values(regs).some(r => r.programId === prog.id && String(r.chestNo||'').toUpperCase() === val);
-            if(!isRegistered) {
-                el.textContent = `✗ Not registered in ${pCode}`;
-                el.className = 'hint-txt hint-err';
-                return;
-            }
+            if(!isRegistered) { el.textContent = `✗ Not registered in ${pCode}`; el.className = 'hint-txt hint-err'; return; }
         }
     }
     
-    // All good
-    el.textContent = `✓ ${stu.name} (${stu.house})`;
-    el.className = 'hint-txt hint-ok';
-    
-    // Trigger new chest validation since old changed (to check house match)
+    el.textContent = `✓ ${stu.name} (${stu.house})`; el.className = 'hint-txt hint-ok';
     if(document.getElementById('man-new-chest').value) checkSubNew();
 };
 
@@ -787,27 +826,14 @@ window.checkSubNew = function() {
     const el = document.getElementById('man-new-name');
     if(!val) { el.textContent = ''; return; }
     
-    // 1. Check if student exists
     const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val);
-    if(!newStu) { 
-        el.textContent = '✗ Student not found'; 
-        el.className = 'hint-txt hint-err'; 
-        return; 
-    }
+    if(!newStu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; }
     
-    // 2. Strict House Matching (Deergha Veekshanam)
     if(oldVal) {
         const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldVal);
-        if(oldStu && oldStu.house !== newStu.house) {
-            el.textContent = `✗ House Mismatch! (New is ${newStu.house})`;
-            el.className = 'hint-txt hint-err';
-            return;
-        }
+        if(oldStu && oldStu.house !== newStu.house) { el.textContent = `✗ House Mismatch! (New is ${newStu.house})`; el.className = 'hint-txt hint-err'; return; }
     }
-
-    // All good
-    el.textContent = `✓ ${newStu.name} (${newStu.house})`;
-    el.className = 'hint-txt hint-ok';
+    el.textContent = `✓ ${newStu.name} (${newStu.house})`; el.className = 'hint-txt hint-ok';
 };
 
 window.processManualSub = async function() {
@@ -826,49 +852,23 @@ window.processManualSub = async function() {
     const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === newChest);
     if(!newStu) { toast(`Substitute Candidate '${newChest}' not found`, 'r'); return; }
 
-    // Final House Check
-    if(oldStu.house !== newStu.house) {
-        toast(`House mismatch! Old: ${oldStu.house}, New: ${newStu.house}`, 'r');
-        return;
-    }
+    if(oldStu.house !== newStu.house) { toast(`House mismatch! Old: ${oldStu.house}, New: ${newStu.house}`, 'r'); return; }
 
-    // Find the old registration record
     let targetRegKey = null;
     for(const [key, r] of Object.entries(regs)) {
-        if(r.programId === prog.id && String(r.chestNo||'').toUpperCase() === oldChest) {
-            targetRegKey = key;
-            break;
-        }
+        if(r.programId === prog.id && String(r.chestNo||'').toUpperCase() === oldChest) { targetRegKey = key; break; }
     }
 
-    if(!targetRegKey) {
-        toast(`'${oldChest}' is NOT registered in '${pCode}'`, 'r');
-        return;
-    }
-
+    if(!targetRegKey) { toast(`'${oldChest}' is NOT registered in '${pCode}'`, 'r'); return; }
     if(!confirm(`Confirm replacement?\n\nReplace: ${oldChest} (${oldStu.house})\nWith: ${newChest} (${newStu.house})\nIn Program: ${prog.name}`)) return;
 
     setSyncState('ing');
     try {
-        await setDoc(doc(db, 'registrations', targetRegKey), {
-            studentId: newStu.id,
-            chestNo: newStu.chestNo,
-            name: newStu.name,
-            isRegistered: false // Reverts their status to pending (unchecked)
-        }, { merge: true });
-        
+        await setDoc(doc(db, 'registrations', targetRegKey), { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true });
         toast('Substitution Successful!', 'g');
-        
-        // Clear forms
-        document.getElementById('man-prog-code').value = '';
-        document.getElementById('man-old-chest').value = '';
-        document.getElementById('man-new-chest').value = '';
+        document.getElementById('man-prog-code').value = ''; document.getElementById('man-old-chest').value = ''; document.getElementById('man-new-chest').value = '';
         checkSubProg(); checkSubOld(); checkSubNew();
-
-    } catch(err) {
-        setSyncState('err');
-        toast('Failed to substitute', 'r');
-    }
+    } catch(err) { setSyncState('err'); toast('Failed to substitute', 'r'); }
 };
 
 /* ================= BULK SUBSTITUTION SCRIPT (XLSX & CSV) ================= */
@@ -890,7 +890,6 @@ window.processBulkSubstitution = async function() {
             const worksheet = workbook.Sheets[firstSheetName];
             
             const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
-            
             if(rows.length < 2) { toast('Invalid file format or empty file.', 'r'); return; }
 
             const headers = rows[0].map(h => String(h).trim().toLowerCase());
@@ -908,31 +907,21 @@ window.processBulkSubstitution = async function() {
                 return;
             }
 
-            // Track errors and successes separately
-            let errorLogs = [];
-            let successLogs = [];
-            let successCount = 0;
+            let errorLogs = []; let successLogs = []; let successCount = 0;
             setSyncState('ing');
-            
             const batch = writeBatch(db);
 
             for(let i=1; i<rows.length; i++) {
                 if(!rows[i] || rows[i].length === 0) continue; 
                 
-                const pVal = rows[i][pIdx];
-                const oVal = rows[i][oIdx];
-                const nVal = rows[i][nIdx];
-
+                const pVal = rows[i][pIdx]; const oVal = rows[i][oIdx]; const nVal = rows[i][nIdx];
                 if(!pVal && !oVal && !nVal) continue; 
 
                 const pCode = String(pVal || '').trim().toUpperCase();
                 const oldChest = String(oVal || '').trim().toUpperCase();
                 const newChest = String(nVal || '').trim().toUpperCase();
 
-                if(!pCode || !oldChest || !newChest) {
-                    errorLogs.push(`Row ${i+1}: Missing data — all three columns must be filled.`);
-                    continue;
-                }
+                if(!pCode || !oldChest || !newChest) { errorLogs.push(`Row ${i+1}: Missing data — all three columns must be filled.`); continue; }
 
                 const prog = Object.values(programs).find(p => String(p.code||'').trim().toUpperCase() === pCode);
                 if(!prog) { errorLogs.push(`Row ${i+1}: Program Code '${pCode}' not found in the database.`); continue; }
@@ -943,33 +932,17 @@ window.processBulkSubstitution = async function() {
                 const newStu = Object.values(students).find(s => String(s.chestNo||'').trim().toUpperCase() === newChest);
                 if(!newStu) { errorLogs.push(`Row ${i+1}: Substitute Chest No '${newChest}' not found in the students list.`); continue; }
 
-                // House Check
-                if(oldStu.house !== newStu.house) {
-                    errorLogs.push(`Row ${i+1}: House mismatch! Original '${oldChest}' is ${oldStu.house}, but substitute '${newChest}' is ${newStu.house}. Substitution blocked.`);
-                    continue;
-                }
+                if(oldStu.house !== newStu.house) { errorLogs.push(`Row ${i+1}: House mismatch! Original '${oldChest}' is ${oldStu.house}, but substitute '${newChest}' is ${newStu.house}.`); continue; }
 
                 let targetRegKey = null;
                 for(const [key, r] of Object.entries(regs)) {
-                    if(r.programId === prog.id && String(r.chestNo||'').trim().toUpperCase() === oldChest) {
-                        targetRegKey = key;
-                        break;
-                    }
+                    if(r.programId === prog.id && String(r.chestNo||'').trim().toUpperCase() === oldChest) { targetRegKey = key; break; }
                 }
 
-                if(!targetRegKey) {
-                    errorLogs.push(`Row ${i+1}: '${oldChest}' is not registered in program '${pCode}'.`);
-                    continue;
-                }
+                if(!targetRegKey) { errorLogs.push(`Row ${i+1}: '${oldChest}' is not registered in program '${pCode}'.`); continue; }
 
                 const docRef = doc(db, 'registrations', targetRegKey);
-                batch.set(docRef, {
-                    studentId: newStu.id,
-                    chestNo: newStu.chestNo,
-                    name: newStu.name,
-                    isRegistered: false 
-                }, { merge: true });
-                
+                batch.set(docRef, { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true });
                 successLogs.push(`Row ${i+1}: '${oldChest}' (${oldStu.name}) → '${newChest}' (${newStu.name}) in ${pCode} — substituted successfully.`);
                 successCount++;
             }
@@ -979,41 +952,25 @@ window.processBulkSubstitution = async function() {
                     await batch.commit();
                     toast(`Successfully substituted ${successCount} candidate(s)!`, 'g');
                     fileInput.value = "";
-                } catch (batchErr) {
-                    console.error(batchErr);
-                    errorLogs.push("Database update failed. Please try again.");
-                }
-            } else {
-                toast('No valid substitutions found to process.', 'ti');
-            }
+                } catch (batchErr) { errorLogs.push("Database update failed. Please try again."); }
+            } else { toast('No valid substitutions found to process.', 'ti'); }
 
             setSyncState('ok');
             
-            // Render color-coded log
             if (errorLogs.length > 0 || successLogs.length > 0) {
                 let html = '';
                 if (successLogs.length > 0) {
                     html += `<div style="font-size:11px; font-weight:800; color:var(--success); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">✓ Success (${successLogs.length})</div>`;
-                    html += successLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px 10px; background:#f0fdf4; border:1px solid #86efac; border-radius:7px; margin-bottom:6px; font-size:12px; color:#065f46; font-weight:600;">
-                      <span style="flex-shrink:0; margin-top:1px;">✓</span><span>${msg}</span>
-                    </div>`).join('');
+                    html += successLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px 10px; background:#f0fdf4; border:1px solid #86efac; border-radius:7px; margin-bottom:6px; font-size:12px; color:#065f46; font-weight:600;"><span style="flex-shrink:0; margin-top:1px;">✓</span><span>${msg}</span></div>`).join('');
                 }
                 if (errorLogs.length > 0) {
                     html += `<div style="font-size:11px; font-weight:800; color:var(--danger); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; ${successLogs.length?'margin-top:12px;':''}">✗ Errors (${errorLogs.length})</div>`;
-                    html += errorLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px 10px; background:#fef2f2; border:1px solid #fecaca; border-radius:7px; margin-bottom:6px; font-size:12px; color:#991b1b; font-weight:600;">
-                      <span style="flex-shrink:0; margin-top:1px;">✗</span><span>${msg}</span>
-                    </div>`).join('');
+                    html += errorLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px 10px; background:#fef2f2; border:1px solid #fecaca; border-radius:7px; margin-bottom:6px; font-size:12px; color:#991b1b; font-weight:600;"><span style="flex-shrink:0; margin-top:1px;">✗</span><span>${msg}</span></div>`).join('');
                 }
                 logDiv.innerHTML = html;
             }
-            
-        } catch(error) {
-            console.error(error);
-            toast('Error reading file. Please check if it is a valid Excel or CSV file.', 'r');
-            setSyncState('err');
-        }
+        } catch(error) { toast('Error reading file. Please check if it is a valid Excel or CSV file.', 'r'); setSyncState('err'); }
     };
-    
     reader.readAsArrayBuffer(file);
 };
 
@@ -1028,9 +985,7 @@ window.checkHouseMismatch = function() {
   btn.disabled = true;
 
   const allRegs = Object.values(regs);
-  const total = allRegs.length;
-  let checked = 0;
-  const errors = [];
+  const total = allRegs.length; let checked = 0; const errors = [];
 
   allRegs.forEach(r => {
     const chestNo = String(r.chestNo || '').trim().toUpperCase();
@@ -1038,25 +993,18 @@ window.checkHouseMismatch = function() {
     const progCode = String(r.programCode || r.programId || '');
     const progName = String(r.programName || '');
 
-    // Find the student by chestNo
     const stu = Object.values(students).find(s => String(s.chestNo || '').toUpperCase() === chestNo);
     checked++;
 
-    if (!stu) {
-      errors.push({ type: 'not_found', chestNo, slotHouse, progCode, progName, msg: `Student not found in database` });
-      return;
-    }
+    if (!stu) { errors.push({ type: 'not_found', chestNo, slotHouse, progCode, progName, msg: `Student not found in database` }); return; }
 
     const actualHouse = toTitle(stu.house || '');
-    if (actualHouse !== slotHouse) {
-      errors.push({ type: 'mismatch', chestNo, name: stu.name, slotHouse, actualHouse, progCode, progName });
-    }
+    if (actualHouse !== slotHouse) { errors.push({ type: 'mismatch', chestNo, name: stu.name, slotHouse, actualHouse, progCode, progName }); }
   });
 
   const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
   const hasErrors = errors.length > 0;
 
-  // Summary bar
   summaryEl.innerHTML = `
     <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:180px;">
       <span class="material-symbols-rounded icon-filled" style="color:${hasErrors?'var(--danger)':'var(--success)'}; font-size:28px;">${hasErrors ? 'warning' : 'verified'}</span>
@@ -1074,12 +1022,8 @@ window.checkHouseMismatch = function() {
     </div>
   `;
 
-  // Errors list
   if (!hasErrors) {
-    errorsEl.innerHTML = `<div style="text-align:center; padding:16px 0; color:var(--success); font-weight:800; font-size:13px;">
-      <span class="material-symbols-rounded icon-filled" style="font-size:32px; display:block; margin-bottom:6px;">check_circle</span>
-      No house mismatches found!
-    </div>`;
+    errorsEl.innerHTML = `<div style="text-align:center; padding:16px 0; color:var(--success); font-weight:800; font-size:13px;"><span class="material-symbols-rounded icon-filled" style="font-size:32px; display:block; margin-bottom:6px;">check_circle</span>No house mismatches found!</div>`;
   } else {
     errorsEl.innerHTML = `<div style="font-size:11px; font-weight:800; color:var(--r500); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Mismatch Details</div>` +
       errors.map(e => {
@@ -1119,6 +1063,278 @@ onSnapshot(collection(db,'students'),snap=>{ students={}; snap.forEach(d=>{stude
 onSnapshot(collection(db,'programs'),snap=>{ programs={}; snap.forEach(d=>{programs[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderPrograms(); renderAdminPanel(); renderRegister();});
 onSnapshot(collection(db,'registrations'),snap=>{ regs={}; snap.forEach(d=>{regs[d.id]=d.data();}); setSyncState('ok'); renderRegister(); renderAdminPanel(); });
 
+/* ================= PRINT JUDGEMENT SHEET LOGIC (MANUAL CODE SETUP & ROUND ROBIN) ================= */
+let currentPrintData = null;
+window.customOrder = ["", "", "", ""]; 
+
+window.openPrintSetup = function(pid) {
+  const prog = programs[pid];
+  if(!prog) return;
+
+  let progRegs = Object.values(regs).filter(r => r.programId === pid && !r.isRegistered);
+
+  if(prog.type === 'group') {
+    const grouped = {};
+    progRegs.forEach(r => {
+      if(!grouped[r.house]) grouped[r.house] = [];
+      grouped[r.house].push(r);
+    });
+    progRegs = [];
+    for(const house in grouped) {
+      if(grouped[house].length > 0) {
+        const rep = grouped[house][0];
+        progRegs.push({ ...rep, name: rep.name + " & TEAM", isGroup: true });
+      }
+    }
+  }
+
+  currentPrintData = { prog, regs: [], rawRegs: [...progRegs] };
+  window.customOrder = ["", "", "", ""]; 
+  
+  renderPrintSetup();
+  openModal('modal-print-setup');
+};
+
+function assignCodeLetters(arr) {
+  return arr.map((r, idx) => ({ ...r, codeLetter: String.fromCharCode(65 + idx) }));
+}
+
+// Function triggered by manual selection of dropdowns
+window.updateManualOrder = function(index, val) {
+    window.customOrder[index] = val;
+    const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
+    
+    // Auto-fill D if A, B, C are selected
+    let filled = window.customOrder.filter(x => x !== "");
+    if (filled.length === 3) {
+        let missing = fixedHouses.find(h => !window.customOrder.includes(h));
+        let emptyIndex = window.customOrder.findIndex(x => x === "");
+        if(emptyIndex !== -1 && missing) {
+            window.customOrder[emptyIndex] = missing;
+        }
+    }
+    
+    // If all 4 are selected, apply the Round-Robin order
+    if (window.customOrder.filter(x => x !== "").length === 4) {
+        applyDistinctHouseOrder(window.customOrder);
+    } else {
+        currentPrintData.regs = []; // Clear table if setup is incomplete
+        renderPrintSetup();
+    }
+};
+
+// Function to auto-randomize the dropdowns and list
+window.autoRandomizeCodes = function() {
+    let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
+    // Shuffle the houses array randomly
+    for (let i = houses.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [houses[i], houses[j]] = [houses[j], houses[i]];
+    }
+    window.customOrder = houses;
+    applyDistinctHouseOrder(window.customOrder);
+};
+
+function applyDistinctHouseOrder(orderArray) {
+  // Use map to create a shallow copy without stringify overhead
+  let availableRegs = currentPrintData.rawRegs.map(r => ({...r}));
+  let grouped = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] };
+  
+  availableRegs.forEach(r => {
+    let h = toTitle(r.house);
+    if(grouped[h] !== undefined) {
+       grouped[h].push(r);
+    } else {
+       let firstKey = Object.keys(grouped)[0];
+       grouped[firstKey].push(r);
+    }
+  });
+
+  // Sort inside each house alphabetically by Chest No
+  orderArray.forEach(h => {
+     if(grouped[h]) grouped[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo)));
+  });
+
+  let finalOrder = [];
+  
+  // Safe Round-Robin loop
+  let loopActive = true;
+  while (loopActive) {
+    loopActive = false;
+    for (let i = 0; i < orderArray.length; i++) {
+      let hName = orderArray[i];
+      if (grouped[hName] && grouped[hName].length > 0) {
+        finalOrder.push(grouped[hName].shift());
+        loopActive = true;
+      }
+    }
+  }
+
+  // Fallback safe catch for any unexpected remaining candidates
+  Object.keys(grouped).forEach(h => {
+      if(grouped[h] && grouped[h].length > 0) {
+          finalOrder.push(...grouped[h]);
+      }
+  });
+
+  currentPrintData.regs = assignCodeLetters(finalOrder);
+  renderPrintSetup();
+}
+
+function renderPrintSetup() {
+  const { prog, regs } = currentPrintData;
+  if(!window.customOrder) window.customOrder = ["", "", "", ""];
+  
+  const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
+  let selectsHtml = '';
+  
+  // Render the 4 dropdowns for A, B, C, D
+  for(let i=0; i<4; i++) {
+      let letter = String.fromCharCode(65+i);
+      let options = `<option value="">-- House --</option>`;
+      fixedHouses.forEach(h => {
+          let isSelected = window.customOrder[i] === h;
+          let isSelectedElsewhere = window.customOrder.includes(h) && !isSelected;
+          let disabled = isSelectedElsewhere ? 'disabled' : '';
+          let selected = isSelected ? 'selected' : '';
+          options += `<option value="${h}" ${selected} ${disabled}>${h}</option>`;
+      });
+      selectsHtml += `
+        <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
+          <label style="font-size:11px; font-weight:800; color:var(--r500); text-align:center;">CODE ${letter}</label>
+          <select onchange="updateManualOrder(${i}, this.value)" style="min-height:36px; padding:6px; font-size:13px; font-weight:700; text-align:center; cursor:pointer; outline:none; border-radius:6px; border:1px solid var(--r300);">${options}</select>
+        </div>
+      `;
+  }
+
+  let isReady = window.customOrder.filter(x => x !== "").length === 4;
+
+  let html = `
+    <div style="font-size:14px; font-weight:800; color:var(--r800); margin-bottom:12px;">${prog.code} - ${prog.name} (${prog.type.toUpperCase()})</div>
+    
+    <div style="background:var(--r50); border:1px solid var(--r200); padding:14px; border-radius:10px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div style="font-size:12px; font-weight:900; color:var(--pri); text-transform:uppercase;">Manual Code Setup</div>
+            <button class="btn btn-out btn-sm" onclick="autoRandomizeCodes()" style="min-height:28px; padding:4px 10px; font-size:11px; border-color:var(--purple); color:var(--purple); background:#faf5ff; box-shadow:none; cursor:pointer;">
+                <span class="material-symbols-rounded" style="font-size:14px; margin-right:4px;">casino</span> Auto Random
+            </button>
+        </div>
+        <div style="display:flex; gap:8px;">
+            ${selectsHtml}
+        </div>
+        ${!isReady 
+          ? `<div style="font-size:11px; color:var(--danger); margin-top:10px; font-weight:700;">* Select houses for A, B, and C. Code D will auto-fill.</div>` 
+          : `<div style="font-size:11px; color:var(--success); margin-top:10px; font-weight:800; display:flex; align-items:center; gap:4px;"><span class="material-symbols-rounded" style="font-size:14px;">check_circle</span> Code order applied successfully!</div>`
+        }
+    </div>
+
+    <div style="max-height: 38vh; overflow-y:auto; border:1px solid var(--r200); border-radius:8px;">
+      <table class="print-setup-table" style="margin-top:0;">
+        <thead style="position:sticky; top:0; z-index:10;"><tr><th>Lot</th><th>Chest</th><th>Name</th><th>House</th></tr></thead>
+        <tbody>
+          ${regs.length === 0 && !isReady ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--r400); font-weight:600;">Set house order above to generate codes</td></tr>` : ''}
+          ${regs.length === 0 && isReady && currentPrintData.rawRegs.length === 0 ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--danger); font-weight:600;">No pending candidates available for this program.</td></tr>` : ''}
+          ${regs.map(r => `<tr><td class="t-code">${r.codeLetter}</td><td>${r.chestNo}</td><td>${r.name}</td><td>${r.house}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  document.getElementById('print-setup-body').innerHTML = html;
+}
+
+window.triggerPrint = function() {
+  const { prog, regs, rawRegs } = currentPrintData;
+  
+  if (regs.length === 0 && rawRegs.length > 0) {
+      toast("Please complete the Manual Code Letter setup first!", "r");
+      return;
+  }
+  
+  const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+  
+  const totalRows = Math.max(regs.length, 15);
+  let leftRows = '', rightRows = '';
+
+  for(let i = 0; i < totalRows; i++) {
+    const r = regs[i];
+    if(r) {
+      const cls = r.isGroup ? 'TEAM' : (students[r.studentId]?.class || '');
+      const houseShort = r.house.substring(0, 4).toUpperCase();
+      
+      leftRows += `<tr>
+        <td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td>
+        <td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td>
+        <td>${houseShort}</td><td>${cls}</td>
+        <td></td><td></td><td></td>
+      </tr>`;
+      
+      rightRows += `<tr>
+        <td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td>
+        <td></td><td></td><td></td><td></td><td></td><td></td>
+      </tr>`;
+    } else {
+      leftRows += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+      rightRows += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+    }
+  }
+
+  const printHtml = `
+    <div class="print-page">
+      <div class="watermark"><img src="kamapng.png" alt="Logo"></div>
+      
+      <div class="print-half">
+        <div class="print-header">KAMA 2K26<br><span class="print-header-sub">PROGRAM CANDIDATES</span></div>
+        <div class="print-meta-grid">
+          <div>P.CODE: <b>${prog.code}</b></div>
+          <div>SEC: <b>${prog.section}</b></div>
+          <div>TYPE: <b>${prog.type}</b></div>
+          <div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div>
+          <div>CANDI: <b>${regs.length}</b></div>
+        </div>
+        <table class="print-table">
+          <thead>
+            <tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>
+          </thead>
+          <tbody>${leftRows}</tbody>
+        </table>
+        <div class="print-footer">
+          <span>Printed on: ${printDate}</span>
+          <span>Sign of completion: __________________</span>
+        </div>
+      </div>
+
+      <div class="print-half">
+        <div class="print-header">KAMA 2K26 - MDIA ART FEST<br><span class="print-header-sub">JUDGEMENT SHEET</span></div>
+        <div class="print-meta-grid">
+          <div>P.CODE: <b>${prog.code}</b></div>
+          <div>SEC: <b>${prog.section}</b></div>
+          <div>TYPE: <b>${prog.type}</b></div>
+          <div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div>
+          <div>CANDI: <b>${regs.length}</b></div>
+        </div>
+        <table class="print-table">
+          <thead>
+            <tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>
+          </thead>
+          <tbody>${rightRows}</tbody>
+        </table>
+        <div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>
+        <div class="print-footer" style="margin-top:15px;">
+          <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+            <div>Printed on: ${printDate}</div>
+            <div style="display:flex; justify-content:space-between;">
+              <span>Name of Judge: ________________________</span>
+              <span>Sign: _________ Date: _________</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('print-container').innerHTML = printHtml;
+  window.print();
+};
 </script>
 </body>
 </html>
