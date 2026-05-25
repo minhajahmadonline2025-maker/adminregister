@@ -205,14 +205,16 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 .print-setup-table .t-code { font-weight: 900; color: var(--pri); }
 
 /* ================= PRINT MEDIA QUERIES (A4 Landscape B&W) ================= */
+/* ================= PRINT MEDIA QUERIES (A4 Landscape B&W) ================= */
 #print-container { display: none; }
 @media print {
-  @page { size: A4 landscape; margin: 10mm 20mm; } /* Left & Right margin 20mm for reduced width */
+  @page { size: A4 landscape; margin: 10mm 15mm; } 
   body { background: #fff; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; color: #000; -webkit-print-color-adjust: exact; }
   #app, .bottom-nav, .hdr, .overlay, .toasts { display: none !important; }
   #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: #fff; z-index: 9999; }
   
-  .print-page { width: 100%; height: 100%; page-break-after: always; display: flex; gap: 20mm; position: relative; } /* Gap 20mm */
+  /* Removed page-break-after to fix the extra blank page */
+  .print-page { width: 100%; display: flex; gap: 20mm; position: relative; } 
   .print-half { flex: 1; width: 50%; }
   
   .print-header { text-align: center; font-weight: 900; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 4px; }
@@ -223,7 +225,9 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
   .print-meta-grid > div:last-child { border-right: none; }
   
   .print-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  .print-table th, .print-table td { border: 1px solid #000; padding: 9px 4px; text-align: center; color: #000; } /* Padding increased for taller rows */
+  
+  /* Reduced padding to prevent content from pushing to the next page */
+  .print-table th, .print-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; color: #000; } 
   .print-table th { font-weight: 800; text-transform: uppercase; font-size: 10px; background: #f0f0f0 !important; }
   .print-table td.t-left { text-align: left; padding-left: 6px; }
   
@@ -456,7 +460,7 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
       </div>
     <div class="mfoot">
       <button class="mcancl" onclick="closeModal('modal-print-setup')">Cancel</button>
-      <button class="msave" onclick="triggerPrint()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">print</span> Print Sheet</button>
+      <button class="msave" id="print-save-btn" onclick="triggerPrint()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">save</span> Save & Print</button>
     </div>
   </div>
 </div>
@@ -1061,7 +1065,7 @@ window.checkHouseMismatch = function() {
 /* FIRESTORE LISTENERS */
 onSnapshot(collection(db,'students'),snap=>{ students={}; snap.forEach(d=>{students[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderStudents(); });
 onSnapshot(collection(db,'programs'),snap=>{ programs={}; snap.forEach(d=>{programs[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderPrograms(); renderAdminPanel(); renderRegister();});
-onSnapshot(collection(db,'registrations'),snap=>{ regs={}; snap.forEach(d=>{regs[d.id]=d.data();}); setSyncState('ok'); renderRegister(); renderAdminPanel(); });
+onSnapshot(collection(db,'registrations'),snap=>{ regs={}; snap.forEach(d=>{regs[d.id]={...d.data(), id:d.id};}); setSyncState('ok'); renderRegister(); renderAdminPanel(); });
 
 /* ================= PRINT JUDGEMENT SHEET LOGIC (MANUAL CODE SETUP & ROUND ROBIN) ================= */
 let currentPrintData = null;
@@ -1088,7 +1092,12 @@ window.openPrintSetup = function(pid) {
     }
   }
 
-  currentPrintData = { prog, regs: [], rawRegs: [...progRegs] };
+  let hasSaved = progRegs.some(r => r.codeLetter);
+  if (hasSaved) {
+      progRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z')));
+  }
+
+  currentPrintData = { prog, regs: hasSaved ? [...progRegs] : [], rawRegs: [...progRegs], isLocked: hasSaved };
   window.customOrder = ["", "", "", ""]; 
   
   renderPrintSetup();
@@ -1099,12 +1108,10 @@ function assignCodeLetters(arr) {
   return arr.map((r, idx) => ({ ...r, codeLetter: String.fromCharCode(65 + idx) }));
 }
 
-// Function triggered by manual selection of dropdowns
 window.updateManualOrder = function(index, val) {
     window.customOrder[index] = val;
     const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
     
-    // Auto-fill D if A, B, C are selected
     let filled = window.customOrder.filter(x => x !== "");
     if (filled.length === 3) {
         let missing = fixedHouses.find(h => !window.customOrder.includes(h));
@@ -1114,19 +1121,16 @@ window.updateManualOrder = function(index, val) {
         }
     }
     
-    // If all 4 are selected, apply the Round-Robin order
     if (window.customOrder.filter(x => x !== "").length === 4) {
         applyDistinctHouseOrder(window.customOrder);
     } else {
-        currentPrintData.regs = []; // Clear table if setup is incomplete
+        currentPrintData.regs = []; 
         renderPrintSetup();
     }
 };
 
-// Function to auto-randomize the dropdowns and list
 window.autoRandomizeCodes = function() {
     let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
-    // Shuffle the houses array randomly
     for (let i = houses.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [houses[i], houses[j]] = [houses[j], houses[i]];
@@ -1136,7 +1140,6 @@ window.autoRandomizeCodes = function() {
 };
 
 function applyDistinctHouseOrder(orderArray) {
-  // Use map to create a shallow copy without stringify overhead
   let availableRegs = currentPrintData.rawRegs.map(r => ({...r}));
   let grouped = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] };
   
@@ -1150,14 +1153,11 @@ function applyDistinctHouseOrder(orderArray) {
     }
   });
 
-  // Sort inside each house alphabetically by Chest No
   orderArray.forEach(h => {
      if(grouped[h]) grouped[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo)));
   });
 
   let finalOrder = [];
-  
-  // Safe Round-Robin loop
   let loopActive = true;
   while (loopActive) {
     loopActive = false;
@@ -1170,7 +1170,6 @@ function applyDistinctHouseOrder(orderArray) {
     }
   }
 
-  // Fallback safe catch for any unexpected remaining candidates
   Object.keys(grouped).forEach(h => {
       if(grouped[h] && grouped[h].length > 0) {
           finalOrder.push(...grouped[h]);
@@ -1181,14 +1180,20 @@ function applyDistinctHouseOrder(orderArray) {
   renderPrintSetup();
 }
 
+window.unlockCodes = function() {
+    currentPrintData.isLocked = false;
+    currentPrintData.regs = [];
+    window.customOrder = ["", "", "", ""];
+    renderPrintSetup();
+}
+
 function renderPrintSetup() {
-  const { prog, regs } = currentPrintData;
+  const { prog, regs, isLocked } = currentPrintData;
   if(!window.customOrder) window.customOrder = ["", "", "", ""];
   
   const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
   let selectsHtml = '';
   
-  // Render the 4 dropdowns for A, B, C, D
   for(let i=0; i<4; i++) {
       let letter = String.fromCharCode(65+i);
       let options = `<option value="">-- House --</option>`;
@@ -1211,28 +1216,41 @@ function renderPrintSetup() {
 
   let html = `
     <div style="font-size:14px; font-weight:800; color:var(--r800); margin-bottom:12px;">${prog.code} - ${prog.name} (${prog.type.toUpperCase()})</div>
-    
-    <div style="background:var(--r50); border:1px solid var(--r200); padding:14px; border-radius:10px; margin-bottom:16px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <div style="font-size:12px; font-weight:900; color:var(--pri); text-transform:uppercase;">Manual Code Setup</div>
-            <button class="btn btn-out btn-sm" onclick="autoRandomizeCodes()" style="min-height:28px; padding:4px 10px; font-size:11px; border-color:var(--purple); color:var(--purple); background:#faf5ff; box-shadow:none; cursor:pointer;">
-                <span class="material-symbols-rounded" style="font-size:14px; margin-right:4px;">casino</span> Auto Random
-            </button>
-        </div>
-        <div style="display:flex; gap:8px;">
-            ${selectsHtml}
-        </div>
-        ${!isReady 
-          ? `<div style="font-size:11px; color:var(--danger); margin-top:10px; font-weight:700;">* Select houses for A, B, and C. Code D will auto-fill.</div>` 
-          : `<div style="font-size:11px; color:var(--success); margin-top:10px; font-weight:800; display:flex; align-items:center; gap:4px;"><span class="material-symbols-rounded" style="font-size:14px;">check_circle</span> Code order applied successfully!</div>`
-        }
-    </div>
+  `;
 
+  if(isLocked) {
+      html += `
+        <div style="background:#f0fdf4; border:1px solid #86efac; padding:14px; border-radius:10px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+           <div style="font-size:13px; font-weight:800; color:#065f46;"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:18px; margin-right:6px;">lock</span> Code Letters are Fixed</div>
+           <button class="btn btn-out btn-sm" onclick="unlockCodes()" style="border-color:var(--success); color:var(--success); background:#fff;">Change Codes</button>
+        </div>
+      `;
+  } else {
+      html += `
+        <div style="background:var(--r50); border:1px solid var(--r200); padding:14px; border-radius:10px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div style="font-size:12px; font-weight:900; color:var(--pri); text-transform:uppercase;">Manual Code Setup</div>
+                <button class="btn btn-out btn-sm" onclick="autoRandomizeCodes()" style="min-height:28px; padding:4px 10px; font-size:11px; border-color:var(--purple); color:var(--purple); background:#faf5ff; box-shadow:none; cursor:pointer;">
+                    <span class="material-symbols-rounded" style="font-size:14px; margin-right:4px;">casino</span> Auto Random
+                </button>
+            </div>
+            <div style="display:flex; gap:8px;">
+                ${selectsHtml}
+            </div>
+            ${!isReady 
+              ? `<div style="font-size:11px; color:var(--danger); margin-top:10px; font-weight:700;">* Select houses for A, B, and C. Code D will auto-fill.</div>` 
+              : `<div style="font-size:11px; color:var(--success); margin-top:10px; font-weight:800; display:flex; align-items:center; gap:4px;"><span class="material-symbols-rounded" style="font-size:14px;">check_circle</span> Code order applied successfully!</div>`
+            }
+        </div>
+      `;
+  }
+
+  html += `
     <div style="max-height: 38vh; overflow-y:auto; border:1px solid var(--r200); border-radius:8px;">
       <table class="print-setup-table" style="margin-top:0;">
         <thead style="position:sticky; top:0; z-index:10;"><tr><th>Lot</th><th>Chest</th><th>Name</th><th>House</th></tr></thead>
         <tbody>
-          ${regs.length === 0 && !isReady ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--r400); font-weight:600;">Set house order above to generate codes</td></tr>` : ''}
+          ${regs.length === 0 && !isReady && !isLocked ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--r400); font-weight:600;">Set house order above to generate codes</td></tr>` : ''}
           ${regs.length === 0 && isReady && currentPrintData.rawRegs.length === 0 ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--danger); font-weight:600;">No pending candidates available for this program.</td></tr>` : ''}
           ${regs.map(r => `<tr><td class="t-code">${r.codeLetter}</td><td>${r.chestNo}</td><td>${r.name}</td><td>${r.house}</td></tr>`).join('')}
         </tbody>
@@ -1240,16 +1258,56 @@ function renderPrintSetup() {
     </div>
   `;
   document.getElementById('print-setup-body').innerHTML = html;
+  
+  const btn = document.getElementById('print-save-btn');
+  if(isLocked) {
+      btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">print</span> Print Sheet`;
+  } else {
+      btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">save</span> Save & Print`;
+  }
 }
 
-window.triggerPrint = function() {
-  const { prog, regs, rawRegs } = currentPrintData;
+window.triggerPrint = async function() {
+  const { prog, regs, rawRegs, isLocked } = currentPrintData;
   
   if (regs.length === 0 && rawRegs.length > 0) {
       toast("Please complete the Manual Code Letter setup first!", "r");
       return;
   }
-  
+
+  if (!isLocked && regs.length > 0) {
+      setSyncState('ing');
+      try {
+          const batch = writeBatch(db);
+          regs.forEach(r => {
+              if (r.isGroup) {
+                 Object.values(window.regs).forEach(allR => {
+                     if (allR.programId === prog.id && allR.house === r.house && !allR.isRegistered) {
+                         batch.set(doc(db, 'registrations', allR.id), { codeLetter: r.codeLetter }, { merge: true });
+                     }
+                 });
+              } else {
+                 batch.set(doc(db, 'registrations', r.id), { codeLetter: r.codeLetter }, { merge: true });
+              }
+          });
+          await batch.commit();
+          setSyncState('ok');
+          toast('Code Letters Saved!', 'g');
+          currentPrintData.isLocked = true;
+          renderPrintSetup(); 
+          
+          setTimeout(() => { executePrint(); }, 500);
+      } catch(e) {
+          setSyncState('err');
+          toast('Failed to save code letters', 'r');
+      }
+  } else {
+      executePrint();
+  }
+};
+
+function executePrint() {
+  const { prog, regs } = currentPrintData;
   const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
   
   const totalRows = Math.max(regs.length, 15);
@@ -1334,7 +1392,7 @@ window.triggerPrint = function() {
 
   document.getElementById('print-container').innerHTML = printHtml;
   window.print();
-};
+}
 </script>
 </body>
 </html>
