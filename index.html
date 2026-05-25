@@ -33,6 +33,16 @@ body { font-family: 'Outfit', sans-serif; background: #f4f6f8; min-height: 100vh
 .material-symbols-rounded { font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24; font-size: 20px; display: inline-flex; align-items: center; justify-content: center; }
 .icon-filled { font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24; }
 
+/* ═══ LOADING SCREEN STYLES ═══ */
+.spinner { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; background: #fff; position: fixed; z-index: 999999; width: 100%; top: 0; left: 0; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.loader-card { width: 85%; max-width: 320px; text-align: center; }
+.loader-img-logo { height: 80px; width: auto; max-width: 100%; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); animation: pulseLogo 1.5s infinite ease-in-out; }
+@keyframes pulseLogo { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+.loader-sub { font-size: 12px; color: var(--r500); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 30px; }
+.progress-bar-track { width: 100%; height: 6px; background: var(--r100); border-radius: 99px; overflow: hidden; position: relative; margin-bottom: 12px; }
+.progress-bar-fill { height: 100%; width: 5%; background: linear-gradient(90deg, var(--pri), var(--pri-d)); border-radius: 99px; transition: width 0.3s cubic-bezier(0.1, 0.8, 0.2, 1); }
+.loader-status { font-size: 11px; color: var(--r400); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
 .hdr { background: linear-gradient(135deg, var(--pri-d) 0%, var(--pri) 60%, #871e2a 100%); padding: 18px 20px 14px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shm); }
 .hdr-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .hdr-logo { height: 40px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
@@ -241,7 +251,19 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 </head>
 <body>
 
-<div id="app">
+<div class="spinner" id="loading">
+  <div class="loader-card">
+    <img src="kamapng.png" alt="KAMA '26 Logo" class="loader-img-logo">
+    <div class="loader-sub">Admin Master Portal</div>
+    <div class="progress-bar-track">
+       <div class="progress-bar-fill" id="pbar-fill"></div>
+    </div>
+    <div class="loader-status" id="pbar-status">Fetching Data...</div>
+  </div>
+</div>
+
+<div id="app" style="display:none; opacity: 0; transition: opacity 0.3s ease;">
+
   <div class="hdr">
     <div class="hdr-row">
       <div class="hdr-left" style="display: flex; align-items: center; gap: 12px;">
@@ -1063,10 +1085,50 @@ window.checkHouseMismatch = function() {
   btn.disabled = false;
 };
 
-/* FIRESTORE LISTENERS */
-onSnapshot(collection(db,'students'),snap=>{ students={}; snap.forEach(d=>{students[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderStudents(); });
-onSnapshot(collection(db,'programs'),snap=>{ programs={}; snap.forEach(d=>{programs[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderPrograms(); renderAdminPanel(); renderRegister();});
-onSnapshot(collection(db,'registrations'),snap=>{ regs={}; snap.forEach(d=>{regs[d.id]={...d.data(), id:d.id};}); setSyncState('ok'); renderRegister(); renderAdminPanel(); });
+/* ================= LOADING & FIRESTORE LISTENERS ================= */
+let loadedStreams = { students: false, programs: false, registrations: false };
+
+function updateProgressBar(streamName) {
+  loadedStreams[streamName] = true;
+  const fill = document.getElementById('pbar-fill');
+  const status = document.getElementById('pbar-status');
+  let totalLoaded = Object.values(loadedStreams).filter(Boolean).length;
+  let percent = Math.floor((totalLoaded / 3) * 100);
+  
+  if(fill) fill.style.width = percent + '%';
+  if(status) status.textContent = `Assembling Dashboard (${percent}%)`;
+  
+  if(totalLoaded === 3) {
+    setTimeout(() => {
+      const loadingEl = document.getElementById('loading');
+      const appEl = document.getElementById('app');
+      if(loadingEl) loadingEl.style.opacity = '0';
+      setTimeout(() => {
+        if(loadingEl) loadingEl.style.display = 'none';
+        if(appEl) { appEl.style.display = 'block'; setTimeout(() => appEl.style.opacity = '1', 50); }
+      }, 300);
+    }, 500);
+  }
+}
+
+onSnapshot(collection(db,'students'),snap=>{ 
+    students={}; snap.forEach(d=>{students[d.id]={...d.data(),id:d.id};}); 
+    updateDynamicFilters(); updateHeader(); renderStudents(); 
+    updateProgressBar('students');
+}, e => setSyncState('err'));
+
+onSnapshot(collection(db,'programs'),snap=>{ 
+    programs={}; snap.forEach(d=>{programs[d.id]={...d.data(),id:d.id};}); 
+    updateDynamicFilters(); updateHeader(); renderPrograms(); renderAdminPanel(); renderRegister();
+    updateProgressBar('programs');
+}, e => setSyncState('err'));
+
+onSnapshot(collection(db,'registrations'),snap=>{ 
+    regs={}; snap.forEach(d=>{regs[d.id]={...d.data(), id:d.id};}); 
+    setSyncState('ok'); renderRegister(); renderAdminPanel(); 
+    updateProgressBar('registrations');
+}, e => setSyncState('err'));
+
 
 /* ================= PRINT JUDGEMENT SHEET LOGIC (MANUAL CODE SETUP & ROUND ROBIN) ================= */
 let currentPrintData = null;
