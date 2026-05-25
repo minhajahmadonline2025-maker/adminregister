@@ -205,7 +205,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 .print-setup-table .t-code { font-weight: 900; color: var(--pri); }
 
 /* ================= PRINT MEDIA QUERIES (A4 Landscape B&W) ================= */
-/* ================= PRINT MEDIA QUERIES (A4 Landscape B&W) ================= */
 #print-container { display: none; }
 @media print {
   @page { size: A4 landscape; margin: 10mm 15mm; } 
@@ -213,7 +212,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
   #app, .bottom-nav, .hdr, .overlay, .toasts { display: none !important; }
   #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: #fff; z-index: 9999; }
   
-  /* Removed page-break-after to fix the extra blank page */
   .print-page { width: 100%; display: flex; gap: 20mm; position: relative; } 
   .print-half { flex: 1; width: 50%; }
   
@@ -225,14 +223,17 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
   .print-meta-grid > div:last-child { border-right: none; }
   
   .print-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  
-  /* Reduced padding to prevent content from pushing to the next page */
   .print-table th, .print-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; color: #000; } 
   .print-table th { font-weight: 800; text-transform: uppercase; font-size: 10px; background: #f0f0f0 !important; }
   .print-table td.t-left { text-align: left; padding-left: 6px; }
   
-  .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; z-index: -1; pointer-events: none; }
-  .watermark img { width: 400px; filter: grayscale(100%); }
+  .watermark { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    z-index: -1; pointer-events: none; opacity: 0.07; 
+    display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); 
+    place-items: center; padding: 20px; box-sizing: border-box;
+  }
+  .watermark img { width: 260px; filter: grayscale(100%); opacity: 0.8; }
   
   .print-footer { margin-top: 10px; font-size: 10px; display: flex; justify-content: space-between; font-weight: 600; }
 }
@@ -1260,7 +1261,8 @@ function renderPrintSetup() {
   document.getElementById('print-setup-body').innerHTML = html;
   
   const btn = document.getElementById('print-save-btn');
-  if(isLocked) {
+  // Group program anu enkil 'Print Sheet' mathram kaanikkanam (karanam save aavilla)
+  if(isLocked || prog.type === 'group') {
       btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">print</span> Print Sheet`;
   } else {
       btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">save</span> Save & Print`;
@@ -1275,20 +1277,18 @@ window.triggerPrint = async function() {
       return;
   }
 
+  // Group program anengil database-il save cheyyanda, direct print-il poyal mathi
+  if (prog.type === 'group') {
+      executePrint();
+      return;
+  }
+
   if (!isLocked && regs.length > 0) {
       setSyncState('ing');
       try {
           const batch = writeBatch(db);
           regs.forEach(r => {
-              if (r.isGroup) {
-                 Object.values(window.regs).forEach(allR => {
-                     if (allR.programId === prog.id && allR.house === r.house && !allR.isRegistered) {
-                         batch.set(doc(db, 'registrations', allR.id), { codeLetter: r.codeLetter }, { merge: true });
-                     }
-                 });
-              } else {
-                 batch.set(doc(db, 'registrations', r.id), { codeLetter: r.codeLetter }, { merge: true });
-              }
+             batch.set(doc(db, 'registrations', r.id), { codeLetter: r.codeLetter }, { merge: true });
           });
           await batch.commit();
           setSyncState('ok');
@@ -1310,7 +1310,8 @@ function executePrint() {
   const { prog, regs } = currentPrintData;
   const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
   
-  const totalRows = Math.max(regs.length, 15);
+  // Changed maximum empty rows from 15 to 12 to avoid pushing content to the next blank page
+  const totalRows = Math.max(regs.length, 12);
   let leftRows = '', rightRows = '';
 
   for(let i = 0; i < totalRows; i++) {
@@ -1338,7 +1339,10 @@ function executePrint() {
 
   const printHtml = `
     <div class="print-page">
-      <div class="watermark"><img src="kamapng.png" alt="Logo"></div>
+      <div class="watermark">
+        <img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo">
+        <img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo">
+      </div>
       
       <div class="print-half">
         <div class="print-header">KAMA 2K26<br><span class="print-header-sub">PROGRAM CANDIDATES</span></div>
