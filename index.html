@@ -85,6 +85,7 @@ body { font-family: 'Outfit', sans-serif; background: #f4f6f8; min-height: 100vh
 .sd-err { background: #f87171; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
+/* BOTTOM NAV (MOBILE RESPONSIVE 3 TABS) */
 .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-top: 1px solid var(--r200); display: flex; z-index: 200; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 15px rgba(0,0,0,0.04); }
 .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 2px; color: var(--r400); border: none; background: none; cursor: pointer; transition: all 0.2s ease; }
 .nav-icon { font-size: 24px; margin-bottom: 4px; transition: transform 0.2s, color 0.2s;}
@@ -92,6 +93,12 @@ body { font-family: 'Outfit', sans-serif; background: #f4f6f8; min-height: 100vh
 .nav-item:hover { color: var(--r600); }
 .nav-item.on { color: var(--pri); }
 .nav-item.on .nav-icon { font-variation-settings: 'FILL' 1, 'wght' 600; transform: translateY(-2px); }
+
+/* MORE MENU BOTTOM SHEET */
+.more-sheet { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; border-radius: 20px 20px 0 0; padding: 24px 20px 40px; box-shadow: var(--shl); animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.sheet-item { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 15px; color: var(--r800); border: 1.5px solid var(--r100); margin-bottom: 10px; cursor: pointer; transition: all 0.2s; background: #fff; }
+.sheet-item:hover, .sheet-item:active { background: var(--r50); border-color: var(--r200); transform: translateX(4px); }
+.sheet-item .material-symbols-rounded { color: var(--pri); font-size: 24px; background: var(--sec-l); padding: 8px; border-radius: 8px; }
 
 .pg { padding: 20px 16px 100px; display: none; animation: fadeIn 0.3s ease; }
 .pg.on { display: block; }
@@ -357,21 +364,16 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
     </div>
   </div>
 
+  <!-- MOBILE RESPONSIVE 3-TAB NAV -->
   <div class="bottom-nav">
-    <button class="nav-item" onclick="switchTab('students', this)">
-      <span class="material-symbols-rounded nav-icon">group</span><span class="nav-text">Students</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('programs', this)">
-      <span class="material-symbols-rounded nav-icon">emoji_events</span><span class="nav-text">Programs</span>
-    </button>
-    <button class="nav-item" onclick="switchTab('register', this)">
-      <span class="material-symbols-rounded nav-icon">list_alt</span><span class="nav-text">Candidates</span>
-    </button>
-    <button class="nav-item on" onclick="switchTab('admin', this)">
+    <button class="nav-item on" id="nav-admin" onclick="switchTab('admin', this)">
       <span class="material-symbols-rounded nav-icon">admin_panel_settings</span><span class="nav-text">Dashboard</span>
     </button>
-    <button class="nav-item" onclick="switchTab('substitute', this)">
+    <button class="nav-item" id="nav-substitute" onclick="switchTab('substitute', this)">
       <span class="material-symbols-rounded nav-icon">find_replace</span><span class="nav-text">Substitute</span>
+    </button>
+    <button class="nav-item" id="nav-more" onclick="openModal('modal-more')">
+      <span class="material-symbols-rounded nav-icon">menu</span><span class="nav-text">More</span>
     </button>
   </div>
 
@@ -486,6 +488,54 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 
   </div>
 
+  <!-- NEW LOCK SETTINGS PAGE -->
+  <div class="pg" id="pg-locksettings">
+    <div class="seclbl">Change App PIN</div>
+    <div class="card" style="flex-direction:column; align-items:stretch; padding: 20px; gap: 12px;">
+       <div class="input-wrap">
+          <span class="material-symbols-rounded">lock</span>
+          <input type="password" class="has-icon" id="set-old-pin" placeholder="Current PIN" maxlength="4" pattern="\d*">
+       </div>
+       <div class="input-wrap">
+          <span class="material-symbols-rounded">pin</span>
+          <input type="password" class="has-icon" id="set-new-pin" placeholder="New 4-Digit PIN" maxlength="4" pattern="\d*">
+       </div>
+       <button class="btn btn-primary" onclick="saveNewPin()" style="margin-top: 8px;">
+         <span class="material-symbols-rounded">save</span> Update PIN
+       </button>
+    </div>
+
+    <div class="seclbl mt-3">Biometrics Management</div>
+    <div class="card" style="flex-direction:column; align-items:stretch; padding: 20px; gap: 12px;">
+       <button class="btn btn-out" onclick="registerBiometrics()" style="border-color:var(--success); color:var(--success);">
+          <span class="material-symbols-rounded">fingerprint</span> Setup Fingerprint / Face
+       </button>
+       <button class="btn btn-red" onclick="clearBiometrics()">
+          <span class="material-symbols-rounded">delete_forever</span> Remove Biometrics
+       </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MORE MENU (BOTTOM SHEET) -->
+<div class="overlay" id="modal-more" onclick="closeModal('modal-more')">
+  <div class="more-sheet" onclick="event.stopPropagation()">
+    <div style="font-size: 14px; font-weight: 800; color: var(--r500); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.1em;">More Options</div>
+    
+    <div class="sheet-item" onclick="switchTab('students'); closeModal('modal-more')">
+      <span class="material-symbols-rounded">group</span> Manage Students
+    </div>
+    <div class="sheet-item" onclick="switchTab('programs'); closeModal('modal-more')">
+      <span class="material-symbols-rounded">emoji_events</span> Manage Programs
+    </div>
+    <div class="sheet-item" onclick="switchTab('register'); closeModal('modal-more')">
+      <span class="material-symbols-rounded">list_alt</span> Assign Candidates
+    </div>
+    <div class="sheet-item" onclick="switchTab('locksettings'); closeModal('modal-more')">
+      <span class="material-symbols-rounded" style="color:var(--orange); background:#fff7ed;">security</span> Security & Lock
+    </div>
+  </div>
 </div>
 
 <datalist id="class-list"></datalist>
@@ -580,8 +630,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-/* ================= SCREEN LOCK & WEBAUTHN LOGIC ================= */
-const MASTER_PIN = "2456";
+/* ================= SCREEN LOCK & SECURITY LOGIC ================= */
+let MASTER_PIN = localStorage.getItem('kama_admin_pin') || "2456";
 let currentPin = "";
 const lockScreen = document.getElementById('app-lock');
 const lockCard = document.getElementById('lock-card');
@@ -699,6 +749,32 @@ window.verifyBiometrics = async function() {
     }
 };
 
+window.clearBiometrics = function() {
+    localStorage.removeItem('kama_bio_credential');
+    toast('Biometrics Removed', 'g');
+};
+
+window.saveNewPin = function() {
+    const oldP = document.getElementById('set-old-pin').value;
+    const newP = document.getElementById('set-new-pin').value;
+    
+    if(oldP !== MASTER_PIN) {
+        toast('Current PIN is incorrect', 'r');
+        return;
+    }
+    if(newP.length !== 4) {
+        toast('New PIN must be exactly 4 digits', 'r');
+        return;
+    }
+    
+    localStorage.setItem('kama_admin_pin', newP);
+    MASTER_PIN = newP;
+    toast('PIN Changed Successfully!', 'g');
+    
+    document.getElementById('set-old-pin').value = '';
+    document.getElementById('set-new-pin').value = '';
+};
+
 window.addEventListener('DOMContentLoaded', () => {
     if(localStorage.getItem('kama_bio_credential')) {
         setTimeout(verifyBiometrics, 500);
@@ -733,10 +809,19 @@ function toast(msg, type='g') {
 }
 
 window.switchTab = function(tab, el){
+  // Handle Bottom Nav Highlights
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('on'));
-  if(el) el.classList.add('on');
+  if(el) {
+      el.classList.add('on');
+  } else {
+      // If triggered from the "More" menu, highlight the More icon
+      document.getElementById('nav-more').classList.add('on');
+  }
+
+  // Switch Pages
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.getElementById('pg-'+tab).classList.add('on');
+  
   if(tab==='register') renderRegister();
   if(tab==='admin') renderAdminPanel();
 };
