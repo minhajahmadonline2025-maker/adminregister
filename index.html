@@ -85,7 +85,7 @@ body { font-family: 'Outfit', sans-serif; background: #f4f6f8; min-height: 100vh
 .sd-err { background: #f87171; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
-/* BOTTOM NAV (MOBILE RESPONSIVE 3 TABS) */
+/* BOTTOM NAV */
 .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-top: 1px solid var(--r200); display: flex; z-index: 200; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 15px rgba(0,0,0,0.04); }
 .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px 2px; color: var(--r400); border: none; background: none; cursor: pointer; transition: all 0.2s ease; }
 .nav-icon { font-size: 24px; margin-bottom: 4px; transition: transform 0.2s, color 0.2s;}
@@ -94,11 +94,16 @@ body { font-family: 'Outfit', sans-serif; background: #f4f6f8; min-height: 100vh
 .nav-item.on { color: var(--pri); }
 .nav-item.on .nav-icon { font-variation-settings: 'FILL' 1, 'wght' 600; transform: translateY(-2px); }
 
-/* MORE MENU BOTTOM SHEET */
-.more-sheet { position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; border-radius: 20px 20px 0 0; padding: 24px 20px 40px; box-shadow: var(--shl); animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.sheet-item { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 12px; font-weight: 700; font-size: 15px; color: var(--r800); border: 1.5px solid var(--r100); margin-bottom: 10px; cursor: pointer; transition: all 0.2s; background: #fff; }
-.sheet-item:hover, .sheet-item:active { background: var(--r50); border-color: var(--r200); transform: translateX(4px); }
-.sheet-item .material-symbols-rounded { color: var(--pri); font-size: 24px; background: var(--sec-l); padding: 8px; border-radius: 8px; }
+/* SIDE DRAWER NAVIGATION PANEL */
+.side-drawer { position: absolute; top: 0; right: 0; width: 100%; max-width: 320px; height: 100%; background: #fff; box-shadow: -10px 0 40px rgba(0,0,0,0.15); padding: 24px; animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; display: flex; flex-direction: column; overflow-y: auto; }
+@keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+.drawer-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--r100); }
+.drawer-title { font-size: 16px; font-weight: 900; color: var(--r800); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.sheet-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; font-weight: 700; font-size: 15px; color: var(--r800); border: 1.5px solid transparent; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; background: var(--r50); }
+.sheet-item:hover, .sheet-item:active { background: #fff; border-color: var(--r200); box-shadow: var(--sh); }
+.sheet-item .material-symbols-rounded { color: var(--pri); font-size: 22px; }
 
 .pg { padding: 20px 16px 100px; display: none; animation: fadeIn 0.3s ease; }
 .pg.on { display: block; }
@@ -518,10 +523,13 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 
 </div>
 
-<!-- MORE MENU (BOTTOM SHEET) -->
+<!-- MORE MENU (SIDE DRAWER/PANEL) -->
 <div class="overlay" id="modal-more" onclick="closeModal('modal-more')">
-  <div class="more-sheet" onclick="event.stopPropagation()">
-    <div style="font-size: 14px; font-weight: 800; color: var(--r500); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.1em;">More Options</div>
+  <div class="side-drawer" onclick="event.stopPropagation()">
+    <div class="drawer-hdr">
+        <div class="drawer-title">Menu Options</div>
+        <button class="mclose" onclick="closeModal('modal-more')"><span class="material-symbols-rounded">close</span></button>
+    </div>
     
     <div class="sheet-item" onclick="switchTab('students'); closeModal('modal-more')">
       <span class="material-symbols-rounded">group</span> Manage Students
@@ -532,8 +540,8 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
     <div class="sheet-item" onclick="switchTab('register'); closeModal('modal-more')">
       <span class="material-symbols-rounded">list_alt</span> Assign Candidates
     </div>
-    <div class="sheet-item" onclick="switchTab('locksettings'); closeModal('modal-more')">
-      <span class="material-symbols-rounded" style="color:var(--orange); background:#fff7ed;">security</span> Security & Lock
+    <div class="sheet-item" onclick="switchTab('locksettings'); closeModal('modal-more')" style="background:#fff7ed; color:#9a3412; border-color:#ffedd5;">
+      <span class="material-symbols-rounded" style="color:var(--orange);">security</span> Security & Lock
     </div>
   </div>
 </div>
@@ -629,6 +637,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
+
+/* ================= GLOBALIZE MODAL FUNCTIONS ================= */
+window.closeModal = id => document.getElementById(id).classList.remove('show');
+window.openModal = id => { document.getElementById(id).classList.add('show'); };
 
 /* ================= SCREEN LOCK & SECURITY LOGIC ================= */
 let MASTER_PIN = localStorage.getItem('kama_admin_pin') || "2456";
@@ -814,7 +826,7 @@ window.switchTab = function(tab, el){
   if(el) {
       el.classList.add('on');
   } else {
-      // If triggered from the "More" menu, highlight the More icon
+      // Highlight the "More" menu if navigated from inside the drawer
       document.getElementById('nav-more').classList.add('on');
   }
 
@@ -826,8 +838,6 @@ window.switchTab = function(tab, el){
   if(tab==='admin') renderAdminPanel();
 };
 
-window.closeModal=id=>document.getElementById(id).classList.remove('show');
-function openModal(id){document.getElementById(id).classList.add('show');}
 
 function updateHeader(){
   document.getElementById('hdr-stats').textContent=`${Object.keys(students).length} Students · ${Object.keys(programs).length} Programs`;
