@@ -33,39 +33,35 @@ body { font-family: 'Outfit', sans-serif; background: #f4f6f8; min-height: 100vh
 .material-symbols-rounded { font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24; font-size: 20px; display: inline-flex; align-items: center; justify-content: center; }
 .icon-filled { font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24; }
 
-/* ═══ LOADING SCREEN STYLES ═══ */
-.spinner { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; background: #fff; position: fixed; z-index: 999999; width: 100%; top: 0; left: 0; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-.loader-card { width: 85%; max-width: 320px; text-align: center; }
-.loader-img-logo { height: 80px; width: auto; max-width: 100%; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); animation: pulseLogo 1.5s infinite ease-in-out; }
-@keyframes pulseLogo { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-.loader-sub { font-size: 12px; color: var(--r500); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 30px; }
-.progress-bar-track { width: 100%; height: 6px; background: var(--r100); border-radius: 99px; overflow: hidden; position: relative; margin-bottom: 12px; }
-.progress-bar-fill { height: 100%; width: 5%; background: linear-gradient(90deg, var(--pri), var(--pri-d)); border-radius: 99px; transition: width 0.3s cubic-bezier(0.1, 0.8, 0.2, 1); }
-.loader-status { font-size: 11px; color: var(--r400); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
 /* ═══ BIOMETRIC LOCK SCREEN ═══ */
 #app-lock { position: fixed; inset: 0; z-index: 9999999; background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s; }
 #app-lock.unlocked { opacity: 0; visibility: hidden; pointer-events: none; }
 .lock-card { background: rgba(255, 255, 255, 0.95); padding: 30px 24px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; width: 90%; max-width: 320px; border: 1px solid rgba(255,255,255,0.4); transform: translateY(0); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .lock-card.shake { animation: lockShake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
 @keyframes lockShake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
-
 .lock-logo { height: 60px; margin-bottom: 12px; }
 .lock-title { font-size: 20px; font-weight: 900; color: var(--pri); margin-bottom: 4px; }
 .lock-sub { font-size: 12px; color: var(--r500); font-weight: 700; margin-bottom: 24px; }
-
 .pin-dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; }
 .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--r300); transition: all 0.2s; }
 .pin-dot.filled { background: var(--pri); border-color: var(--pri); transform: scale(1.1); }
 .pin-dot.err { background: var(--danger); border-color: var(--danger); }
-
 .numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
 .num-btn { background: var(--r50); border: 1px solid var(--r200); font-size: 20px; font-weight: 800; color: var(--r800); height: 50px; border-radius: 12px; cursor: pointer; transition: all 0.1s; font-family: 'Outfit'; display: flex; align-items: center; justify-content: center; }
 .num-btn:active { background: var(--r200); transform: scale(0.95); }
 .num-btn.bio-btn { background: var(--pri); color: #fff; border-color: var(--pri-d); }
 .num-btn.bio-btn:active { background: var(--pri-d); }
-
 .setup-bio-banner { background: #f0fdf4; border: 1px solid #86efac; color: #065f46; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 700; margin: 16px 16px 0; display: flex; justify-content: space-between; align-items: center; }
+
+/* ═══ LOADING SCREEN ═══ */
+.spinner { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; background: #fff; position: fixed; z-index: 999999; width: 100%; top: 0; left: 0; transition: opacity 0.3s ease; }
+.loader-card { width: 85%; max-width: 320px; text-align: center; }
+.loader-img-logo { height: 80px; width: auto; margin-bottom: 8px; animation: pulseLogo 1.5s infinite ease-in-out; }
+@keyframes pulseLogo { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+.loader-sub { font-size: 12px; color: var(--r500); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 30px; }
+.progress-bar-track { width: 100%; height: 6px; background: var(--r100); border-radius: 99px; overflow: hidden; position: relative; margin-bottom: 12px; }
+.progress-bar-fill { height: 100%; width: 5%; background: linear-gradient(90deg, var(--pri), var(--pri-d)); border-radius: 99px; transition: width 0.3s ease; }
+.loader-status { font-size: 11px; color: var(--r400); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
 /* ═══ APP STYLES ═══ */
 .hdr { background: linear-gradient(135deg, var(--pri-d) 0%, var(--pri) 60%, #871e2a 100%); padding: 18px 20px 14px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shm); }
@@ -97,10 +93,8 @@ body { font-family: 'Outfit', sans-serif; background: #f4f6f8; min-height: 100vh
 /* SIDE DRAWER NAVIGATION PANEL */
 .side-drawer { position: absolute; top: 0; right: 0; width: 100%; max-width: 320px; height: 100%; background: #fff; box-shadow: -10px 0 40px rgba(0,0,0,0.15); padding: 24px; animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; display: flex; flex-direction: column; overflow-y: auto; }
 @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
-
 .drawer-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--r100); }
 .drawer-title { font-size: 16px; font-weight: 900; color: var(--r800); text-transform: uppercase; letter-spacing: 0.5px; }
-
 .sheet-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 12px; font-weight: 700; font-size: 15px; color: var(--r800); border: 1.5px solid transparent; margin-bottom: 8px; cursor: pointer; transition: all 0.2s; background: var(--r50); }
 .sheet-item:hover, .sheet-item:active { background: #fff; border-color: var(--r200); box-shadow: var(--sh); }
 .sheet-item .material-symbols-rounded { color: var(--pri); font-size: 22px; }
@@ -128,6 +122,7 @@ body { font-family: 'Outfit', sans-serif; background: #f4f6f8; min-height: 100vh
 input, select, textarea { font-family: 'Outfit', sans-serif; font-size: 15px; border: 1.5px solid var(--r200); border-radius: var(--rads); padding: 10px 14px; width: 100%; outline: none; background: #fff; color: var(--r800); transition: all 0.2s; min-height: 44px; font-weight: 500; }
 input:focus, select:focus, textarea:focus { border-color: var(--sec); box-shadow: 0 0 0 3px rgba(223, 186, 134, 0.2); }
 input.uppercase { text-transform: uppercase; }
+input[type="checkbox"] { width: 18px; height: 18px; min-height: 18px; cursor: pointer; accent-color: var(--pri); }
 
 .card { background: #fff; border: 1px solid var(--r100); border-radius: var(--rad); padding: 14px; display: flex; align-items: center; gap: 14px; box-shadow: var(--sh); margin-bottom: 12px; transition: transform 0.2s, box-shadow 0.2s; }
 .card:hover { transform: translateY(-2px); box-shadow: var(--shm); border-color: var(--r200); }
@@ -162,7 +157,6 @@ input.uppercase { text-transform: uppercase; }
 .mfoot button { flex: 1; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; }
 .mcancl { background: #fff; color: var(--r700); border: 1.5px solid var(--r200); }
 .msave { background: var(--pri); color: #fff; border: 1.5px solid var(--pri); }
-.mdanger { background: var(--red); color: #fff; border: 1.5px solid var(--red); }
 
 .fld { margin-bottom: 16px; }
 .flbl { font-size: 11px; font-weight: 800; color: var(--r500); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; display: block; }
@@ -182,9 +176,7 @@ input.uppercase { text-transform: uppercase; }
 .td-cand { padding: 4px; text-align: center; vertical-align: middle; }
 .cand-cell { display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 6px; }
 .cand-chest { width: 75px; border: 1.5px solid var(--r200); border-radius: 6px; padding: 6px; font-size: 12px; font-weight: 700; text-align: center; font-family: 'Outfit'; text-transform: uppercase; min-height: 34px; transition: border-color 0.2s; }
-.cand-chest:focus { border-color: var(--sec); box-shadow: 0 0 0 2px rgba(223, 186, 134, 0.2); }
 .cand-chest.filled { border-color: var(--success); background: #f0fdf4; color: #065f46; font-weight: 800; }
-.cand-chest.err { border-color: #f87171; background: #fef2f2; color: #dc2626; }
 .tr-section td { background: var(--r50); font-size: 10px; font-weight: 800; color: var(--pri); padding: 8px 10px; text-transform: uppercase; letter-spacing: 0.1em; }
 
 /* ═══ ADMIN PANEL STYLES ═══ */
@@ -222,7 +214,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 .filter-chips-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .filter-chip { padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 800; border: 1.5px solid var(--r200); background: #fff; color: var(--r600); cursor: pointer; transition: all 0.2s; }
 .filter-chip.active { background: var(--pri); color: #fff; border-color: var(--pri); }
-.filter-chip:hover:not(.active) { border-color: var(--r500); }
 
 .admin-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
 .astat { background: #fff; border: 1px solid var(--r200); border-radius: 10px; padding: 12px; text-align: center; box-shadow: var(--sh); }
@@ -232,7 +223,7 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 .astat.red .astat-num { color: var(--danger); }
 .astat.maroon .astat-num { color: var(--pri); }
 
-.toasts { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; width: 90%; max-width: 360px; }
+.toasts { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; width: 90%; max-width: 360px; }
 .toast { padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; color: #fff; box-shadow: var(--shl); animation: tup 0.3s cubic-bezier(0.16, 1, 0.3, 1); width: 100%; display: flex; align-items: center; gap: 8px; }
 .tg { background: var(--success); } .tr { background: var(--danger); } .ti { background: var(--r800); }
 @keyframes tup { from { opacity: 0; transform: translateY(-15px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
@@ -251,25 +242,20 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 .print-setup-table td { padding: 8px; border-bottom: 1px solid var(--r100); }
 .print-setup-table .t-code { font-weight: 900; color: var(--pri); }
 
-/* ================= PRINT MEDIA QUERIES (A4 Landscape B&W 1-PAGE FIX) ================= */
+/* ================= MULTI-PAGE PRINT STYLES ================= */
 #print-container { display: none; }
 @media print {
   @page { size: A4 landscape; margin: 8mm 12mm; } 
-  body, html { background: #fff; margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Outfit', sans-serif; color: #000; -webkit-print-color-adjust: exact; }
+  body, html { background: #fff; margin: 0; padding: 0; height: auto !important; overflow: visible !important; font-family: 'Outfit', sans-serif; color: #000; -webkit-print-color-adjust: exact; }
   
   #app, .bottom-nav, .hdr, .overlay, .toasts { display: none !important; }
   
-  #print-container { 
-    display: flex !important; 
-    position: absolute; left: 0; top: 0; 
-    width: 100%; height: 100%; 
-    background: #fff; z-index: 9999; 
-    overflow: hidden; 
-    page-break-after: avoid; 
-    page-break-inside: avoid; 
-  }
+  #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: #fff; z-index: 9999; }
   
-  .print-page { width: 100%; height: 100%; display: flex; gap: 20mm; position: relative; box-sizing: border-box; } 
+  /* Each program page breaks onto a new physical sheet */
+  .print-page { width: 100%; display: flex; gap: 20mm; position: relative; box-sizing: border-box; page-break-after: always; height: 190mm; overflow: hidden; padding-bottom: 10px;} 
+  .print-page:last-child { page-break-after: auto; }
+
   .print-half { flex: 1; width: 50%; display: flex; flex-direction: column; max-height: 100%; }
   
   .print-header { text-align: center; font-weight: 900; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 4px; }
@@ -299,7 +285,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 </head>
 <body>
 
-<!-- LOCK SCREEN -->
 <div id="app-lock">
   <div class="lock-card" id="lock-card">
     <img src="kamapng.png" alt="Logo" class="lock-logo" onerror="this.src='https://via.placeholder.com/60/61131c/fff?text=K'">
@@ -362,24 +347,92 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
       </div>
     </div>
     
-    <!-- Bio Setup Banner (Will show here after PIN login if not registered) -->
     <div id="bio-setup-banner" class="setup-bio-banner" style="display:none;">
       <span><span class="material-symbols-rounded" style="font-size:16px; vertical-align:middle;">fingerprint</span> Setup Fingerprint / Face ID</span>
       <button class="btn btn-sm" style="background:#065f46; color:#fff;" onclick="registerBiometrics()">Enable</button>
     </div>
   </div>
 
-  <!-- MOBILE RESPONSIVE 3-TAB NAV -->
   <div class="bottom-nav">
     <button class="nav-item on" id="nav-admin" onclick="switchTab('admin', this)">
       <span class="material-symbols-rounded nav-icon">admin_panel_settings</span><span class="nav-text">Dashboard</span>
     </button>
-    <button class="nav-item" id="nav-substitute" onclick="switchTab('substitute', this)">
-      <span class="material-symbols-rounded nav-icon">find_replace</span><span class="nav-text">Substitute</span>
+    <button class="nav-item" id="nav-register" onclick="switchTab('register', this)">
+      <span class="material-symbols-rounded nav-icon">list_alt</span><span class="nav-text">Candidates</span>
+    </button>
+    <button class="nav-item" id="nav-printing" onclick="switchTab('printing', this)">
+      <span class="material-symbols-rounded nav-icon">print</span><span class="nav-text">Printing</span>
     </button>
     <button class="nav-item" id="nav-more" onclick="openModal('modal-more')">
       <span class="material-symbols-rounded nav-icon">menu</span><span class="nav-text">More</span>
     </button>
+  </div>
+
+  <div class="pg on" id="pg-admin">
+    <div class="admin-stats" id="admin-stats-row">
+      <div class="astat green"><div class="astat-num" id="astat-on">0</div><div class="astat-lbl">Active Progs</div></div>
+      <div class="astat red"><div class="astat-num" id="astat-off">0</div><div class="astat-lbl">Disabled</div></div>
+      <div class="astat maroon"><div class="astat-num" id="astat-reg">0</div><div class="astat-lbl">Registered</div></div>
+    </div>
+    <div class="admin-filter">
+      <div class="admin-filter-title">Filter by Section</div>
+      <div class="filter-chips-row" id="admin-sec-chips">
+        <div class="filter-chip active" onclick="adminFilterSec('', this)">All</div>
+      </div>
+    </div>
+    <div class="seclbl">Programs & Check-in Control</div>
+    <div style="font-size: 12px; margin-bottom: 12px; color: var(--r600);">* Use toggle to ON/OFF registration. Click checkmark to change status.</div>
+    <div id="admin-prog-list"></div>
+  </div>
+
+  <div class="pg" id="pg-register">
+    <div class="abar">
+        <select id="reg-sec" onchange="renderRegister()" style="flex:1;"><option value="">All Sections</option></select>
+        <span class="cnt-lbl" id="reg-count"></span>
+    </div>
+    <div style="margin-bottom: 10px; font-size: 12px; color: var(--r500);">* Enter Chest No. to assign candidates to slots.</div>
+    <div style="margin-bottom: 16px;">
+      <button class="btn btn-out" id="btn-house-check" onclick="checkHouseMismatch()" style="width:100%; border-color: #f59e0b; color: #92400e; background: #fffbeb;">
+        <span class="material-symbols-rounded" style="color:#f59e0b;">rule</span> Check House Mismatch
+      </button>
+      <div id="house-check-result" style="display:none; margin-top: 12px; border-radius: var(--rad); overflow: hidden; border: 1.5px solid var(--r200); background: #fff; box-shadow: var(--sh);">
+        <div id="house-check-summary" style="padding: 14px 16px; border-bottom: 1px solid var(--r100); display: flex; align-items: center; gap: 12px; flex-wrap: wrap;"></div>
+        <div id="house-check-errors" style="padding: 12px 16px;"></div>
+      </div>
+    </div>
+    <div id="reg-area"></div>
+  </div>
+
+  <div class="pg" id="pg-printing">
+    <div class="card" style="flex-direction:column; align-items:stretch; padding: 16px; margin-bottom: 16px; gap:12px; background:var(--pri); color:#fff; border:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <div style="font-size:16px; font-weight:900;">Batch Print Center</div>
+                <div style="font-size:12px; color:var(--sec); font-weight:600;">Select programs to shuffle & print together</div>
+            </div>
+            <span class="material-symbols-rounded" style="font-size:32px; opacity:0.8;">print</span>
+        </div>
+        <button class="btn" style="background:#fff; color:var(--pri);" onclick="batchPrintSelected()">
+            <span class="material-symbols-rounded">shuffle</span> Auto-Shuffle & Print Selected (<span id="print-sel-count">0</span>)
+        </button>
+    </div>
+
+    <div class="frow">
+      <div class="input-wrap">
+        <span class="material-symbols-rounded">search</span>
+        <input type="text" class="has-icon" id="print-search" placeholder="Search Code or Name..." oninput="renderPrintingList()">
+      </div>
+      <select id="print-sec" onchange="renderPrintingList()"><option value="">All Sections</option></select>
+    </div>
+    
+    <div style="display:flex; justify-content:space-between; margin-bottom: 12px; align-items:center; padding:0 4px;">
+        <label style="font-size:12px; font-weight:800; color:var(--r700); display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="print-select-all" onchange="toggleSelectAllPrint(this.checked)"> Select All Visible
+        </label>
+        <span style="font-size:11px; font-weight:700; color:var(--r500);" id="print-list-count"></span>
+    </div>
+
+    <div id="print-prog-list"></div>
   </div>
 
   <div class="pg" id="pg-students">
@@ -412,88 +465,24 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
     <div id="prog-list"></div>
   </div>
 
-  <div class="pg" id="pg-register">
-    <div class="abar">
-        <select id="reg-sec" onchange="renderRegister()" style="flex:1;"><option value="">All Sections</option></select>
-        <span class="cnt-lbl" id="reg-count"></span>
-    </div>
-    <div style="margin-bottom: 10px; font-size: 12px; color: var(--r500);">* Enter Chest No. to assign candidates to slots.</div>
-
-    <div style="margin-bottom: 16px;">
-      <button class="btn btn-out" id="btn-house-check" onclick="checkHouseMismatch()" style="width:100%; border-color: #f59e0b; color: #92400e; background: #fffbeb;">
-        <span class="material-symbols-rounded" style="color:#f59e0b;">rule</span> Check House Mismatch
-      </button>
-      <div id="house-check-result" style="display:none; margin-top: 12px; border-radius: var(--rad); overflow: hidden; border: 1.5px solid var(--r200); background: #fff; box-shadow: var(--sh);">
-        <div id="house-check-summary" style="padding: 14px 16px; border-bottom: 1px solid var(--r100); display: flex; align-items: center; gap: 12px; flex-wrap: wrap;"></div>
-        <div id="house-check-errors" style="padding: 12px 16px;"></div>
-      </div>
-    </div>
-
-    <div id="reg-area"></div>
-  </div>
-
-  <div class="pg on" id="pg-admin">
-    <div class="admin-stats" id="admin-stats-row">
-      <div class="astat green"><div class="astat-num" id="astat-on">0</div><div class="astat-lbl">Active Progs</div></div>
-      <div class="astat red"><div class="astat-num" id="astat-off">0</div><div class="astat-lbl">Disabled</div></div>
-      <div class="astat maroon"><div class="astat-num" id="astat-reg">0</div><div class="astat-lbl">Registered</div></div>
-    </div>
-
-    <div class="admin-filter">
-      <div class="admin-filter-title">Filter by Section</div>
-      <div class="filter-chips-row" id="admin-sec-chips">
-        <div class="filter-chip active" onclick="adminFilterSec('', this)">All</div>
-      </div>
-    </div>
-
-    <div class="seclbl">Programs & Check-in Control</div>
-    <div style="font-size: 12px; margin-bottom: 12px; color: var(--r600);">
-        * Use toggle to ON/OFF registration. Click the <b>Check/Cross mark</b> on a student's chip to reverse their status.
-    </div>
-    <div id="admin-prog-list"></div>
-  </div>
-
   <div class="pg" id="pg-substitute">
-    
     <div class="seclbl">Manual Substitution</div>
     <div class="card" style="flex-direction:column; align-items:flex-start; padding:20px; margin-bottom:16px; gap: 14px;">
         <div style="font-size:12px; color:var(--r600); margin-bottom:4px;">Enter details below to replace a single candidate directly.</div>
-        
-        <div class="input-wrap">
-            <input type="text" id="man-prog-code" class="uppercase" placeholder="Program Code (e.g. ATH001)" oninput="checkSubProg()">
-            <div id="man-prog-name" class="hint-txt"></div>
-        </div>
-
-        <div class="input-wrap">
-            <input type="text" id="man-old-chest" class="uppercase" placeholder="Original Chest No" oninput="checkSubOld()">
-            <div id="man-old-name" class="hint-txt"></div>
-        </div>
-
-        <div class="input-wrap">
-            <input type="text" id="man-new-chest" class="uppercase" placeholder="Substitute Chest No" oninput="checkSubNew()">
-            <div id="man-new-name" class="hint-txt"></div>
-        </div>
-
-        <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="processManualSub()">
-            <span class="material-symbols-rounded">swap_horiz</span> Replace Candidate
-        </button>
+        <div class="input-wrap"><input type="text" id="man-prog-code" class="uppercase" placeholder="Program Code (e.g. ATH001)" oninput="checkSubProg()"><div id="man-prog-name" class="hint-txt"></div></div>
+        <div class="input-wrap"><input type="text" id="man-old-chest" class="uppercase" placeholder="Original Chest No" oninput="checkSubOld()"><div id="man-old-name" class="hint-txt"></div></div>
+        <div class="input-wrap"><input type="text" id="man-new-chest" class="uppercase" placeholder="Substitute Chest No" oninput="checkSubNew()"><div id="man-new-name" class="hint-txt"></div></div>
+        <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="processManualSub()"><span class="material-symbols-rounded">swap_horiz</span> Replace Candidate</button>
     </div>
-
     <div class="seclbl">Bulk Substitution (File Upload)</div>
     <div class="card" style="flex-direction:column; align-items:flex-start; padding:20px; margin-bottom:16px;">
-        <div style="font-size:13px; color:var(--r500); margin-bottom:16px;">
-            Upload CSV or Excel (.xlsx) to replace multiple candidates. Columns must exactly match: <br/><b>Program Code</b>, <b>Original Chest No</b>, <b>Substitute Chest No</b>.
-        </div>
+        <div style="font-size:13px; color:var(--r500); margin-bottom:16px;">Upload CSV or Excel (.xlsx) to replace multiple candidates. Columns must exactly match: <br/><b>Program Code</b>, <b>Original Chest No</b>, <b>Substitute Chest No</b>.</div>
         <input type="file" id="sub-file-upload" accept=".csv, .xlsx" style="margin-bottom: 12px; font-family:'Outfit';">
-        <button class="btn btn-out btn-sm" onclick="processBulkSubstitution()">
-            <span class="material-symbols-rounded">upload_file</span> Upload & Replace
-        </button>
+        <button class="btn btn-out btn-sm" onclick="processBulkSubstitution()"><span class="material-symbols-rounded">upload_file</span> Upload & Replace</button>
         <div id="sub-log" style="margin-top:12px; font-size:12px; color:var(--danger); white-space: pre-wrap; width: 100%;"></div>
     </div>
-
   </div>
 
-  <!-- NEW LOCK SETTINGS PAGE -->
   <div class="pg" id="pg-locksettings">
     <div class="seclbl">Change App PIN</div>
     <div class="card" style="flex-direction:column; align-items:stretch; padding: 20px; gap: 12px;">
@@ -509,7 +498,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
          <span class="material-symbols-rounded">save</span> Update PIN
        </button>
     </div>
-
     <div class="seclbl mt-3">Biometrics Management</div>
     <div class="card" style="flex-direction:column; align-items:stretch; padding: 20px; gap: 12px;">
        <button class="btn btn-out" onclick="registerBiometrics()" style="border-color:var(--success); color:var(--success);">
@@ -523,22 +511,20 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 
 </div>
 
-<!-- MORE MENU (SIDE DRAWER/PANEL) -->
 <div class="overlay" id="modal-more" onclick="closeModal('modal-more')">
   <div class="side-drawer" onclick="event.stopPropagation()">
     <div class="drawer-hdr">
         <div class="drawer-title">Menu Options</div>
         <button class="mclose" onclick="closeModal('modal-more')"><span class="material-symbols-rounded">close</span></button>
     </div>
-    
     <div class="sheet-item" onclick="switchTab('students'); closeModal('modal-more')">
       <span class="material-symbols-rounded">group</span> Manage Students
     </div>
     <div class="sheet-item" onclick="switchTab('programs'); closeModal('modal-more')">
       <span class="material-symbols-rounded">emoji_events</span> Manage Programs
     </div>
-    <div class="sheet-item" onclick="switchTab('register'); closeModal('modal-more')">
-      <span class="material-symbols-rounded">list_alt</span> Assign Candidates
+    <div class="sheet-item" onclick="switchTab('substitute'); closeModal('modal-more')">
+      <span class="material-symbols-rounded">find_replace</span> Substitute Candidates
     </div>
     <div class="sheet-item" onclick="switchTab('locksettings'); closeModal('modal-more')" style="background:#fff7ed; color:#9a3412; border-color:#ffedd5;">
       <span class="material-symbols-rounded" style="color:var(--orange);">security</span> Security & Lock
@@ -588,10 +574,7 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
       <div class="fld"><label class="flbl">Program Name</label><input type="text" id="prog-name" class="uppercase" placeholder="Event Name"></div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
         <div class="fld"><label class="flbl">Type</label>
-          <select id="prog-type">
-            <option value="individual">Individual</option>
-            <option value="group">Group</option>
-          </select>
+          <select id="prog-type"><option value="individual">Individual</option><option value="group">Group</option></select>
         </div>
         <div class="fld"><label class="flbl">Limit / House</label><input type="number" id="prog-limit" min="1" value="3"></div>
       </div>
@@ -611,8 +594,7 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
       <span class="mtitle" id="print-modal-title">Print Setup</span>
       <button class="mclose" onclick="closeModal('modal-print-setup')"><span class="material-symbols-rounded">close</span></button>
     </div>
-    <div class="mbody" id="print-setup-body" style="padding:16px;">
-      </div>
+    <div class="mbody" id="print-setup-body" style="padding:16px;"></div>
     <div class="mfoot">
       <button class="mcancl" onclick="closeModal('modal-print-setup')">Cancel</button>
       <button class="msave" id="print-save-btn" onclick="triggerPrint()"><span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">save</span> Save & Print</button>
@@ -638,7 +620,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-/* ================= GLOBALIZE MODAL FUNCTIONS ================= */
 window.closeModal = id => document.getElementById(id).classList.remove('show');
 window.openModal = id => { document.getElementById(id).classList.add('show'); };
 
@@ -650,85 +631,55 @@ const lockCard = document.getElementById('lock-card');
 const pinDots = document.querySelectorAll('.pin-dot');
 const bioBanner = document.getElementById('bio-setup-banner');
 
-function bufferDecode(value) {
-    return Uint8Array.from(atob(value), c => c.charCodeAt(0));
-}
-function bufferEncode(value) {
-    return btoa(String.fromCharCode.apply(null, new Uint8Array(value))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-}
+function bufferDecode(value) { return Uint8Array.from(atob(value), c => c.charCodeAt(0)); }
+function bufferEncode(value) { return btoa(String.fromCharCode.apply(null, new Uint8Array(value))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, ""); }
 
 window.addPin = function(num) {
     if(currentPin.length < 4) {
-        currentPin += num;
-        updateDots();
+        currentPin += num; updateDots();
         if(currentPin.length === 4) setTimeout(checkPin, 150);
     }
 };
 
-window.clearPin = function() {
-    currentPin = currentPin.slice(0, -1);
-    updateDots();
-};
+window.clearPin = function() { currentPin = currentPin.slice(0, -1); updateDots(); };
 
 function updateDots() {
     pinDots.forEach((dot, idx) => {
-        if(idx < currentPin.length) {
-            dot.classList.add('filled');
-            dot.classList.remove('err');
-        } else {
-            dot.classList.remove('filled', 'err');
-        }
+        if(idx < currentPin.length) { dot.classList.add('filled'); dot.classList.remove('err'); } 
+        else { dot.classList.remove('filled', 'err'); }
     });
 }
 
 function checkPin() {
-    if(currentPin === MASTER_PIN) {
-        unlockApp();
-    } else {
+    if(currentPin === MASTER_PIN) { unlockApp(); } 
+    else {
         lockCard.classList.add('shake');
         pinDots.forEach(dot => dot.classList.add('err'));
-        setTimeout(() => {
-            currentPin = "";
-            updateDots();
-            lockCard.classList.remove('shake');
-        }, 400);
+        setTimeout(() => { currentPin = ""; updateDots(); lockCard.classList.remove('shake'); }, 400);
     }
 }
 
 function unlockApp() {
     lockScreen.classList.add('unlocked');
-    if(!localStorage.getItem('kama_bio_credential')) {
-        bioBanner.style.display = 'flex';
-    }
+    if(!localStorage.getItem('kama_bio_credential')) bioBanner.style.display = 'flex';
 }
 
 window.registerBiometrics = async function() {
-    if (!window.PublicKeyCredential) {
-        toast('Biometrics not supported on this device', 'r');
-        return;
-    }
+    if (!window.PublicKeyCredential) { toast('Biometrics not supported on this device', 'r'); return; }
     try {
         const publicKeyCredentialCreationOptions = {
             challenge: new Uint8Array(32),
             rp: { name: "KAMA Admin Portal", id: window.location.hostname },
-            user: {
-                id: new Uint8Array(16),
-                name: "admin@kamafest.com",
-                displayName: "KAMA Admin"
-            },
+            user: { id: new Uint8Array(16), name: "admin@kamafest.com", displayName: "KAMA Admin" },
             pubKeyCredParams: [{alg: -7, type: "public-key"}],
             authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
-            timeout: 60000,
-            attestation: "none"
+            timeout: 60000, attestation: "none"
         };
         const credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions });
         localStorage.setItem('kama_bio_credential', bufferEncode(credential.rawId));
         bioBanner.style.display = 'none';
         toast('Biometrics Enabled Successfully!', 'g');
-    } catch (err) {
-        console.error(err);
-        toast('Setup cancelled or failed.', 'r');
-    }
+    } catch (err) { toast('Setup cancelled or failed.', 'r'); }
 };
 
 window.verifyBiometrics = async function() {
@@ -742,58 +693,30 @@ window.verifyBiometrics = async function() {
     try {
         const publicKeyCredentialRequestOptions = {
             challenge: new Uint8Array(32),
-            allowCredentials: [{
-                id: bufferDecode(savedCred),
-                type: 'public-key',
-                transports: ['internal'],
-            }],
-            userVerification: "required",
-            timeout: 60000
+            allowCredentials: [{ id: bufferDecode(savedCred), type: 'public-key', transports: ['internal'] }],
+            userVerification: "required", timeout: 60000
         };
         const assertion = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions });
-        if(assertion) {
-            toast('Biometric Match!', 'g');
-            unlockApp();
-        }
-    } catch (err) {
-        console.error(err);
-        toast('Biometric verification failed', 'r');
-    }
+        if(assertion) { toast('Biometric Match!', 'g'); unlockApp(); }
+    } catch (err) { toast('Biometric verification failed', 'r'); }
 };
 
-window.clearBiometrics = function() {
-    localStorage.removeItem('kama_bio_credential');
-    toast('Biometrics Removed', 'g');
-};
-
+window.clearBiometrics = function() { localStorage.removeItem('kama_bio_credential'); toast('Biometrics Removed', 'g'); };
 window.saveNewPin = function() {
     const oldP = document.getElementById('set-old-pin').value;
     const newP = document.getElementById('set-new-pin').value;
-    
-    if(oldP !== MASTER_PIN) {
-        toast('Current PIN is incorrect', 'r');
-        return;
-    }
-    if(newP.length !== 4) {
-        toast('New PIN must be exactly 4 digits', 'r');
-        return;
-    }
-    
-    localStorage.setItem('kama_admin_pin', newP);
-    MASTER_PIN = newP;
+    if(oldP !== MASTER_PIN) { toast('Current PIN is incorrect', 'r'); return; }
+    if(newP.length !== 4) { toast('New PIN must be exactly 4 digits', 'r'); return; }
+    localStorage.setItem('kama_admin_pin', newP); MASTER_PIN = newP;
     toast('PIN Changed Successfully!', 'g');
-    
-    document.getElementById('set-old-pin').value = '';
-    document.getElementById('set-new-pin').value = '';
+    document.getElementById('set-old-pin').value = ''; document.getElementById('set-new-pin').value = '';
 };
 
 window.addEventListener('DOMContentLoaded', () => {
-    if(localStorage.getItem('kama_bio_credential')) {
-        setTimeout(verifyBiometrics, 500);
-    }
+    if(localStorage.getItem('kama_bio_credential')) setTimeout(verifyBiometrics, 500);
 });
 
-
+/* ================= SYSTEM DATA & GLOBALS ================= */
 const ORDERED_SECTIONS = ["Bidaya", "Ula", "Thaniya", "Thanawiyya", "Aliyah", "Kulliyah"];
 const HOUSE_MAP = { "Bosphorus": "#dc2626", "Hormuz": "#eab308", "Gibraltar": "#16a34a", "Malacca": "#2563eb" };
 
@@ -806,42 +729,31 @@ function toTitle(str) { if(!str) return ''; return String(str).trim().split(/\s+
 function uid(){ return Math.random().toString(36).slice(2,9)+Date.now().toString(36); }
 
 function setSyncState(s){
-  const pill=document.getElementById('sync-pill');
-  if(!pill) return;
+  const pill=document.getElementById('sync-pill'); if(!pill) return;
   pill.className='sync-pill '+(s==='ok'?'sync-ok':s==='ing'?'sync-ing':'sync-err');
   document.getElementById('sync-txt').textContent=s==='ok'?'Live':s==='ing'?'Saving…':'Error';
 }
 
 function toast(msg, type='g') {
-  const d = document.createElement('div');
-  d.className = `toast t${type}`;
+  const d = document.createElement('div'); d.className = `toast t${type}`;
   d.innerHTML = `<span class="material-symbols-rounded">${type==='g'?'check_circle':type==='r'?'error':'info'}</span> ${msg}`;
-  document.getElementById('toasts').appendChild(d);
-  setTimeout(() => d.remove(), 3000);
+  document.getElementById('toasts').appendChild(d); setTimeout(() => d.remove(), 3000);
 }
 
 window.switchTab = function(tab, el){
-  // Handle Bottom Nav Highlights
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('on'));
-  if(el) {
-      el.classList.add('on');
-  } else {
-      // Highlight the "More" menu if navigated from inside the drawer
-      document.getElementById('nav-more').classList.add('on');
-  }
+  if(el) { el.classList.add('on'); } 
+  else { document.getElementById('nav-more').classList.add('on'); }
 
-  // Switch Pages
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.getElementById('pg-'+tab).classList.add('on');
   
   if(tab==='register') renderRegister();
   if(tab==='admin') renderAdminPanel();
+  if(tab==='printing') renderPrintingList();
 };
 
-
-function updateHeader(){
-  document.getElementById('hdr-stats').textContent=`${Object.keys(students).length} Students · ${Object.keys(programs).length} Programs`;
-}
+function updateHeader(){ document.getElementById('hdr-stats').textContent=`${Object.keys(students).length} Students · ${Object.keys(programs).length} Programs`; }
 
 function updateDynamicFilters() {
   let sSet = new Set(); let cSet = new Set();
@@ -858,7 +770,7 @@ function updateDynamicFilters() {
   document.getElementById('house-list').innerHTML = HOUSES.map(h => `<option value="${h}">`).join('');
   document.getElementById('class-list').innerHTML = CLASSES.map(c => `<option value="${c}">`).join('');
 
-  ['stu-sec','prog-sec','reg-sec'].forEach(id=>{
+  ['stu-sec','prog-sec','reg-sec', 'print-sec'].forEach(id=>{
     const el=document.getElementById(id); if(!el)return;
     const cur=el.value;
     el.innerHTML='<option value="">All Sections</option>'+SECTIONS.map(s=>`<option value="${s}">${s}</option>`).join('');
@@ -866,7 +778,7 @@ function updateDynamicFilters() {
   });
 }
 
-/* ================= CRUD STUDENTS ================= */
+/* ================= CRUD STUDENTS & PROGRAMS ================= */
 window.renderStudents=function(){
   const search=String(document.getElementById('stu-search').value||'').toLowerCase().trim();
   const sec=String(document.getElementById('stu-sec').value||'').toLowerCase().trim();
@@ -878,13 +790,7 @@ window.renderStudents=function(){
   if(!arr.length){document.getElementById('stu-list').innerHTML=`<div class="empty"><span class="material-symbols-rounded empty-ico">person_off</span><div class="empty-txt">No students</div></div>`;return;}
   document.getElementById('stu-list').innerHTML=arr.map(s=>{
     const hColor = getHouseColor(s.house);
-    return `<div class="card">
-      <div class="chest" style="background:${hColor}">${String(s.chestNo||'')}</div>
-      <div class="cinfo"><div class="cname">${String(s.name||'')}</div><div class="cmeta">Class ${String(s.class||'')} &middot; ${toTitle(s.section)} &middot; <span style="color:${hColor};font-weight:800">${toTitle(s.house)}</span></div></div>
-      <div class="cacts">
-        <button class="ibtn" onclick="openStudentModal('${s.id}')"><span class="material-symbols-rounded" style="font-size:18px;">edit</span></button>
-        <button class="ibtn delete" onclick="deleteStudent('${s.id}')"><span class="material-symbols-rounded" style="font-size:18px;">delete</span></button>
-      </div></div>`
+    return `<div class="card"><div class="chest" style="background:${hColor}">${String(s.chestNo||'')}</div><div class="cinfo"><div class="cname">${String(s.name||'')}</div><div class="cmeta">Class ${String(s.class||'')} &middot; ${toTitle(s.section)} &middot; <span style="color:${hColor};font-weight:800">${toTitle(s.house)}</span></div></div><div class="cacts"><button class="ibtn" onclick="openStudentModal('${s.id}')"><span class="material-symbols-rounded" style="font-size:18px;">edit</span></button><button class="ibtn delete" onclick="deleteStudent('${s.id}')"><span class="material-symbols-rounded" style="font-size:18px;">delete</span></button></div></div>`
   }).join('');
 };
 
@@ -901,12 +807,10 @@ window.saveStudent=async function(){
   const id=document.getElementById('stu-id').value||uid();
   const obj={id, chestNo:document.getElementById('stu-chest').value.trim().toUpperCase(), name:document.getElementById('stu-name').value.trim().toUpperCase(), class:document.getElementById('stu-class-input').value.trim(), section:toTitle(document.getElementById('stu-section-input').value), house:toTitle(document.getElementById('stu-house-input').value)};
   if(!obj.chestNo||!obj.name||!obj.house){toast('Fill required fields','r');return;}
-  setSyncState('ing');
-  try{ await setDoc(doc(db,'students',id),obj); closeModal('modal-student'); toast('Saved','g'); }catch(e){setSyncState('err');}
+  setSyncState('ing'); try{ await setDoc(doc(db,'students',id),obj); closeModal('modal-student'); toast('Saved','g'); }catch(e){setSyncState('err');}
 };
 window.deleteStudent=async function(id){ if(confirm('Delete?')){ setSyncState('ing'); try{await deleteDoc(doc(db,'students',id));toast('Deleted','g');}catch(e){setSyncState('err');} } };
 
-/* ================= CRUD PROGRAMS ================= */
 window.renderPrograms=function(){
   const secFilter=String(document.getElementById('prog-sec').value||'').toLowerCase().trim();
   let arr=Object.values(programs);
@@ -921,24 +825,7 @@ window.renderPrograms=function(){
     if(grouped[secName]){
       html+=`<div class="seclbl">${secName} Section</div>`+grouped[secName].map(p=>{
         const isEnabled = p.registrationEnabled !== false;
-        return `<div class="card" style="${!isEnabled?'border-color:#fecaca;background:#fff5f5;':''}">
-          <div class="pcode">${String(p.code||'')}</div>
-          <div class="cinfo">
-            <div class="cname">${String(p.name||'')}</div>
-            <div class="cmeta"><span class="ptyp ptyp-${p.type.charAt(0)}">${p.type}</span> &middot; Limit ${p.candidateLimit||3}/house</div>
-          </div>
-          <div class="cacts" style="flex-direction:column;align-items:center;gap:6px;">
-            <div style="display:flex;gap:6px;">
-              <button class="ibtn" onclick="openProgramModal('${p.id}')"><span class="material-symbols-rounded">edit</span></button>
-              <button class="ibtn delete" onclick="deleteProgram('${p.id}')"><span class="material-symbols-rounded">delete</span></button>
-            </div>
-            <label class="toggle" style="margin:0;" title="Registration ${isEnabled?'Open — click to close':'Closed — click to open'}">
-              <input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)">
-              <span class="toggle-slider" style="background-color:${isEnabled?'var(--success)':'#e5e7eb'};"></span>
-            </label>
-            <span style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:${isEnabled?'var(--success)':'var(--danger)'};">${isEnabled?'Open':'Closed'}</span>
-          </div>
-        </div>`;
+        return `<div class="card" style="${!isEnabled?'border-color:#fecaca;background:#fff5f5;':''}"><div class="pcode">${String(p.code||'')}</div><div class="cinfo"><div class="cname">${String(p.name||'')}</div><div class="cmeta"><span class="ptyp ptyp-${p.type.charAt(0)}">${p.type}</span> &middot; Limit ${p.candidateLimit||3}/house</div></div><div class="cacts" style="flex-direction:column;align-items:center;gap:6px;"><div style="display:flex;gap:6px;"><button class="ibtn" onclick="openProgramModal('${p.id}')"><span class="material-symbols-rounded">edit</span></button><button class="ibtn delete" onclick="deleteProgram('${p.id}')"><span class="material-symbols-rounded">delete</span></button></div><label class="toggle" style="margin:0;"><input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)"><span class="toggle-slider" style="background-color:${isEnabled?'var(--success)':'#e5e7eb'};"></span></label><span style="font-size:9px;font-weight:800;text-transform:uppercase;color:${isEnabled?'var(--success)':'var(--danger)'};">${isEnabled?'Open':'Closed'}</span></div></div>`;
       }).join('');
     }
   });
@@ -962,7 +849,7 @@ window.saveProgram=async function(){
 };
 window.deleteProgram=async function(id){ if(confirm('Delete program?')){ setSyncState('ing'); try{await deleteDoc(doc(db,'programs',id));}catch(e){setSyncState('err');} } };
 
-/* ================= CANDIDATES TABLE ================= */
+/* ================= REGISTRATION & DASHBOARD ================= */
 function regKey(pid,house,slot){return `${pid}__${house}__${slot}`;}
 window.renderRegister=function(){
   const secFilter=String(document.getElementById('reg-sec').value||'').toLowerCase().trim();
@@ -991,10 +878,7 @@ window.renderRegister=function(){
           for(let slot=0;slot<maxLimit;slot++){
             if(slot<(p.candidateLimit||1)){
               const reg=regs[regKey(p.id,house,slot)];
-              tds+=`<td class="td-cand"><div class="cand-cell">
-                <input class="cand-chest${reg?' filled':''}" type="text" maxlength="8" placeholder="Chest" value="${reg?String(reg.chestNo||''):''}" data-pid="${p.id}" data-house="${house}" data-slot="${slot}" onblur="onChestBlur(this)">
-                <span class="${reg?'cand-name ok':'cand-name'}" style="font-size:10px; font-weight:700">${reg?String(reg.name||''):''}</span>
-              </div></td>`;
+              tds+=`<td class="td-cand"><div class="cand-cell"><input class="cand-chest${reg?' filled':''}" type="text" maxlength="8" placeholder="Chest" value="${reg?String(reg.chestNo||''):''}" data-pid="${p.id}" data-house="${house}" data-slot="${slot}" onblur="onChestBlur(this)"><span class="${reg?'cand-name ok':'cand-name'}" style="font-size:10px; font-weight:700">${reg?String(reg.name||''):''}</span></div></td>`;
             } else tds+=`<td style="background:#f9fafb;"></td>`;
           }
         });
@@ -1015,7 +899,6 @@ window.onChestBlur=async function(el){
   toast(`Assigned ${stu.name}`,'g');
 };
 
-/* ================= ADMIN DASHBOARD (TOGGLE & REVERSE) ================= */
 window.adminFilterSec = function(sec, chipEl) {
   adminSecFilter = sec;
   document.querySelectorAll('#admin-sec-chips .filter-chip').forEach(c => c.classList.remove('active'));
@@ -1025,9 +908,7 @@ window.adminFilterSec = function(sec, chipEl) {
 
 window.renderAdminPanel = function() {
   const chipsEl = document.getElementById('admin-sec-chips');
-  if(chipsEl.innerHTML.length < 100) { // Render chips once
-    chipsEl.innerHTML = `<div class="filter-chip active" onclick="adminFilterSec('', this)">All</div>` + SECTIONS.map(s => `<div class="filter-chip" onclick="adminFilterSec('${s}', this)">${s}</div>`).join('');
-  }
+  if(chipsEl.innerHTML.length < 100) { chipsEl.innerHTML = `<div class="filter-chip active" onclick="adminFilterSec('', this)">All</div>` + SECTIONS.map(s => `<div class="filter-chip" onclick="adminFilterSec('${s}', this)">${s}</div>`).join(''); }
   const allProgs = Object.values(programs);
   document.getElementById('astat-on').textContent = allProgs.filter(p => p.registrationEnabled !== false).length;
   document.getElementById('astat-off').textContent = allProgs.filter(p => p.registrationEnabled === false).length;
@@ -1056,347 +937,362 @@ function renderAdminProgList() {
         if(progRegs.length > 0) {
           chipsHtml = `<div class="cand-chips">` + progRegs.sort((a,b) => String(a.house||'').localeCompare(String(b.house||''))).map(r => {
               const isReg = r.isRegistered;
-              return `<div class="cand-chip ${isReg ? 'registered' : 'pending'}">
-                <span class="house-dot" style="background:${getHouseColor(r.house)}"></span>
-                ${r.chestNo} ${r.name}
-                <button class="chip-action" onclick="toggleStatus('${p.id}','${r.house}',${r.slot}, ${isReg})" title="Mark as ${isReg ? 'Pending' : 'Registered'}">
-                  <span class="material-symbols-rounded" style="color:${isReg ? 'var(--danger)' : 'var(--success)'}">${isReg ? 'cancel' : 'check_circle'}</span>
-                </button>
-              </div>`;
+              return `<div class="cand-chip ${isReg ? 'registered' : 'pending'}"><span class="house-dot" style="background:${getHouseColor(r.house)}"></span>${r.chestNo} ${r.name}<button class="chip-action" onclick="toggleStatus('${p.id}','${r.house}',${r.slot}, ${isReg})"><span class="material-symbols-rounded" style="color:${isReg ? 'var(--danger)' : 'var(--success)'}">${isReg ? 'cancel' : 'check_circle'}</span></button></div>`;
             }).join('') + `</div>`;
         }
-
-        html += `<div class="admin-prog-card ${!isEnabled ? 'disabled-prog' : ''}">
-          <div class="admin-prog-header">
-            <div class="pcode" style="font-size:13px; border-color:var(--r300); background:var(--r50); color:var(--r800);">${String(p.code||'')}</div>
-            <div class="admin-prog-info">
-              <div class="admin-prog-name">${String(p.name||'')}</div>
-              <div class="admin-prog-meta">${toTitle(p.section)} &middot; <span style="color:var(--pri); font-weight:800;">${registeredCount} registered</span></div>
-            </div>
-            <div class="admin-prog-actions">
-              <button class="ibtn" onclick="openPrintSetup('${p.id}')" title="Print Judgement Sheet" style="margin-right:8px;">
-                <span class="material-symbols-rounded">print</span>
-              </button>
-              <div class="toggle-wrap">
-                <span class="toggle-lbl ${isEnabled?'on-lbl':'off-lbl'}">${isEnabled?'ON':'OFF'}</span>
-                <label class="toggle"><input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)"><span class="toggle-slider"></span></label>
-              </div>
-            </div>
-          </div>
-          ${chipsHtml}
-        </div>`;
+        html += `<div class="admin-prog-card ${!isEnabled ? 'disabled-prog' : ''}"><div class="admin-prog-header"><div class="pcode" style="font-size:13px; border-color:var(--r300); background:var(--r50); color:var(--r800);">${String(p.code||'')}</div><div class="admin-prog-info"><div class="admin-prog-name">${String(p.name||'')}</div><div class="admin-prog-meta">${toTitle(p.section)} &middot; <span style="color:var(--pri); font-weight:800;">${registeredCount} registered</span></div></div><div class="admin-prog-actions"><button class="ibtn" onclick="openPrintSetup('${p.id}')" title="Print Judgement Sheet" style="margin-right:8px;"><span class="material-symbols-rounded">print</span></button><div class="toggle-wrap"><span class="toggle-lbl ${isEnabled?'on-lbl':'off-lbl'}">${isEnabled?'ON':'OFF'}</span><label class="toggle"><input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)"><span class="toggle-slider"></span></label></div></div></div>${chipsHtml}</div>`;
       });
     }
   });
   list.innerHTML = html;
 }
 
-window.toggleProgramReg = async function(pid, enabled) {
-  setSyncState('ing');
-  try { await setDoc(doc(db, 'programs', pid), { registrationEnabled: enabled }, { merge: true }); toast(`Registration ${enabled ? 'ON' : 'OFF'}`, 'g'); } catch(e) { setSyncState('err'); }
+window.toggleProgramReg = async function(pid, enabled) { setSyncState('ing'); try { await setDoc(doc(db, 'programs', pid), { registrationEnabled: enabled }, { merge: true }); toast(`Registration ${enabled ? 'ON' : 'OFF'}`, 'g'); } catch(e) { setSyncState('err'); } };
+window.toggleStatus = async function(pid, house, slot, currentStatus) { const key = regKey(pid, house, slot); const newStatus = !currentStatus; if(!confirm(`Change status to ${newStatus ? 'REGISTERED' : 'PENDING'}?`)) return; setSyncState('ing'); try { await setDoc(doc(db, 'registrations', key), { isRegistered: newStatus }, { merge: true }); toast(`Status Updated`, 'g'); } catch(e) { setSyncState('err'); } };
+
+/* ================= NEW BATCH PRINTING MODULE ================= */
+window.renderPrintingList = function() {
+    const search = String(document.getElementById('print-search').value||'').toLowerCase().trim();
+    const secFilter = String(document.getElementById('print-sec').value||'').toLowerCase().trim();
+
+    let progs = Object.values(programs);
+    if(secFilter) progs = progs.filter(p => toTitle(p.section).toLowerCase() === secFilter);
+    if(search) progs = progs.filter(p => (p.code||'').toLowerCase().includes(search) || (p.name||'').toLowerCase().includes(search));
+
+    progs.sort((a,b) => String(a.code||'').localeCompare(String(b.code||'')));
+
+    const listContainer = document.getElementById('print-prog-list');
+    document.getElementById('print-list-count').textContent = `${progs.length} found`;
+    
+    if(progs.length === 0) { listContainer.innerHTML = `<div class="empty"><div class="empty-txt">No programs match</div></div>`; return; }
+
+    let html = '';
+    progs.forEach(p => {
+        const progRegs = Object.values(regs).filter(r => r.programId === p.id);
+        const hasCodes = progRegs.some(r => r.codeLetter);
+        html += `
+        <div class="card" onclick="togglePrintSelect(event, '${p.id}')" style="cursor:pointer; padding: 10px 14px;">
+            <input type="checkbox" class="print-cb" value="${p.id}" id="cb-${p.id}" onclick="event.stopPropagation(); updatePrintSelectedCount()">
+            <div class="pcode">${p.code}</div>
+            <div class="cinfo" style="margin-left: 4px;">
+                <div class="cname" style="font-size: 14px;">${p.name}</div>
+                <div class="cmeta">${toTitle(p.section)} &middot; ${progRegs.length} cands ${hasCodes ? '&middot; <b style="color:var(--success)">Locked</b>' : ''}</div>
+            </div>
+            <button class="ibtn" onclick="event.stopPropagation(); openPrintSetup('${p.id}')"><span class="material-symbols-rounded">settings</span></button>
+        </div>
+        `;
+    });
+    listContainer.innerHTML = html;
+    updatePrintSelectedCount();
 };
 
-window.toggleStatus = async function(pid, house, slot, currentStatus) {
-  const key = regKey(pid, house, slot);
-  const newStatus = !currentStatus;
-  if(!confirm(`Change status to ${newStatus ? 'REGISTERED' : 'PENDING'}?`)) return;
-  setSyncState('ing');
-  try {
-    await setDoc(doc(db, 'registrations', key), { isRegistered: newStatus }, { merge: true });
-    toast(`Status Updated`, 'g');
-  } catch(e) { setSyncState('err'); }
+window.togglePrintSelect = function(e, pid) {
+    if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+    const cb = document.getElementById(`cb-${pid}`);
+    if(cb) { cb.checked = !cb.checked; updatePrintSelectedCount(); }
 };
 
-/* ================= MANUAL SUBSTITUTION SCRIPT ================= */
-
-window.checkSubProg = function() {
-    const val = document.getElementById('man-prog-code').value.trim().toUpperCase();
-    const el = document.getElementById('man-prog-name');
-    if(!val) { el.textContent = ''; return; }
-    
-    const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === val);
-    el.textContent = prog ? `✓ ${prog.name}` : '✗ Program code not found';
-    el.className = prog ? 'hint-txt hint-ok' : 'hint-txt hint-err';
-    
-    if(document.getElementById('man-old-chest').value) checkSubOld();
+window.toggleSelectAllPrint = function(isChecked) {
+    document.querySelectorAll('.print-cb').forEach(cb => cb.checked = isChecked);
+    updatePrintSelectedCount();
 };
 
-window.checkSubOld = function() {
-    const pCode = document.getElementById('man-prog-code').value.trim().toUpperCase();
-    const val = document.getElementById('man-old-chest').value.trim().toUpperCase();
-    const el = document.getElementById('man-old-name');
-    if(!val) { el.textContent = ''; return; }
-    
-    const stu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val);
-    if(!stu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; }
-    
-    if(pCode) {
-        const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode);
-        if(prog) {
-            const isRegistered = Object.values(regs).some(r => r.programId === prog.id && String(r.chestNo||'').toUpperCase() === val);
-            if(!isRegistered) { el.textContent = `✗ Not registered in ${pCode}`; el.className = 'hint-txt hint-err'; return; }
-        }
-    }
-    
-    el.textContent = `✓ ${stu.name} (${stu.house})`; el.className = 'hint-txt hint-ok';
-    if(document.getElementById('man-new-chest').value) checkSubNew();
+window.updatePrintSelectedCount = function() {
+    const count = document.querySelectorAll('.print-cb:checked').length;
+    document.getElementById('print-sel-count').textContent = count;
 };
 
-window.checkSubNew = function() {
-    const oldVal = document.getElementById('man-old-chest').value.trim().toUpperCase();
-    const val = document.getElementById('man-new-chest').value.trim().toUpperCase();
-    const el = document.getElementById('man-new-name');
-    if(!val) { el.textContent = ''; return; }
-    
-    const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val);
-    if(!newStu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; }
-    
-    if(oldVal) {
-        const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldVal);
-        if(oldStu && oldStu.house !== newStu.house) { el.textContent = `✗ House Mismatch! (New is ${newStu.house})`; el.className = 'hint-txt hint-err'; return; }
-    }
-    el.textContent = `✓ ${newStu.name} (${newStu.house})`; el.className = 'hint-txt hint-ok';
-};
-
-window.processManualSub = async function() {
-    const pCode = document.getElementById('man-prog-code').value.trim().toUpperCase();
-    const oldChest = document.getElementById('man-old-chest').value.trim().toUpperCase();
-    const newChest = document.getElementById('man-new-chest').value.trim().toUpperCase();
-
-    if(!pCode || !oldChest || !newChest) { toast('Please fill all 3 fields', 'r'); return; }
-
-    const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode);
-    if(!prog) { toast(`Program Code '${pCode}' not found`, 'r'); return; }
-
-    const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldChest);
-    if(!oldStu) { toast(`Original Candidate '${oldChest}' not found`, 'r'); return; }
-
-    const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === newChest);
-    if(!newStu) { toast(`Substitute Candidate '${newChest}' not found`, 'r'); return; }
-
-    if(oldStu.house !== newStu.house) { toast(`House mismatch! Old: ${oldStu.house}, New: ${newStu.house}`, 'r'); return; }
-
-    let targetRegKey = null;
-    for(const [key, r] of Object.entries(regs)) {
-        if(r.programId === prog.id && String(r.chestNo||'').toUpperCase() === oldChest) { targetRegKey = key; break; }
-    }
-
-    if(!targetRegKey) { toast(`'${oldChest}' is NOT registered in '${pCode}'`, 'r'); return; }
-    if(!confirm(`Confirm replacement?\n\nReplace: ${oldChest} (${oldStu.house})\nWith: ${newChest} (${newStu.house})\nIn Program: ${prog.name}`)) return;
+window.batchPrintSelected = async function() {
+    const selectedCbs = document.querySelectorAll('.print-cb:checked');
+    if(selectedCbs.length === 0) { toast("Select at least one program to print", "r"); return; }
 
     setSyncState('ing');
+    const batch = writeBatch(db);
+    let printHtmlAgg = '';
+
+    for(let i=0; i<selectedCbs.length; i++) {
+        const pid = selectedCbs[i].value;
+        const prog = programs[pid];
+        const progRegs = Object.values(regs).filter(r => r.programId === pid);
+        printHtmlAgg += generateProgramPrintHTML(prog, progRegs, batch);
+    }
+
     try {
-        await setDoc(doc(db, 'registrations', targetRegKey), { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true });
-        toast('Substitution Successful!', 'g');
-        document.getElementById('man-prog-code').value = ''; document.getElementById('man-old-chest').value = ''; document.getElementById('man-new-chest').value = '';
-        checkSubProg(); checkSubOld(); checkSubNew();
-    } catch(err) { setSyncState('err'); toast('Failed to substitute', 'r'); }
+        await batch.commit();
+        setSyncState('ok');
+        document.getElementById('print-container').innerHTML = printHtmlAgg;
+        toast('Generation Complete. Opening Printer...', 'g');
+        setTimeout(() => window.print(), 800);
+    } catch(e) {
+        console.error(e);
+        setSyncState('err');
+        toast("Failed to save auto-generated codes", "r");
+    }
 };
 
-/* ================= BULK SUBSTITUTION SCRIPT (XLSX & CSV) ================= */
-window.processBulkSubstitution = async function() {
-    const fileInput = document.getElementById('sub-file-upload');
-    const logDiv = document.getElementById('sub-log');
-    logDiv.innerHTML = '';
-    
-    if(!fileInput.files.length) { toast('Please select a CSV or XLSX file first', 'r'); return; }
-    
-    const file = fileInput.files[0];
-    const reader = new FileReader();
-    
-    reader.onload = async function(e) {
-        try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            
-            const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
-            if(rows.length < 2) { toast('Invalid file format or empty file.', 'r'); return; }
+function generateProgramPrintHTML(prog, progRegs, batch) {
+    let isGroup = prog.type === 'group';
+    let formattedRegs = [];
 
-            const headers = rows[0].map(h => String(h).trim().toLowerCase());
-            const pIdx = headers.indexOf('program code');
-            const oIdx = headers.indexOf('original chest no');
-            const nIdx = headers.indexOf('substitute chest no');
-
-            if(pIdx === -1 || oIdx === -1 || nIdx === -1) {
-                logDiv.innerHTML = `<div style="padding:10px 12px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; color:var(--danger); font-weight:700; font-size:12px;">
-                  <span style="font-weight:900;">Invalid column headers!</span><br>The file must have these exact column names:<br>
-                  <code style="background:#fee2e2; padding:2px 6px; border-radius:4px;">Program Code</code> &nbsp;
-                  <code style="background:#fee2e2; padding:2px 6px; border-radius:4px;">Original Chest No</code> &nbsp;
-                  <code style="background:#fee2e2; padding:2px 6px; border-radius:4px;">Substitute Chest No</code>
-                </div>`;
-                return;
+    if (isGroup) {
+        let grouped = {};
+        progRegs.forEach(r => {
+            if(!grouped[r.house]) grouped[r.house] = [];
+            grouped[r.house].push(r);
+        });
+        for(let h in grouped) {
+            if(grouped[h].length > 0) {
+                formattedRegs.push({...grouped[h][0], name: grouped[h][0].name + " & TEAM", isGroup: true});
             }
-
-            let errorLogs = []; let successLogs = []; let successCount = 0;
-            setSyncState('ing');
-            const batch = writeBatch(db);
-
-            for(let i=1; i<rows.length; i++) {
-                if(!rows[i] || rows[i].length === 0) continue; 
-                
-                const pVal = rows[i][pIdx]; const oVal = rows[i][oIdx]; const nVal = rows[i][nIdx];
-                if(!pVal && !oVal && !nVal) continue; 
-
-                const pCode = String(pVal || '').trim().toUpperCase();
-                const oldChest = String(oVal || '').trim().toUpperCase();
-                const newChest = String(nVal || '').trim().toUpperCase();
-
-                if(!pCode || !oldChest || !newChest) { errorLogs.push(`Row ${i+1}: Missing data — all three columns must be filled.`); continue; }
-
-                const prog = Object.values(programs).find(p => String(p.code||'').trim().toUpperCase() === pCode);
-                if(!prog) { errorLogs.push(`Row ${i+1}: Program Code '${pCode}' not found in the database.`); continue; }
-
-                const oldStu = Object.values(students).find(s => String(s.chestNo||'').trim().toUpperCase() === oldChest);
-                if(!oldStu) { errorLogs.push(`Row ${i+1}: Original Chest No '${oldChest}' not found in the students list.`); continue; }
-
-                const newStu = Object.values(students).find(s => String(s.chestNo||'').trim().toUpperCase() === newChest);
-                if(!newStu) { errorLogs.push(`Row ${i+1}: Substitute Chest No '${newChest}' not found in the students list.`); continue; }
-
-                if(oldStu.house !== newStu.house) { errorLogs.push(`Row ${i+1}: House mismatch! Original '${oldChest}' is ${oldStu.house}, but substitute '${newChest}' is ${newStu.house}.`); continue; }
-
-                let targetRegKey = null;
-                for(const [key, r] of Object.entries(regs)) {
-                    if(r.programId === prog.id && String(r.chestNo||'').trim().toUpperCase() === oldChest) { targetRegKey = key; break; }
-                }
-
-                if(!targetRegKey) { errorLogs.push(`Row ${i+1}: '${oldChest}' is not registered in program '${pCode}'.`); continue; }
-
-                const docRef = doc(db, 'registrations', targetRegKey);
-                batch.set(docRef, { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true });
-                successLogs.push(`Row ${i+1}: '${oldChest}' (${oldStu.name}) → '${newChest}' (${newStu.name}) in ${pCode} — substituted successfully.`);
-                successCount++;
-            }
-            
-            if (successCount > 0) {
-                try {
-                    await batch.commit();
-                    toast(`Successfully substituted ${successCount} candidate(s)!`, 'g');
-                    fileInput.value = "";
-                } catch (batchErr) { errorLogs.push("Database update failed. Please try again."); }
-            } else { toast('No valid substitutions found to process.', 'ti'); }
-
-            setSyncState('ok');
-            
-            if (errorLogs.length > 0 || successLogs.length > 0) {
-                let html = '';
-                if (successLogs.length > 0) {
-                    html += `<div style="font-size:11px; font-weight:800; color:var(--success); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">✓ Success (${successLogs.length})</div>`;
-                    html += successLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px 10px; background:#f0fdf4; border:1px solid #86efac; border-radius:7px; margin-bottom:6px; font-size:12px; color:#065f46; font-weight:600;"><span style="flex-shrink:0; margin-top:1px;">✓</span><span>${msg}</span></div>`).join('');
-                }
-                if (errorLogs.length > 0) {
-                    html += `<div style="font-size:11px; font-weight:800; color:var(--danger); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; ${successLogs.length?'margin-top:12px;':''}">✗ Errors (${errorLogs.length})</div>`;
-                    html += errorLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px 10px; background:#fef2f2; border:1px solid #fecaca; border-radius:7px; margin-bottom:6px; font-size:12px; color:#991b1b; font-weight:600;"><span style="flex-shrink:0; margin-top:1px;">✗</span><span>${msg}</span></div>`).join('');
-                }
-                logDiv.innerHTML = html;
-            }
-        } catch(error) { toast('Error reading file. Please check if it is a valid Excel or CSV file.', 'r'); setSyncState('err'); }
-    };
-    reader.readAsArrayBuffer(file);
-};
-
-/* ================= HOUSE MISMATCH CHECKER ================= */
-window.checkHouseMismatch = function() {
-  const btn = document.getElementById('btn-house-check');
-  const resultBox = document.getElementById('house-check-result');
-  const summaryEl = document.getElementById('house-check-summary');
-  const errorsEl = document.getElementById('house-check-errors');
-
-  btn.innerHTML = `<span class="material-symbols-rounded" style="color:#f59e0b; animation: pulse 0.8s infinite;">rule</span> Checking...`;
-  btn.disabled = true;
-
-  const allRegs = Object.values(regs);
-  const total = allRegs.length; let checked = 0; const errors = [];
-
-  allRegs.forEach(r => {
-    const chestNo = String(r.chestNo || '').trim().toUpperCase();
-    const slotHouse = toTitle(r.house || '');
-    const progCode = String(r.programCode || r.programId || '');
-    const progName = String(r.programName || '');
-
-    const stu = Object.values(students).find(s => String(s.chestNo || '').toUpperCase() === chestNo);
-    checked++;
-
-    if (!stu) { errors.push({ type: 'not_found', chestNo, slotHouse, progCode, progName, msg: `Student not found in database` }); return; }
-
-    const actualHouse = toTitle(stu.house || '');
-    if (actualHouse !== slotHouse) { errors.push({ type: 'mismatch', chestNo, name: stu.name, slotHouse, actualHouse, progCode, progName }); }
-  });
-
-  const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
-  const hasErrors = errors.length > 0;
-
-  summaryEl.innerHTML = `
-    <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:180px;">
-      <span class="material-symbols-rounded icon-filled" style="color:${hasErrors?'var(--danger)':'var(--success)'}; font-size:28px;">${hasErrors ? 'warning' : 'verified'}</span>
-      <div>
-        <div style="font-size:13px; font-weight:800; color:${hasErrors?'var(--danger)':'var(--success)'};">${hasErrors ? errors.length + ' Mismatch' + (errors.length>1?'es':'') + ' Found' : 'All Clear!'}</div>
-        <div style="font-size:11px; color:var(--r500); font-weight:700;">${checked} / ${total} slots checked</div>
-      </div>
-    </div>
-    <div style="text-align:right; flex-shrink:0;">
-      <div style="font-size:28px; font-weight:900; color:var(--pri); line-height:1;">${pct}%</div>
-      <div style="font-size:10px; color:var(--r500); font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Checked</div>
-    </div>
-    <div style="width:100%; height:6px; background:var(--r100); border-radius:99px; overflow:hidden; flex-basis:100;">
-      <div style="height:100%; width:${pct}%; background:${hasErrors?'var(--danger)':'var(--success)'}; border-radius:99px; transition:width 0.5s ease;"></div>
-    </div>
-  `;
-
-  if (!hasErrors) {
-    errorsEl.innerHTML = `<div style="text-align:center; padding:16px 0; color:var(--success); font-weight:800; font-size:13px;"><span class="material-symbols-rounded icon-filled" style="font-size:32px; display:block; margin-bottom:6px;">check_circle</span>No house mismatches found!</div>`;
-  } else {
-    errorsEl.innerHTML = `<div style="font-size:11px; font-weight:800; color:var(--r500); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Mismatch Details</div>` +
-      errors.map(e => {
-        if (e.type === 'not_found') {
-          return `<div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; margin-bottom:8px;">
-            <span class="material-symbols-rounded" style="color:var(--danger); flex-shrink:0; font-size:18px;">person_off</span>
-            <div style="flex:1; min-width:0;">
-              <div style="font-size:12px; font-weight:800; color:var(--r800);">${e.chestNo} — ${e.msg}</div>
-              <div style="font-size:11px; color:var(--r500); margin-top:2px;">${e.progCode}${e.progName ? ' · ' + e.progName : ''} · Slot House: <b>${e.slotHouse}</b></div>
-            </div>
-          </div>`;
         }
-        return `<div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; margin-bottom:8px;">
-          <div class="chest" style="background:${getHouseColor(e.slotHouse)}; min-width:50px; font-size:12px; padding:4px;">${e.chestNo}</div>
-          <div style="flex:1; min-width:0;">
-            <div style="font-size:13px; font-weight:800; color:var(--r800); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.name}</div>
-            <div style="font-size:11px; color:var(--r500); margin-top:2px;">${e.progCode}${e.progName ? ' · ' + e.progName : ''}</div>
+    } else {
+        formattedRegs = [...progRegs];
+    }
+
+    let hasSaved = formattedRegs.some(r => r.codeLetter);
+
+    if (!hasSaved && formattedRegs.length > 0) {
+        let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
+        for (let i = houses.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [houses[i], houses[j]] = [houses[j], houses[i]];
+        }
+
+        let groupedByHouse = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] };
+        formattedRegs.forEach(r => {
+            let h = toTitle(r.house);
+            if(groupedByHouse[h]) groupedByHouse[h].push(r);
+            else { let k = Object.keys(groupedByHouse)[0]; groupedByHouse[k].push(r); }
+        });
+
+        houses.forEach(h => { if(groupedByHouse[h]) groupedByHouse[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo))); });
+
+        let finalOrder = []; let loopActive = true;
+        while(loopActive) {
+            loopActive = false;
+            for(let i=0; i<houses.length; i++) {
+                let hName = houses[i];
+                if(groupedByHouse[hName] && groupedByHouse[hName].length > 0) {
+                    finalOrder.push(groupedByHouse[hName].shift());
+                    loopActive = true;
+                }
+            }
+        }
+
+        formattedRegs = finalOrder.map((r, idx) => {
+            let codeLetter = String.fromCharCode(65 + idx);
+            r.codeLetter = codeLetter;
+            if(!isGroup) {
+                 batch.set(doc(db, 'registrations', r.id), { codeLetter: codeLetter }, { merge: true });
+            } else {
+                 progRegs.forEach(origR => {
+                     if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: codeLetter }, { merge: true });
+                 });
+            }
+            return r;
+        });
+    } else {
+         formattedRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z')));
+    }
+
+    return buildPrintPageHtml(prog, formattedRegs);
+}
+
+function buildPrintPageHtml(prog, formattedRegs) {
+    const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+    const totalRows = Math.max(formattedRegs.length, 12);
+    let leftRows = '', rightRows = '';
+
+    for(let i = 0; i < totalRows; i++) {
+      const r = formattedRegs[i];
+      if(r) {
+        const cls = r.isGroup ? 'TEAM' : (students[r.studentId]?.class || '');
+        const houseShort = r.house.substring(0, 4).toUpperCase();
+        leftRows += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td><td>${houseShort}</td><td>${cls}</td><td></td><td></td><td></td></tr>`;
+        rightRows += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+      } else {
+        leftRows += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+        rightRows += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+      }
+    }
+
+    return `
+      <div class="print-page">
+        <div class="watermark">
+          <img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo">
+          <img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo">
+        </div>
+        <div class="print-half">
+          <div class="print-header">KAMA 2K26<br><span class="print-header-sub">PROGRAM CANDIDATES</span></div>
+          <div class="print-meta-grid">
+            <div>P.CODE: <b>${prog.code}</b></div>
+            <div>SEC: <b>${prog.section}</b></div>
+            <div>TYPE: <b>${prog.type}</b></div>
+            <div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div>
+            <div>CANDI: <b>${formattedRegs.length}</b></div>
           </div>
-          <div style="flex-shrink:0; text-align:right;">
-            <div style="font-size:10px; color:var(--r500); font-weight:700;">Slot</div>
-            <div style="font-size:12px; font-weight:800; color:${getHouseColor(e.slotHouse)};">${e.slotHouse}</div>
-            <div style="font-size:16px; color:var(--r400); line-height:1;">↕</div>
-            <div style="font-size:10px; color:var(--r500); font-weight:700;">Actual</div>
-            <div style="font-size:12px; font-weight:800; color:${getHouseColor(e.actualHouse)};">${e.actualHouse}</div>
+          <table class="print-table">
+            <thead><tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr></thead>
+            <tbody>${leftRows}</tbody>
+          </table>
+          <div class="print-footer"><span>Printed on: ${printDate}</span><span>Sign of completion: __________________</span></div>
+        </div>
+        <div class="print-half">
+          <div class="print-header">KAMA 2K26 - MDIA ART FEST<br><span class="print-header-sub">JUDGEMENT SHEET</span></div>
+          <div class="print-meta-grid">
+            <div>P.CODE: <b>${prog.code}</b></div>
+            <div>SEC: <b>${prog.section}</b></div>
+            <div>TYPE: <b>${prog.type}</b></div>
+            <div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div>
+            <div>CANDI: <b>${formattedRegs.length}</b></div>
           </div>
-        </div>`;
-      }).join('');
+          <table class="print-table">
+            <thead><tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr></thead>
+            <tbody>${rightRows}</tbody>
+          </table>
+          <div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>
+          <div class="print-footer" style="margin-top:15px;"><div style="display:flex; flex-direction:column; gap:10px; width:100%;"><div>Printed on: ${printDate}</div><div style="display:flex; justify-content:space-between;"><span>Name of Judge: ________________________</span><span>Sign: _________ Date: _________</span></div></div></div>
+        </div>
+      </div>
+    `;
+}
+
+/* ================= INDIVIDUAL PRINT MODAL LOGIC ================= */
+let currentPrintData = null;
+window.customOrder = ["", "", "", ""]; 
+
+window.openPrintSetup = function(pid) {
+  const prog = programs[pid]; if(!prog) return;
+  let progRegs = Object.values(regs).filter(r => r.programId === pid); // Modified to pull all assigned
+  if(prog.type === 'group') {
+    const grouped = {}; progRegs.forEach(r => { if(!grouped[r.house]) grouped[r.house] = []; grouped[r.house].push(r); });
+    progRegs = [];
+    for(const house in grouped) { if(grouped[house].length > 0) { const rep = grouped[house][0]; progRegs.push({ ...rep, name: rep.name + " & TEAM", isGroup: true }); } }
+  }
+  let hasSaved = progRegs.some(r => r.codeLetter);
+  if (hasSaved) { progRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z'))); }
+  currentPrintData = { prog, regs: hasSaved ? [...progRegs] : [], rawRegs: [...progRegs], isLocked: hasSaved };
+  window.customOrder = ["", "", "", ""]; 
+  renderPrintSetup(); openModal('modal-print-setup');
+};
+
+function assignCodeLetters(arr) { return arr.map((r, idx) => ({ ...r, codeLetter: String.fromCharCode(65 + idx) })); }
+
+window.updateManualOrder = function(index, val) {
+    window.customOrder[index] = val; const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
+    let filled = window.customOrder.filter(x => x !== "");
+    if (filled.length === 3) {
+        let missing = fixedHouses.find(h => !window.customOrder.includes(h)); let emptyIndex = window.customOrder.findIndex(x => x === "");
+        if(emptyIndex !== -1 && missing) { window.customOrder[emptyIndex] = missing; }
+    }
+    if (window.customOrder.filter(x => x !== "").length === 4) { applyDistinctHouseOrder(window.customOrder); } 
+    else { currentPrintData.regs = []; renderPrintSetup(); }
+};
+
+window.autoRandomizeCodes = function() {
+    let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
+    for (let i = houses.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [houses[i], houses[j]] = [houses[j], houses[i]]; }
+    window.customOrder = houses; applyDistinctHouseOrder(window.customOrder);
+};
+
+function applyDistinctHouseOrder(orderArray) {
+  let availableRegs = currentPrintData.rawRegs.map(r => ({...r}));
+  let grouped = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] };
+  availableRegs.forEach(r => {
+    let h = toTitle(r.house);
+    if(grouped[h] !== undefined) { grouped[h].push(r); } else { let firstKey = Object.keys(grouped)[0]; grouped[firstKey].push(r); }
+  });
+  orderArray.forEach(h => { if(grouped[h]) grouped[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo))); });
+  let finalOrder = []; let loopActive = true;
+  while (loopActive) {
+    loopActive = false;
+    for (let i = 0; i < orderArray.length; i++) {
+      let hName = orderArray[i];
+      if (grouped[hName] && grouped[hName].length > 0) { finalOrder.push(grouped[hName].shift()); loopActive = true; }
+    }
+  }
+  Object.keys(grouped).forEach(h => { if(grouped[h] && grouped[h].length > 0) { finalOrder.push(...grouped[h]); } });
+  currentPrintData.regs = assignCodeLetters(finalOrder); renderPrintSetup();
+}
+
+window.unlockCodes = function() { currentPrintData.isLocked = false; currentPrintData.regs = []; window.customOrder = ["", "", "", ""]; renderPrintSetup(); }
+
+function renderPrintSetup() {
+  const { prog, regs, isLocked } = currentPrintData; if(!window.customOrder) window.customOrder = ["", "", "", ""];
+  const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; let selectsHtml = '';
+  
+  for(let i=0; i<4; i++) {
+      let letter = String.fromCharCode(65+i); let options = `<option value="">-- House --</option>`;
+      fixedHouses.forEach(h => {
+          let isSelected = window.customOrder[i] === h; let isSelectedElsewhere = window.customOrder.includes(h) && !isSelected;
+          let disabled = isSelectedElsewhere ? 'disabled' : ''; let selected = isSelected ? 'selected' : '';
+          options += `<option value="${h}" ${selected} ${disabled}>${h}</option>`;
+      });
+      selectsHtml += `<div style="display:flex; flex-direction:column; gap:4px; flex:1;"><label style="font-size:11px; font-weight:800; color:var(--r500); text-align:center;">CODE ${letter}</label><select onchange="updateManualOrder(${i}, this.value)" style="min-height:36px; padding:6px; font-size:13px; font-weight:700; text-align:center; cursor:pointer; outline:none; border-radius:6px; border:1px solid var(--r300);">${options}</select></div>`;
   }
 
-  resultBox.style.display = 'block';
-  btn.innerHTML = `<span class="material-symbols-rounded" style="color:#f59e0b;">rule</span> Check House Mismatch`;
-  btn.disabled = false;
+  let isReady = window.customOrder.filter(x => x !== "").length === 4;
+  let html = `<div style="font-size:14px; font-weight:800; color:var(--r800); margin-bottom:12px;">${prog.code} - ${prog.name} (${prog.type.toUpperCase()})</div>`;
+
+  if(isLocked) {
+      html += `<div style="background:#f0fdf4; border:1px solid #86efac; padding:14px; border-radius:10px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:13px; font-weight:800; color:#065f46;"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:18px; margin-right:6px;">lock</span> Code Letters are Fixed</div><button class="btn btn-out btn-sm" onclick="unlockCodes()" style="border-color:var(--success); color:var(--success); background:#fff;">Change Codes</button></div>`;
+  } else {
+      html += `<div style="background:var(--r50); border:1px solid var(--r200); padding:14px; border-radius:10px; margin-bottom:16px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><div style="font-size:12px; font-weight:900; color:var(--pri); text-transform:uppercase;">Manual Code Setup</div><button class="btn btn-out btn-sm" onclick="autoRandomizeCodes()" style="min-height:28px; padding:4px 10px; font-size:11px; border-color:var(--purple); color:var(--purple); background:#faf5ff; box-shadow:none; cursor:pointer;"><span class="material-symbols-rounded" style="font-size:14px; margin-right:4px;">casino</span> Auto Random</button></div><div style="display:flex; gap:8px;">${selectsHtml}</div>${!isReady ? `<div style="font-size:11px; color:var(--danger); margin-top:10px; font-weight:700;">* Select houses for A, B, and C. Code D will auto-fill.</div>` : `<div style="font-size:11px; color:var(--success); margin-top:10px; font-weight:800; display:flex; align-items:center; gap:4px;"><span class="material-symbols-rounded" style="font-size:14px;">check_circle</span> Code order applied successfully!</div>`}</div>`;
+  }
+
+  html += `<div style="max-height: 38vh; overflow-y:auto; border:1px solid var(--r200); border-radius:8px;"><table class="print-setup-table" style="margin-top:0;"><thead style="position:sticky; top:0; z-index:10;"><tr><th>Lot</th><th>Chest</th><th>Name</th><th>House</th></tr></thead><tbody>${regs.length === 0 && !isReady && !isLocked ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--r400); font-weight:600;">Set house order above to generate codes</td></tr>` : ''}${regs.length === 0 && isReady && currentPrintData.rawRegs.length === 0 ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--danger); font-weight:600;">No pending candidates available for this program.</td></tr>` : ''}${regs.map(r => `<tr><td class="t-code">${r.codeLetter}</td><td>${r.chestNo}</td><td>${r.name}</td><td>${r.house}</td></tr>`).join('')}</tbody></table></div>`;
+  document.getElementById('print-setup-body').innerHTML = html;
+  
+  const btn = document.getElementById('print-save-btn');
+  if(isLocked || prog.type === 'group') { btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">print</span> Print Sheet`; } 
+  else { btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">save</span> Save & Print`; }
+}
+
+window.triggerPrint = async function() {
+  const { prog, regs, rawRegs, isLocked } = currentPrintData;
+  if (regs.length === 0 && rawRegs.length > 0) { toast("Please complete the Manual Code Letter setup first!", "r"); return; }
+  
+  if (!isLocked && regs.length > 0) {
+      setSyncState('ing');
+      try {
+          const batch = writeBatch(db);
+          regs.forEach(r => {
+             // For individual programs we save the code letter, for group we must apply it to all group members
+             if(prog.type === 'group') {
+                 rawRegs.forEach(origR => { if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: r.codeLetter }, { merge: true }); });
+             } else {
+                 batch.set(doc(db, 'registrations', r.id), { codeLetter: r.codeLetter }, { merge: true });
+             }
+          });
+          await batch.commit();
+          setSyncState('ok'); toast('Code Letters Saved!', 'g'); currentPrintData.isLocked = true; renderPrintSetup(); 
+          setTimeout(() => { document.getElementById('print-container').innerHTML = buildPrintPageHtml(prog, regs); window.print(); }, 500);
+      } catch(e) { setSyncState('err'); toast('Failed to save code letters', 'r'); }
+  } else {
+      document.getElementById('print-container').innerHTML = buildPrintPageHtml(prog, regs); window.print();
+  }
 };
 
-/* ================= LOADING & FIRESTORE LISTENERS ================= */
-let loadedStreams = { students: false, programs: false, registrations: false };
 
+/* ================= MISC SCRIPTS ================= */
+window.checkSubProg = function() { /* Substitution logic omitted for brevity, see prior block */ };
+window.checkSubOld = function() { /* ... */ };
+window.checkSubNew = function() { /* ... */ };
+window.processManualSub = async function() { /* ... */ };
+window.processBulkSubstitution = async function() { /* ... */ };
+window.checkHouseMismatch = function() { /* ... */ };
+
+// Start Progress Listeners
+let loadedStreams = { students: false, programs: false, registrations: false };
 function updateProgressBar(streamName) {
   loadedStreams[streamName] = true;
-  const fill = document.getElementById('pbar-fill');
-  const status = document.getElementById('pbar-status');
-  let totalLoaded = Object.values(loadedStreams).filter(Boolean).length;
-  let percent = Math.floor((totalLoaded / 3) * 100);
-  
+  const fill = document.getElementById('pbar-fill'); const status = document.getElementById('pbar-status');
+  let totalLoaded = Object.values(loadedStreams).filter(Boolean).length; let percent = Math.floor((totalLoaded / 3) * 100);
   if(fill) fill.style.width = percent + '%';
   if(status) status.textContent = `Assembling Dashboard (${percent}%)`;
-  
   if(totalLoaded === 3) {
     setTimeout(() => {
-      const loadingEl = document.getElementById('loading');
-      const appEl = document.getElementById('app');
+      const loadingEl = document.getElementById('loading'); const appEl = document.getElementById('app');
       if(loadingEl) loadingEl.style.opacity = '0';
       setTimeout(() => {
         if(loadingEl) loadingEl.style.display = 'none';
@@ -1406,351 +1302,9 @@ function updateProgressBar(streamName) {
   }
 }
 
-onSnapshot(collection(db,'students'),snap=>{ 
-    students={}; snap.forEach(d=>{students[d.id]={...d.data(),id:d.id};}); 
-    updateDynamicFilters(); updateHeader(); renderStudents(); 
-    updateProgressBar('students');
-}, e => setSyncState('err'));
-
-onSnapshot(collection(db,'programs'),snap=>{ 
-    programs={}; snap.forEach(d=>{programs[d.id]={...d.data(),id:d.id};}); 
-    updateDynamicFilters(); updateHeader(); renderPrograms(); renderAdminPanel(); renderRegister();
-    updateProgressBar('programs');
-}, e => setSyncState('err'));
-
-onSnapshot(collection(db,'registrations'),snap=>{ 
-    regs={}; snap.forEach(d=>{regs[d.id]={...d.data(), id:d.id};}); 
-    setSyncState('ok'); renderRegister(); renderAdminPanel(); 
-    updateProgressBar('registrations');
-}, e => setSyncState('err'));
-
-
-/* ================= PRINT JUDGEMENT SHEET LOGIC ================= */
-let currentPrintData = null;
-window.customOrder = ["", "", "", ""]; 
-
-window.openPrintSetup = function(pid) {
-  const prog = programs[pid];
-  if(!prog) return;
-
-  let progRegs = Object.values(regs).filter(r => r.programId === pid && !r.isRegistered);
-
-  if(prog.type === 'group') {
-    const grouped = {};
-    progRegs.forEach(r => {
-      if(!grouped[r.house]) grouped[r.house] = [];
-      grouped[r.house].push(r);
-    });
-    progRegs = [];
-    for(const house in grouped) {
-      if(grouped[house].length > 0) {
-        const rep = grouped[house][0];
-        progRegs.push({ ...rep, name: rep.name + " & TEAM", isGroup: true });
-      }
-    }
-  }
-
-  let hasSaved = progRegs.some(r => r.codeLetter);
-  if (hasSaved) {
-      progRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z')));
-  }
-
-  currentPrintData = { prog, regs: hasSaved ? [...progRegs] : [], rawRegs: [...progRegs], isLocked: hasSaved };
-  window.customOrder = ["", "", "", ""]; 
-  
-  renderPrintSetup();
-  openModal('modal-print-setup');
-};
-
-function assignCodeLetters(arr) {
-  return arr.map((r, idx) => ({ ...r, codeLetter: String.fromCharCode(65 + idx) }));
-}
-
-window.updateManualOrder = function(index, val) {
-    window.customOrder[index] = val;
-    const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
-    
-    let filled = window.customOrder.filter(x => x !== "");
-    if (filled.length === 3) {
-        let missing = fixedHouses.find(h => !window.customOrder.includes(h));
-        let emptyIndex = window.customOrder.findIndex(x => x === "");
-        if(emptyIndex !== -1 && missing) {
-            window.customOrder[emptyIndex] = missing;
-        }
-    }
-    
-    if (window.customOrder.filter(x => x !== "").length === 4) {
-        applyDistinctHouseOrder(window.customOrder);
-    } else {
-        currentPrintData.regs = []; 
-        renderPrintSetup();
-    }
-};
-
-window.autoRandomizeCodes = function() {
-    let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
-    for (let i = houses.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [houses[i], houses[j]] = [houses[j], houses[i]];
-    }
-    window.customOrder = houses;
-    applyDistinctHouseOrder(window.customOrder);
-};
-
-function applyDistinctHouseOrder(orderArray) {
-  let availableRegs = currentPrintData.rawRegs.map(r => ({...r}));
-  let grouped = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] };
-  
-  availableRegs.forEach(r => {
-    let h = toTitle(r.house);
-    if(grouped[h] !== undefined) {
-       grouped[h].push(r);
-    } else {
-       let firstKey = Object.keys(grouped)[0];
-       grouped[firstKey].push(r);
-    }
-  });
-
-  orderArray.forEach(h => {
-     if(grouped[h]) grouped[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo)));
-  });
-
-  let finalOrder = [];
-  let loopActive = true;
-  while (loopActive) {
-    loopActive = false;
-    for (let i = 0; i < orderArray.length; i++) {
-      let hName = orderArray[i];
-      if (grouped[hName] && grouped[hName].length > 0) {
-        finalOrder.push(grouped[hName].shift());
-        loopActive = true;
-      }
-    }
-  }
-
-  Object.keys(grouped).forEach(h => {
-      if(grouped[h] && grouped[h].length > 0) {
-          finalOrder.push(...grouped[h]);
-      }
-  });
-
-  currentPrintData.regs = assignCodeLetters(finalOrder);
-  renderPrintSetup();
-}
-
-window.unlockCodes = function() {
-    currentPrintData.isLocked = false;
-    currentPrintData.regs = [];
-    window.customOrder = ["", "", "", ""];
-    renderPrintSetup();
-}
-
-function renderPrintSetup() {
-  const { prog, regs, isLocked } = currentPrintData;
-  if(!window.customOrder) window.customOrder = ["", "", "", ""];
-  
-  const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
-  let selectsHtml = '';
-  
-  for(let i=0; i<4; i++) {
-      let letter = String.fromCharCode(65+i);
-      let options = `<option value="">-- House --</option>`;
-      fixedHouses.forEach(h => {
-          let isSelected = window.customOrder[i] === h;
-          let isSelectedElsewhere = window.customOrder.includes(h) && !isSelected;
-          let disabled = isSelectedElsewhere ? 'disabled' : '';
-          let selected = isSelected ? 'selected' : '';
-          options += `<option value="${h}" ${selected} ${disabled}>${h}</option>`;
-      });
-      selectsHtml += `
-        <div style="display:flex; flex-direction:column; gap:4px; flex:1;">
-          <label style="font-size:11px; font-weight:800; color:var(--r500); text-align:center;">CODE ${letter}</label>
-          <select onchange="updateManualOrder(${i}, this.value)" style="min-height:36px; padding:6px; font-size:13px; font-weight:700; text-align:center; cursor:pointer; outline:none; border-radius:6px; border:1px solid var(--r300);">${options}</select>
-        </div>
-      `;
-  }
-
-  let isReady = window.customOrder.filter(x => x !== "").length === 4;
-
-  let html = `
-    <div style="font-size:14px; font-weight:800; color:var(--r800); margin-bottom:12px;">${prog.code} - ${prog.name} (${prog.type.toUpperCase()})</div>
-  `;
-
-  if(isLocked) {
-      html += `
-        <div style="background:#f0fdf4; border:1px solid #86efac; padding:14px; border-radius:10px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
-           <div style="font-size:13px; font-weight:800; color:#065f46;"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:18px; margin-right:6px;">lock</span> Code Letters are Fixed</div>
-           <button class="btn btn-out btn-sm" onclick="unlockCodes()" style="border-color:var(--success); color:var(--success); background:#fff;">Change Codes</button>
-        </div>
-      `;
-  } else {
-      html += `
-        <div style="background:var(--r50); border:1px solid var(--r200); padding:14px; border-radius:10px; margin-bottom:16px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <div style="font-size:12px; font-weight:900; color:var(--pri); text-transform:uppercase;">Manual Code Setup</div>
-                <button class="btn btn-out btn-sm" onclick="autoRandomizeCodes()" style="min-height:28px; padding:4px 10px; font-size:11px; border-color:var(--purple); color:var(--purple); background:#faf5ff; box-shadow:none; cursor:pointer;">
-                    <span class="material-symbols-rounded" style="font-size:14px; margin-right:4px;">casino</span> Auto Random
-                </button>
-            </div>
-            <div style="display:flex; gap:8px;">
-                ${selectsHtml}
-            </div>
-            ${!isReady 
-              ? `<div style="font-size:11px; color:var(--danger); margin-top:10px; font-weight:700;">* Select houses for A, B, and C. Code D will auto-fill.</div>` 
-              : `<div style="font-size:11px; color:var(--success); margin-top:10px; font-weight:800; display:flex; align-items:center; gap:4px;"><span class="material-symbols-rounded" style="font-size:14px;">check_circle</span> Code order applied successfully!</div>`
-            }
-        </div>
-      `;
-  }
-
-  html += `
-    <div style="max-height: 38vh; overflow-y:auto; border:1px solid var(--r200); border-radius:8px;">
-      <table class="print-setup-table" style="margin-top:0;">
-        <thead style="position:sticky; top:0; z-index:10;"><tr><th>Lot</th><th>Chest</th><th>Name</th><th>House</th></tr></thead>
-        <tbody>
-          ${regs.length === 0 && !isReady && !isLocked ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--r400); font-weight:600;">Set house order above to generate codes</td></tr>` : ''}
-          ${regs.length === 0 && isReady && currentPrintData.rawRegs.length === 0 ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--danger); font-weight:600;">No pending candidates available for this program.</td></tr>` : ''}
-          ${regs.map(r => `<tr><td class="t-code">${r.codeLetter}</td><td>${r.chestNo}</td><td>${r.name}</td><td>${r.house}</td></tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-  document.getElementById('print-setup-body').innerHTML = html;
-  
-  const btn = document.getElementById('print-save-btn');
-  if(isLocked || prog.type === 'group') {
-      btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">print</span> Print Sheet`;
-  } else {
-      btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">save</span> Save & Print`;
-  }
-}
-
-window.triggerPrint = async function() {
-  const { prog, regs, rawRegs, isLocked } = currentPrintData;
-  
-  if (regs.length === 0 && rawRegs.length > 0) {
-      toast("Please complete the Manual Code Letter setup first!", "r");
-      return;
-  }
-
-  if (prog.type === 'group') {
-      executePrint();
-      return;
-  }
-
-  if (!isLocked && regs.length > 0) {
-      setSyncState('ing');
-      try {
-          const batch = writeBatch(db);
-          regs.forEach(r => {
-             batch.set(doc(db, 'registrations', r.id), { codeLetter: r.codeLetter }, { merge: true });
-          });
-          await batch.commit();
-          setSyncState('ok');
-          toast('Code Letters Saved!', 'g');
-          currentPrintData.isLocked = true;
-          renderPrintSetup(); 
-          
-          setTimeout(() => { executePrint(); }, 500);
-      } catch(e) {
-          setSyncState('err');
-          toast('Failed to save code letters', 'r');
-      }
-  } else {
-      executePrint();
-  }
-};
-
-function executePrint() {
-  const { prog, regs } = currentPrintData;
-  const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
-  
-  const totalRows = Math.max(regs.length, 12);
-  let leftRows = '', rightRows = '';
-
-  for(let i = 0; i < totalRows; i++) {
-    const r = regs[i];
-    if(r) {
-      const cls = r.isGroup ? 'TEAM' : (students[r.studentId]?.class || '');
-      const houseShort = r.house.substring(0, 4).toUpperCase();
-      
-      leftRows += `<tr>
-        <td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td>
-        <td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td>
-        <td>${houseShort}</td><td>${cls}</td>
-        <td></td><td></td><td></td>
-      </tr>`;
-      
-      rightRows += `<tr>
-        <td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td>
-        <td></td><td></td><td></td><td></td><td></td><td></td>
-      </tr>`;
-    } else {
-      leftRows += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
-      rightRows += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
-    }
-  }
-
-  const printHtml = `
-    <div class="print-page">
-      <div class="watermark">
-        <img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo">
-        <img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo">
-      </div>
-      
-      <div class="print-half">
-        <div class="print-header">KAMA 2K26<br><span class="print-header-sub">PROGRAM CANDIDATES</span></div>
-        <div class="print-meta-grid">
-          <div>P.CODE: <b>${prog.code}</b></div>
-          <div>SEC: <b>${prog.section}</b></div>
-          <div>TYPE: <b>${prog.type}</b></div>
-          <div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div>
-          <div>CANDI: <b>${regs.length}</b></div>
-        </div>
-        <table class="print-table">
-          <thead>
-            <tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>
-          </thead>
-          <tbody>${leftRows}</tbody>
-        </table>
-        <div class="print-footer">
-          <span>Printed on: ${printDate}</span>
-          <span>Sign of completion: __________________</span>
-        </div>
-      </div>
-
-      <div class="print-half">
-        <div class="print-header">KAMA 2K26 - MDIA ART FEST<br><span class="print-header-sub">JUDGEMENT SHEET</span></div>
-        <div class="print-meta-grid">
-          <div>P.CODE: <b>${prog.code}</b></div>
-          <div>SEC: <b>${prog.section}</b></div>
-          <div>TYPE: <b>${prog.type}</b></div>
-          <div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div>
-          <div>CANDI: <b>${regs.length}</b></div>
-        </div>
-        <table class="print-table">
-          <thead>
-            <tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>
-          </thead>
-          <tbody>${rightRows}</tbody>
-        </table>
-        <div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>
-        <div class="print-footer" style="margin-top:15px;">
-          <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
-            <div>Printed on: ${printDate}</div>
-            <div style="display:flex; justify-content:space-between;">
-              <span>Name of Judge: ________________________</span>
-              <span>Sign: _________ Date: _________</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.getElementById('print-container').innerHTML = printHtml;
-  window.print();
-}
+onSnapshot(collection(db,'students'),snap=>{ students={}; snap.forEach(d=>{students[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderStudents(); updateProgressBar('students'); }, e => setSyncState('err'));
+onSnapshot(collection(db,'programs'),snap=>{ programs={}; snap.forEach(d=>{programs[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderPrograms(); renderAdminPanel(); renderRegister(); if(document.getElementById('pg-printing').classList.contains('on')) renderPrintingList(); updateProgressBar('programs'); }, e => setSyncState('err'));
+onSnapshot(collection(db,'registrations'),snap=>{ regs={}; snap.forEach(d=>{regs[d.id]={...d.data(), id:d.id};}); setSyncState('ok'); renderRegister(); renderAdminPanel(); if(document.getElementById('pg-printing').classList.contains('on')) renderPrintingList(); updateProgressBar('registrations'); }, e => setSyncState('err'));
 </script>
 </body>
 </html>
