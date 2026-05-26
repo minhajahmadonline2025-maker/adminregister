@@ -43,6 +43,31 @@ body { font-family: 'Outfit', sans-serif; background: #f4f6f8; min-height: 100vh
 .progress-bar-fill { height: 100%; width: 5%; background: linear-gradient(90deg, var(--pri), var(--pri-d)); border-radius: 99px; transition: width 0.3s cubic-bezier(0.1, 0.8, 0.2, 1); }
 .loader-status { font-size: 11px; color: var(--r400); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
+/* ═══ BIOMETRIC LOCK SCREEN ═══ */
+#app-lock { position: fixed; inset: 0; z-index: 9999999; background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s; }
+#app-lock.unlocked { opacity: 0; visibility: hidden; pointer-events: none; }
+.lock-card { background: rgba(255, 255, 255, 0.95); padding: 30px 24px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; width: 90%; max-width: 320px; border: 1px solid rgba(255,255,255,0.4); transform: translateY(0); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.lock-card.shake { animation: lockShake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes lockShake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+
+.lock-logo { height: 60px; margin-bottom: 12px; }
+.lock-title { font-size: 20px; font-weight: 900; color: var(--pri); margin-bottom: 4px; }
+.lock-sub { font-size: 12px; color: var(--r500); font-weight: 700; margin-bottom: 24px; }
+
+.pin-dots { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; }
+.pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--r300); transition: all 0.2s; }
+.pin-dot.filled { background: var(--pri); border-color: var(--pri); transform: scale(1.1); }
+.pin-dot.err { background: var(--danger); border-color: var(--danger); }
+
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.num-btn { background: var(--r50); border: 1px solid var(--r200); font-size: 20px; font-weight: 800; color: var(--r800); height: 50px; border-radius: 12px; cursor: pointer; transition: all 0.1s; font-family: 'Outfit'; display: flex; align-items: center; justify-content: center; }
+.num-btn:active { background: var(--r200); transform: scale(0.95); }
+.num-btn.bio-btn { background: var(--pri); color: #fff; border-color: var(--pri-d); }
+.num-btn.bio-btn:active { background: var(--pri-d); }
+
+.setup-bio-banner { background: #f0fdf4; border: 1px solid #86efac; color: #065f46; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 700; margin: 16px 16px 0; display: flex; justify-content: space-between; align-items: center; }
+
+/* ═══ APP STYLES ═══ */
 .hdr { background: linear-gradient(135deg, var(--pri-d) 0%, var(--pri) 60%, #871e2a 100%); padding: 18px 20px 14px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shm); }
 .hdr-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .hdr-logo { height: 40px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
@@ -214,46 +239,85 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 .print-setup-table td { padding: 8px; border-bottom: 1px solid var(--r100); }
 .print-setup-table .t-code { font-weight: 900; color: var(--pri); }
 
-/* ================= PRINT MEDIA QUERIES (A4 Landscape B&W) ================= */
+/* ================= PRINT MEDIA QUERIES (A4 Landscape B&W 1-PAGE FIX) ================= */
 #print-container { display: none; }
 @media print {
-  /* Increased left and right margins for beauty and neatness */
-  @page { size: A4 landscape; margin: 12mm 22mm; } 
-  body { background: #fff; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; color: #000; -webkit-print-color-adjust: exact; }
+  @page { size: A4 landscape; margin: 8mm 12mm; } 
+  body, html { background: #fff; margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Outfit', sans-serif; color: #000; -webkit-print-color-adjust: exact; }
+  
   #app, .bottom-nav, .hdr, .overlay, .toasts { display: none !important; }
-  #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: #fff; z-index: 9999; }
   
-  /* Increased gap between the two sides */
-  .print-page { width: 100%; display: flex; gap: 24mm; position: relative; } 
-  .print-half { flex: 1; width: 50%; }
+  #print-container { 
+    display: flex !important; 
+    position: absolute; left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background: #fff; z-index: 9999; 
+    overflow: hidden; 
+    page-break-after: avoid; 
+    page-break-inside: avoid; 
+  }
   
-  .print-header { text-align: center; font-weight: 900; font-size: 17px; margin-bottom: 6px; border-bottom: 2px solid #000; padding-bottom: 6px; }
-  .print-header-sub { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; }
+  .print-page { width: 100%; height: 100%; display: flex; gap: 20mm; position: relative; box-sizing: border-box; } 
+  .print-half { flex: 1; width: 50%; display: flex; flex-direction: column; max-height: 100%; }
   
-  .print-meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 11px; font-weight: 700; margin-bottom: 12px; border: 1px solid #000; padding: 6px; text-transform: uppercase; }
-  .print-meta-grid > div { border-right: 1px solid #000; padding: 0 6px; }
+  .print-header { text-align: center; font-weight: 900; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 4px; }
+  .print-header-sub { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; }
+  
+  .print-meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 10px; font-weight: 700; margin-bottom: 8px; border: 1px solid #000; padding: 4px; text-transform: uppercase; }
+  .print-meta-grid > div { border-right: 1px solid #000; padding: 0 4px; }
   .print-meta-grid > div:last-child { border-right: none; }
   
-  .print-table { width: 100%; border-collapse: collapse; font-size: 12px; } /* Slightly larger text */
+  .print-table { width: 100%; border-collapse: collapse; font-size: 11px; flex-grow: 1; } 
   
-  /* Increased padding and set height for beautiful, spacious rows */
-  .print-table th, .print-table td { border: 1px solid #000; padding: 10px 5px; text-align: center; color: #000; height: 28px; } 
-  .print-table th { font-weight: 800; text-transform: uppercase; font-size: 10px; background: #e5e7eb !important; padding: 8px 4px; }
-  .print-table td.t-left { text-align: left; padding-left: 8px; font-weight: 600;}
+  .print-table th, .print-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; color: #000; height: 22px; } 
+  .print-table th { font-weight: 800; text-transform: uppercase; font-size: 9px; background: #e5e7eb !important; padding: 6px 2px; }
+  .print-table td.t-left { text-align: left; padding-left: 6px; font-weight: 600;}
   
   .watermark { 
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-    z-index: -1; pointer-events: none; opacity: 0.07; 
+    z-index: -1; pointer-events: none; opacity: 0.05; 
     display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); 
     place-items: center; padding: 20px; box-sizing: border-box;
   }
-  .watermark img { width: 260px; filter: grayscale(100%); opacity: 0.8; }
+  .watermark img { width: 220px; filter: grayscale(100%); opacity: 0.8; }
   
-  .print-footer { margin-top: 12px; font-size: 11px; display: flex; justify-content: space-between; font-weight: 600; }
+  .print-footer { margin-top: auto; padding-top: 8px; font-size: 10px; display: flex; justify-content: space-between; font-weight: 600; }
 }
 </style>
 </head>
 <body>
+
+<!-- LOCK SCREEN -->
+<div id="app-lock">
+  <div class="lock-card" id="lock-card">
+    <img src="kamapng.png" alt="Logo" class="lock-logo" onerror="this.src='https://via.placeholder.com/60/61131c/fff?text=K'">
+    <div class="lock-title">Admin Protected</div>
+    <div class="lock-sub">Enter PIN or Use Biometrics</div>
+    
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+    </div>
+    
+    <div class="numpad">
+      <button class="num-btn" onclick="addPin(1)">1</button>
+      <button class="num-btn" onclick="addPin(2)">2</button>
+      <button class="num-btn" onclick="addPin(3)">3</button>
+      <button class="num-btn" onclick="addPin(4)">4</button>
+      <button class="num-btn" onclick="addPin(5)">5</button>
+      <button class="num-btn" onclick="addPin(6)">6</button>
+      <button class="num-btn" onclick="addPin(7)">7</button>
+      <button class="num-btn" onclick="addPin(8)">8</button>
+      <button class="num-btn" onclick="addPin(9)">9</button>
+      <button class="num-btn" onclick="clearPin()">
+        <span class="material-symbols-rounded">backspace</span>
+      </button>
+      <button class="num-btn" onclick="addPin(0)">0</button>
+      <button class="num-btn bio-btn" onclick="verifyBiometrics()">
+        <span class="material-symbols-rounded">fingerprint</span>
+      </button>
+    </div>
+  </div>
+</div>
 
 <div class="spinner" id="loading">
   <div class="loader-card">
@@ -284,6 +348,12 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
           <span id="sync-txt">Syncing</span>
         </div>
       </div>
+    </div>
+    
+    <!-- Bio Setup Banner (Will show here after PIN login if not registered) -->
+    <div id="bio-setup-banner" class="setup-bio-banner" style="display:none;">
+      <span><span class="material-symbols-rounded" style="font-size:16px; vertical-align:middle;">fingerprint</span> Setup Fingerprint / Face ID</span>
+      <button class="btn btn-sm" style="background:#065f46; color:#fff;" onclick="registerBiometrics()">Enable</button>
     </div>
   </div>
 
@@ -509,6 +579,132 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
+
+/* ================= SCREEN LOCK & WEBAUTHN LOGIC ================= */
+const MASTER_PIN = "2456";
+let currentPin = "";
+const lockScreen = document.getElementById('app-lock');
+const lockCard = document.getElementById('lock-card');
+const pinDots = document.querySelectorAll('.pin-dot');
+const bioBanner = document.getElementById('bio-setup-banner');
+
+function bufferDecode(value) {
+    return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+}
+function bufferEncode(value) {
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(value))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+}
+
+window.addPin = function(num) {
+    if(currentPin.length < 4) {
+        currentPin += num;
+        updateDots();
+        if(currentPin.length === 4) setTimeout(checkPin, 150);
+    }
+};
+
+window.clearPin = function() {
+    currentPin = currentPin.slice(0, -1);
+    updateDots();
+};
+
+function updateDots() {
+    pinDots.forEach((dot, idx) => {
+        if(idx < currentPin.length) {
+            dot.classList.add('filled');
+            dot.classList.remove('err');
+        } else {
+            dot.classList.remove('filled', 'err');
+        }
+    });
+}
+
+function checkPin() {
+    if(currentPin === MASTER_PIN) {
+        unlockApp();
+    } else {
+        lockCard.classList.add('shake');
+        pinDots.forEach(dot => dot.classList.add('err'));
+        setTimeout(() => {
+            currentPin = "";
+            updateDots();
+            lockCard.classList.remove('shake');
+        }, 400);
+    }
+}
+
+function unlockApp() {
+    lockScreen.classList.add('unlocked');
+    if(!localStorage.getItem('kama_bio_credential')) {
+        bioBanner.style.display = 'flex';
+    }
+}
+
+window.registerBiometrics = async function() {
+    if (!window.PublicKeyCredential) {
+        toast('Biometrics not supported on this device', 'r');
+        return;
+    }
+    try {
+        const publicKeyCredentialCreationOptions = {
+            challenge: new Uint8Array(32),
+            rp: { name: "KAMA Admin Portal", id: window.location.hostname },
+            user: {
+                id: new Uint8Array(16),
+                name: "admin@kamafest.com",
+                displayName: "KAMA Admin"
+            },
+            pubKeyCredParams: [{alg: -7, type: "public-key"}],
+            authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+            timeout: 60000,
+            attestation: "none"
+        };
+        const credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions });
+        localStorage.setItem('kama_bio_credential', bufferEncode(credential.rawId));
+        bioBanner.style.display = 'none';
+        toast('Biometrics Enabled Successfully!', 'g');
+    } catch (err) {
+        console.error(err);
+        toast('Setup cancelled or failed.', 'r');
+    }
+};
+
+window.verifyBiometrics = async function() {
+    const savedCred = localStorage.getItem('kama_bio_credential');
+    if(!savedCred) {
+        toast('Unlock with PIN first to enable Biometrics', 'ti');
+        lockCard.classList.add('shake');
+        setTimeout(() => lockCard.classList.remove('shake'), 400);
+        return;
+    }
+    try {
+        const publicKeyCredentialRequestOptions = {
+            challenge: new Uint8Array(32),
+            allowCredentials: [{
+                id: bufferDecode(savedCred),
+                type: 'public-key',
+                transports: ['internal'],
+            }],
+            userVerification: "required",
+            timeout: 60000
+        };
+        const assertion = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions });
+        if(assertion) {
+            toast('Biometric Match!', 'g');
+            unlockApp();
+        }
+    } catch (err) {
+        console.error(err);
+        toast('Biometric verification failed', 'r');
+    }
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+    if(localStorage.getItem('kama_bio_credential')) {
+        setTimeout(verifyBiometrics, 500);
+    }
+});
+
 
 const ORDERED_SECTIONS = ["Bidaya", "Ula", "Thaniya", "Thanawiyya", "Aliyah", "Kulliyah"];
 const HOUSE_MAP = { "Bosphorus": "#dc2626", "Hormuz": "#eab308", "Gibraltar": "#16a34a", "Malacca": "#2563eb" };
@@ -1134,7 +1330,7 @@ onSnapshot(collection(db,'registrations'),snap=>{
 }, e => setSyncState('err'));
 
 
-/* ================= PRINT JUDGEMENT SHEET LOGIC (MANUAL CODE SETUP & ROUND ROBIN) ================= */
+/* ================= PRINT JUDGEMENT SHEET LOGIC ================= */
 let currentPrintData = null;
 window.customOrder = ["", "", "", ""]; 
 
@@ -1327,7 +1523,6 @@ function renderPrintSetup() {
   document.getElementById('print-setup-body').innerHTML = html;
   
   const btn = document.getElementById('print-save-btn');
-  // Group program anu enkil 'Print Sheet' mathram kaanikkanam (karanam save aavilla)
   if(isLocked || prog.type === 'group') {
       btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">print</span> Print Sheet`;
   } else {
@@ -1343,7 +1538,6 @@ window.triggerPrint = async function() {
       return;
   }
 
-  // Group program anengil database-il save cheyyanda, direct print-il poyal mathi
   if (prog.type === 'group') {
       executePrint();
       return;
@@ -1376,7 +1570,6 @@ function executePrint() {
   const { prog, regs } = currentPrintData;
   const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
   
-  // Adjusted empty rows logic to ensure it fits beautifully within the A4 page height
   const totalRows = Math.max(regs.length, 12);
   let leftRows = '', rightRows = '';
 
