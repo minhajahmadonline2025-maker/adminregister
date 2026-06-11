@@ -176,6 +176,7 @@ input[type="checkbox"] { width: 18px; height: 18px; min-height: 18px; cursor: po
 .td-cand { padding: 4px; text-align: center; vertical-align: middle; }
 .cand-cell { display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 6px; }
 .cand-chest { width: 75px; border: 1.5px solid var(--r200); border-radius: 6px; padding: 6px; font-size: 12px; font-weight: 700; text-align: center; font-family: 'Outfit'; text-transform: uppercase; min-height: 34px; transition: border-color 0.2s; }
+.cand-chest:focus { border-color: var(--sec); box-shadow: 0 0 0 2px rgba(223, 186, 134, 0.2); }
 .cand-chest.filled { border-color: var(--success); background: #f0fdf4; color: #065f46; font-weight: 800; }
 .tr-section td { background: var(--r50); font-size: 10px; font-weight: 800; color: var(--pri); padding: 8px 10px; text-transform: uppercase; letter-spacing: 0.1em; }
 
@@ -1163,7 +1164,7 @@ window.customOrder = ["", "", "", ""];
 
 window.openPrintSetup = function(pid) {
   const prog = programs[pid]; if(!prog) return;
-  let progRegs = Object.values(regs).filter(r => r.programId === pid); // Modified to pull all assigned
+  let progRegs = Object.values(regs).filter(r => r.programId === pid);
   if(prog.type === 'group') {
     const grouped = {}; progRegs.forEach(r => { if(!grouped[r.house]) grouped[r.house] = []; grouped[r.house].push(r); });
     progRegs = [];
@@ -1257,7 +1258,6 @@ window.triggerPrint = async function() {
       try {
           const batch = writeBatch(db);
           regs.forEach(r => {
-             // For individual programs we save the code letter, for group we must apply it to all group members
              if(prog.type === 'group') {
                  rawRegs.forEach(origR => { if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: r.codeLetter }, { merge: true }); });
              } else {
@@ -1274,13 +1274,275 @@ window.triggerPrint = async function() {
 };
 
 
-/* ================= MISC SCRIPTS ================= */
-window.checkSubProg = function() { /* Substitution logic omitted for brevity, see prior block */ };
-window.checkSubOld = function() { /* ... */ };
-window.checkSubNew = function() { /* ... */ };
-window.processManualSub = async function() { /* ... */ };
-window.processBulkSubstitution = async function() { /* ... */ };
-window.checkHouseMismatch = function() { /* ... */ };
+/* ================= RESTORED MISC SCRIPTS ================= */
+window.checkSubProg = function() {
+    const val = document.getElementById('man-prog-code').value.trim().toUpperCase();
+    const el = document.getElementById('man-prog-name');
+    if(!val) { el.textContent = ''; return; }
+    
+    const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === val);
+    el.textContent = prog ? `✓ ${prog.name}` : '✗ Program code not found';
+    el.className = prog ? 'hint-txt hint-ok' : 'hint-txt hint-err';
+    
+    if(document.getElementById('man-old-chest').value) checkSubOld();
+};
+
+window.checkSubOld = function() {
+    const pCode = document.getElementById('man-prog-code').value.trim().toUpperCase();
+    const val = document.getElementById('man-old-chest').value.trim().toUpperCase();
+    const el = document.getElementById('man-old-name');
+    if(!val) { el.textContent = ''; return; }
+    
+    const stu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val);
+    if(!stu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; }
+    
+    if(pCode) {
+        const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode);
+        if(prog) {
+            const isRegistered = Object.values(regs).some(r => r.programId === prog.id && String(r.chestNo||'').toUpperCase() === val);
+            if(!isRegistered) { el.textContent = `✗ Not registered in ${pCode}`; el.className = 'hint-txt hint-err'; return; }
+        }
+    }
+    
+    el.textContent = `✓ ${stu.name} (${stu.house})`; el.className = 'hint-txt hint-ok';
+    if(document.getElementById('man-new-chest').value) checkSubNew();
+};
+
+window.checkSubNew = function() {
+    const oldVal = document.getElementById('man-old-chest').value.trim().toUpperCase();
+    const val = document.getElementById('man-new-chest').value.trim().toUpperCase();
+    const el = document.getElementById('man-new-name');
+    if(!val) { el.textContent = ''; return; }
+    
+    const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val);
+    if(!newStu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; }
+    
+    if(oldVal) {
+        const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldVal);
+        if(oldStu && oldStu.house !== newStu.house) { el.textContent = `✗ House Mismatch! (New is ${newStu.house})`; el.className = 'hint-txt hint-err'; return; }
+    }
+    el.textContent = `✓ ${newStu.name} (${newStu.house})`; el.className = 'hint-txt hint-ok';
+};
+
+window.processManualSub = async function() {
+    const pCode = document.getElementById('man-prog-code').value.trim().toUpperCase();
+    const oldChest = document.getElementById('man-old-chest').value.trim().toUpperCase();
+    const newChest = document.getElementById('man-new-chest').value.trim().toUpperCase();
+
+    if(!pCode || !oldChest || !newChest) { toast('Please fill all 3 fields', 'r'); return; }
+
+    const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode);
+    if(!prog) { toast(`Program Code '${pCode}' not found`, 'r'); return; }
+
+    const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldChest);
+    if(!oldStu) { toast(`Original Candidate '${oldChest}' not found`, 'r'); return; }
+
+    const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === newChest);
+    if(!newStu) { toast(`Substitute Candidate '${newChest}' not found`, 'r'); return; }
+
+    if(oldStu.house !== newStu.house) { toast(`House mismatch! Old: ${oldStu.house}, New: ${newStu.house}`, 'r'); return; }
+
+    let targetRegKey = null;
+    for(const [key, r] of Object.entries(regs)) {
+        if(r.programId === prog.id && String(r.chestNo||'').toUpperCase() === oldChest) { targetRegKey = key; break; }
+    }
+
+    if(!targetRegKey) { toast(`'${oldChest}' is NOT registered in '${pCode}'`, 'r'); return; }
+    if(!confirm(`Confirm replacement?\n\nReplace: ${oldChest} (${oldStu.house})\nWith: ${newChest} (${newStu.house})\nIn Program: ${prog.name}`)) return;
+
+    setSyncState('ing');
+    try {
+        await setDoc(doc(db, 'registrations', targetRegKey), { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true });
+        toast('Substitution Successful!', 'g');
+        document.getElementById('man-prog-code').value = ''; document.getElementById('man-old-chest').value = ''; document.getElementById('man-new-chest').value = '';
+        checkSubProg(); checkSubOld(); checkSubNew();
+    } catch(err) { setSyncState('err'); toast('Failed to substitute', 'r'); }
+};
+
+window.processBulkSubstitution = async function() {
+    const fileInput = document.getElementById('sub-file-upload');
+    const logDiv = document.getElementById('sub-log');
+    logDiv.innerHTML = '';
+    
+    if(!fileInput.files.length) { toast('Please select a CSV or XLSX file first', 'r'); return; }
+    
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+    
+    reader.onload = async function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            
+            const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
+            if(rows.length < 2) { toast('Invalid file format or empty file.', 'r'); return; }
+
+            const headers = rows[0].map(h => String(h).trim().toLowerCase());
+            const pIdx = headers.indexOf('program code');
+            const oIdx = headers.indexOf('original chest no');
+            const nIdx = headers.indexOf('substitute chest no');
+
+            if(pIdx === -1 || oIdx === -1 || nIdx === -1) {
+                logDiv.innerHTML = `<div style="padding:10px 12px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; color:var(--danger); font-weight:700; font-size:12px;">
+                  <span style="font-weight:900;">Invalid column headers!</span><br>The file must have these exact column names:<br>
+                  <code style="background:#fee2e2; padding:2px 6px; border-radius:4px;">Program Code</code> &nbsp;
+                  <code style="background:#fee2e2; padding:2px 6px; border-radius:4px;">Original Chest No</code> &nbsp;
+                  <code style="background:#fee2e2; padding:2px 6px; border-radius:4px;">Substitute Chest No</code>
+                </div>`;
+                return;
+            }
+
+            let errorLogs = []; let successLogs = []; let successCount = 0;
+            setSyncState('ing');
+            const batch = writeBatch(db);
+
+            for(let i=1; i<rows.length; i++) {
+                if(!rows[i] || rows[i].length === 0) continue; 
+                
+                const pVal = rows[i][pIdx]; const oVal = rows[i][oIdx]; const nVal = rows[i][nIdx];
+                if(!pVal && !oVal && !nVal) continue; 
+
+                const pCode = String(pVal || '').trim().toUpperCase();
+                const oldChest = String(oVal || '').trim().toUpperCase();
+                const newChest = String(nVal || '').trim().toUpperCase();
+
+                if(!pCode || !oldChest || !newChest) { errorLogs.push(`Row ${i+1}: Missing data — all three columns must be filled.`); continue; }
+
+                const prog = Object.values(programs).find(p => String(p.code||'').trim().toUpperCase() === pCode);
+                if(!prog) { errorLogs.push(`Row ${i+1}: Program Code '${pCode}' not found in the database.`); continue; }
+
+                const oldStu = Object.values(students).find(s => String(s.chestNo||'').trim().toUpperCase() === oldChest);
+                if(!oldStu) { errorLogs.push(`Row ${i+1}: Original Chest No '${oldChest}' not found in the students list.`); continue; }
+
+                const newStu = Object.values(students).find(s => String(s.chestNo||'').trim().toUpperCase() === newChest);
+                if(!newStu) { errorLogs.push(`Row ${i+1}: Substitute Chest No '${newChest}' not found in the students list.`); continue; }
+
+                if(oldStu.house !== newStu.house) { errorLogs.push(`Row ${i+1}: House mismatch! Original '${oldChest}' is ${oldStu.house}, but substitute '${newChest}' is ${newStu.house}.`); continue; }
+
+                let targetRegKey = null;
+                for(const [key, r] of Object.entries(regs)) {
+                    if(r.programId === prog.id && String(r.chestNo||'').trim().toUpperCase() === oldChest) { targetRegKey = key; break; }
+                }
+
+                if(!targetRegKey) { errorLogs.push(`Row ${i+1}: '${oldChest}' is not registered in program '${pCode}'.`); continue; }
+
+                const docRef = doc(db, 'registrations', targetRegKey);
+                batch.set(docRef, { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true });
+                successLogs.push(`Row ${i+1}: '${oldChest}' (${oldStu.name}) → '${newChest}' (${newStu.name}) in ${pCode} — substituted successfully.`);
+                successCount++;
+            }
+            
+            if (successCount > 0) {
+                try {
+                    await batch.commit();
+                    toast(`Successfully substituted ${successCount} candidate(s)!`, 'g');
+                    fileInput.value = "";
+                } catch (batchErr) { errorLogs.push("Database update failed. Please try again."); }
+            } else { toast('No valid substitutions found to process.', 'ti'); }
+
+            setSyncState('ok');
+            
+            if (errorLogs.length > 0 || successLogs.length > 0) {
+                let html = '';
+                if (successLogs.length > 0) {
+                    html += `<div style="font-size:11px; font-weight:800; color:var(--success); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px;">✓ Success (${successLogs.length})</div>`;
+                    html += successLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px 10px; background:#f0fdf4; border:1px solid #86efac; border-radius:7px; margin-bottom:6px; font-size:12px; color:#065f46; font-weight:600;"><span style="flex-shrink:0; margin-top:1px;">✓</span><span>${msg}</span></div>`).join('');
+                }
+                if (errorLogs.length > 0) {
+                    html += `<div style="font-size:11px; font-weight:800; color:var(--danger); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:6px; ${successLogs.length?'margin-top:12px;':''}">✗ Errors (${errorLogs.length})</div>`;
+                    html += errorLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px 10px; background:#fef2f2; border:1px solid #fecaca; border-radius:7px; margin-bottom:6px; font-size:12px; color:#991b1b; font-weight:600;"><span style="flex-shrink:0; margin-top:1px;">✗</span><span>${msg}</span></div>`).join('');
+                }
+                logDiv.innerHTML = html;
+            }
+        } catch(error) { toast('Error reading file. Please check if it is a valid Excel or CSV file.', 'r'); setSyncState('err'); }
+    };
+    reader.readAsArrayBuffer(file);
+};
+
+window.checkHouseMismatch = function() {
+  const btn = document.getElementById('btn-house-check');
+  const resultBox = document.getElementById('house-check-result');
+  const summaryEl = document.getElementById('house-check-summary');
+  const errorsEl = document.getElementById('house-check-errors');
+
+  btn.innerHTML = `<span class="material-symbols-rounded" style="color:#f59e0b; animation: pulse 0.8s infinite;">rule</span> Checking...`;
+  btn.disabled = true;
+
+  const allRegs = Object.values(regs);
+  const total = allRegs.length; let checked = 0; const errors = [];
+
+  allRegs.forEach(r => {
+    const chestNo = String(r.chestNo || '').trim().toUpperCase();
+    const slotHouse = toTitle(r.house || '');
+    const progCode = String(r.programCode || r.programId || '');
+    const progName = String(r.programName || '');
+
+    const stu = Object.values(students).find(s => String(s.chestNo || '').toUpperCase() === chestNo);
+    checked++;
+
+    if (!stu) { errors.push({ type: 'not_found', chestNo, slotHouse, progCode, progName, msg: `Student not found in database` }); return; }
+
+    const actualHouse = toTitle(stu.house || '');
+    if (actualHouse !== slotHouse) { errors.push({ type: 'mismatch', chestNo, name: stu.name, slotHouse, actualHouse, progCode, progName }); }
+  });
+
+  const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
+  const hasErrors = errors.length > 0;
+
+  summaryEl.innerHTML = `
+    <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:180px;">
+      <span class="material-symbols-rounded icon-filled" style="color:${hasErrors?'var(--danger)':'var(--success)'}; font-size:28px;">${hasErrors ? 'warning' : 'verified'}</span>
+      <div>
+        <div style="font-size:13px; font-weight:800; color:${hasErrors?'var(--danger)':'var(--success)'};">${hasErrors ? errors.length + ' Mismatch' + (errors.length>1?'es':'') + ' Found' : 'All Clear!'}</div>
+        <div style="font-size:11px; color:var(--r500); font-weight:700;">${checked} / ${total} slots checked</div>
+      </div>
+    </div>
+    <div style="text-align:right; flex-shrink:0;">
+      <div style="font-size:28px; font-weight:900; color:var(--pri); line-height:1;">${pct}%</div>
+      <div style="font-size:10px; color:var(--r500); font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Checked</div>
+    </div>
+    <div style="width:100%; height:6px; background:var(--r100); border-radius:99px; overflow:hidden; flex-basis:100;">
+      <div style="height:100%; width:${pct}%; background:${hasErrors?'var(--danger)':'var(--success)'}; border-radius:99px; transition:width 0.5s ease;"></div>
+    </div>
+  `;
+
+  if (!hasErrors) {
+    errorsEl.innerHTML = `<div style="text-align:center; padding:16px 0; color:var(--success); font-weight:800; font-size:13px;"><span class="material-symbols-rounded icon-filled" style="font-size:32px; display:block; margin-bottom:6px;">check_circle</span>No house mismatches found!</div>`;
+  } else {
+    errorsEl.innerHTML = `<div style="font-size:11px; font-weight:800; color:var(--r500); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px;">Mismatch Details</div>` +
+      errors.map(e => {
+        if (e.type === 'not_found') {
+          return `<div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; margin-bottom:8px;">
+            <span class="material-symbols-rounded" style="color:var(--danger); flex-shrink:0; font-size:18px;">person_off</span>
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:12px; font-weight:800; color:var(--r800);">${e.chestNo} — ${e.msg}</div>
+              <div style="font-size:11px; color:var(--r500); margin-top:2px;">${e.progCode}${e.progName ? ' · ' + e.progName : ''} · Slot House: <b>${e.slotHouse}</b></div>
+            </div>
+          </div>`;
+        }
+        return `<div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:#fef2f2; border:1px solid #fecaca; border-radius:8px; margin-bottom:8px;">
+          <div class="chest" style="background:${getHouseColor(e.slotHouse)}; min-width:50px; font-size:12px; padding:4px;">${e.chestNo}</div>
+          <div style="flex:1; min-width:0;">
+            <div style="font-size:13px; font-weight:800; color:var(--r800); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.name}</div>
+            <div style="font-size:11px; color:var(--r500); margin-top:2px;">${e.progCode}${e.progName ? ' · ' + e.progName : ''}</div>
+          </div>
+          <div style="flex-shrink:0; text-align:right;">
+            <div style="font-size:10px; color:var(--r500); font-weight:700;">Slot</div>
+            <div style="font-size:12px; font-weight:800; color:${getHouseColor(e.slotHouse)};">${e.slotHouse}</div>
+            <div style="font-size:16px; color:var(--r400); line-height:1;">↕</div>
+            <div style="font-size:10px; color:var(--r500); font-weight:700;">Actual</div>
+            <div style="font-size:12px; font-weight:800; color:${getHouseColor(e.actualHouse)};">${e.actualHouse}</div>
+          </div>
+        </div>`;
+      }).join('');
+  }
+
+  resultBox.style.display = 'block';
+  btn.innerHTML = `<span class="material-symbols-rounded" style="color:#f59e0b;">rule</span> Check House Mismatch`;
+  btn.disabled = false;
+};
 
 // Start Progress Listeners
 let loadedStreams = { students: false, programs: false, registrations: false };
