@@ -1,1 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>KAMA Arts Fest '26 - Non-Stage Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+/* Same Color Palette, New Refined Variables */
+:root { 
+    --pri: #61131c; 
+    --pri-d: #450c13; 
+    --pri-l: #871e2a;
+    --sec: #dfba86; 
+    --sec-l: #fcf6ed; 
+    --sec-d: #c09a63;
+    --blue: #2563eb; 
+    --purple: #7c3aed; 
+    --orange: #ea580c; 
+    --teal: #16a34a; 
+    --success: #10b981; 
+    --danger: #ef4444; 
+    
+    /* Neutrals */
+    --r50: #fbf9f8; 
+    --r100: #f2efeb; 
+    --r200: #e3ddd7; 
+    --r300: #d1c8c0; 
+    --r400: #9ca3af; 
+    --r500: #6b7280; 
+    --r600: #4b5563; 
+    --r700: #374151; 
+    --r800: #1f2937; 
+    
+    --rad: 18px; 
+    --rads: 12px; 
+    --sh: 0 4px 15px rgba(0,0,0,0.03), 0 2px 5px rgba(0,0,0,0.02); 
+    --shm: 0 10px 25px -5px rgba(97, 19, 28, 0.08), 0 8px 10px -6px rgba(97, 19, 28, 0.04); 
+    --shl: 0 20px 40px -10px rgba(0,0,0,0.15); 
+}
+
+body { font-family: 'Outfit', sans-serif; background: #fdfaf7; min-height: 100vh; color: var(--r800); font-size: 15px; overflow-x: hidden; }
+.material-symbols-rounded { font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24; font-size: 20px; display: inline-flex; align-items: center; justify-content: center; }
+.icon-filled { font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24; }
+
+/* LOCK SCREEN */
+#app-lock { position: fixed; inset: 0; z-index: 9999999; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: flex; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s; }
+#app-lock.unlocked { opacity: 0; visibility: hidden; pointer-events: none; }
+.lock-card { background: rgba(255, 255, 255, 0.98); padding: 36px 28px; border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.3); text-align: center; width: 90%; max-width: 340px; transform: translateY(0); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.5); }
+.lock-card.shake { animation: lockShake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes lockShake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+.lock-logo { height: 65px; margin-bottom: 16px; filter: drop-shadow(0 4px 8px rgba(97, 19, 28, 0.2)); }
+.lock-title { font-size: 22px; font-weight: 900; color: var(--pri); margin-bottom: 6px; }
+.lock-sub { font-size: 13px; color: var(--r500); font-weight: 700; margin-bottom: 28px; }
+.pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 32px; }
+.pin-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--r100); border: 2px solid var(--r200); transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.pin-dot.filled { background: var(--pri); border-color: var(--pri); transform: scale(1.2); box-shadow: 0 2px 8px rgba(97,19,28,0.3); }
+.pin-dot.err { background: var(--danger); border-color: var(--danger); }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 10px; }
+.num-btn { background: #fff; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.04); font-size: 24px; font-weight: 800; color: var(--r800); height: 56px; border-radius: 16px; cursor: pointer; transition: all 0.1s; font-family: 'Outfit'; display: flex; align-items: center; justify-content: center; }
+.num-btn:active { background: var(--r100); transform: scale(0.92); }
+.num-btn.bio-btn { background: linear-gradient(135deg, var(--pri) 0%, var(--pri-d) 100%); color: #fff; box-shadow: 0 4px 12px rgba(97,19,28,0.3); }
+.num-btn.bio-btn:active { opacity: 0.8; }
+.setup-bio-banner { background: #f0fdf4; border: 1px solid #86efac; color: #065f46; padding: 12px 16px; border-radius: 12px; font-size: 12px; font-weight: 800; margin: 16px 16px 0; display: flex; justify-content: space-between; align-items: center; }
+
+/* SPINNER */
+.spinner { display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; background: #fff; position: fixed; z-index: 999999; width: 100%; top: 0; left: 0; transition: opacity 0.3s ease; }
+.loader-card { width: 85%; max-width: 320px; text-align: center; }
+.loader-img-logo { height: 80px; margin-bottom: 16px; animation: pulseLogo 1.5s infinite ease-in-out; filter: drop-shadow(0 4px 8px rgba(97, 19, 28, 0.2)); }
+@keyframes pulseLogo { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+.loader-sub { font-size: 13px; color: var(--r500); font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 30px; }
+.progress-bar-track { width: 100%; height: 8px; background: var(--r100); border-radius: 99px; overflow: hidden; position: relative; margin-bottom: 14px; }
+.progress-bar-fill { height: 100%; width: 5%; background: linear-gradient(90deg, var(--sec), var(--pri)); border-radius: 99px; transition: width 0.3s ease; }
+.loader-status { font-size: 12px; color: var(--r400); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* HEADER */
+.hdr { background: linear-gradient(135deg, var(--pri-d) 0%, var(--pri) 50%, var(--pri-l) 100%); padding: 24px 20px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 10px 25px -5px rgba(97, 19, 28, 0.25); border-radius: 0 0 24px 24px; margin-bottom: 8px; }
+.hdr-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.hdr-logo { height: 44px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); background: rgba(255,255,255,0.1); padding: 4px; border-radius: 10px; }
+.hdr-title { font-size: 24px; font-weight: 900; color: #fff; letter-spacing: -0.5px; line-height: 1.1; }
+.hdr-sub { font-size: 12px; color: var(--sec); margin-top: 2px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+.hdr-stats { font-size: 12px; color: var(--sec-l); font-weight: 800; text-align: right; line-height: 1.5; margin-bottom: 6px; opacity: 0.9; }
+.sync-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.5px; }
+.sync-ok { background: rgba(0, 0, 0, 0.2); color: var(--sec); border: 1px solid rgba(223, 186, 134, 0.3); }
+.sync-ing { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+.sync-err { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; }
+.sd-ok { background: var(--sec); animation: pulse 2s infinite; }
+.sd-ing { background: #fcd34d; animation: pulse 0.8s infinite; }
+.sd-err { background: #f87171; }
+
+/* BOTTOM NAV - Glassmorphism */
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid rgba(0,0,0,0.04); display: flex; z-index: 200; padding: 8px 12px calc(env(safe-area-inset-bottom) + 8px); box-shadow: 0 -10px 30px rgba(0,0,0,0.06); border-radius: 24px 24px 0 0; gap: 4px; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 4px; color: var(--r400); border: none; background: transparent; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 16px; }
+.nav-icon { font-size: 26px; margin-bottom: 4px; transition: transform 0.3s; }
+.nav-text { font-size: 11px; font-weight: 800; letter-spacing: 0.3px; }
+.nav-item:hover { color: var(--r600); }
+.nav-item.on { color: var(--pri); background: var(--sec-l); box-shadow: inset 0 0 0 1px rgba(223, 186, 134, 0.3); }
+.nav-item.on .nav-icon { font-variation-settings: 'FILL' 1, 'wght' 700; transform: translateY(-2px); }
+
+/* SIDE DRAWER */
+.side-drawer { position: absolute; top: 0; right: 0; width: 100%; max-width: 320px; height: 100%; background: #fff; box-shadow: -15px 0 50px rgba(0,0,0,0.15); padding: 24px; animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; display: flex; flex-direction: column; overflow-y: auto; }
+.drawer-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--r100); }
+.drawer-title { font-size: 18px; font-weight: 900; color: var(--pri); text-transform: uppercase; letter-spacing: 0.5px; }
+.sheet-item { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 15px; color: var(--r800); border: 1px solid var(--r100); margin-bottom: 10px; cursor: pointer; transition: all 0.2s; background: #fff; box-shadow: var(--sh); }
+.sheet-item:hover, .sheet-item:active { background: var(--r50); border-color: var(--sec); transform: translateY(-1px); }
+.sheet-item .material-symbols-rounded { color: var(--pri); font-size: 24px; background: var(--sec-l); padding: 8px; border-radius: 10px; }
+
+/* PAGE CONTAINER */
+.pg { padding: 16px 16px 110px; display: none; animation: fadeIn 0.4s ease; }
+.pg.on { display: block; }
+
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: var(--rads); cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 14px; padding: 12px 20px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); min-height: 46px; text-transform: uppercase; letter-spacing: 0.5px;}
+.btn .material-symbols-rounded { font-size: 20px; }
+.btn-primary { background: linear-gradient(135deg, var(--pri), var(--pri-d)); color: #fff; box-shadow: 0 4px 12px rgba(97, 19, 28, 0.25); } 
+.btn-primary:hover, .btn-primary:active { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(97, 19, 28, 0.35); }
+.btn-out { background: #fff; color: var(--r800); border: 2px solid var(--r200); box-shadow: var(--sh); } 
+.btn-out:hover, .btn-out:active { background: var(--r50); border-color: var(--r300); }
+.btn-red { background: #fff; color: #dc2626; border: 2px solid #fecaca; } 
+.btn-red:hover { background: #fef2f2; }
+.btn-sm { padding: 8px 14px; font-size: 12px; min-height: 38px; }
+
+/* LAYOUT UTILS */
+.abar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+.cnt-lbl { margin-left: auto; font-size: 13px; color: var(--pri); font-weight: 900; background: var(--sec-l); border: 1px solid rgba(223, 186, 134, 0.5); padding: 6px 14px; border-radius: 10px; box-shadow: inset 0 2px 4px rgba(255,255,255,0.5); }
+.frow { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.frow > * { flex: 1; min-width: 140px; }
+
+/* INPUTS */
+.input-wrap { position: relative; width: 100%; display: flex; flex-direction: column; }
+.input-wrap .material-symbols-rounded { position: absolute; left: 14px; top: 14px; color: var(--r400); font-size: 22px; pointer-events: none; transition: color 0.2s; }
+.input-wrap input.has-icon { padding-left: 44px; }
+.input-wrap input:focus + .material-symbols-rounded { color: var(--pri); }
+
+input, select, textarea { font-family: 'Outfit', sans-serif; font-size: 15px; border: 2px solid transparent; background: var(--r100); border-radius: var(--rads); padding: 12px 16px; width: 100%; outline: none; color: var(--r800); transition: all 0.2s; min-height: 48px; font-weight: 600; }
+input:focus, select:focus, textarea:focus { background: #fff; border-color: var(--sec); box-shadow: 0 4px 15px rgba(223, 186, 134, 0.15); }
+input::placeholder { color: var(--r400); font-weight: 500; }
+input.uppercase { text-transform: uppercase; }
+select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; cursor: pointer; }
+
+/* CARDS */
+.card { background: #fff; border: 1px solid var(--r100); border-radius: var(--rad); padding: 18px; display: flex; align-items: center; gap: 16px; box-shadow: var(--sh); margin-bottom: 14px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+.card:hover { transform: translateY(-3px); box-shadow: var(--shm); border-color: var(--r200); }
+.chest { border-radius: 12px; padding: 8px 6px; font-size: 15px; font-weight: 900; color: #fff; min-width: 65px; text-align: center; letter-spacing: 0.5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.cinfo { flex: 1; min-width: 0; }
+.cname { font-weight: 900; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--r800); margin-bottom: 4px; letter-spacing: -0.2px;}
+.cmeta { font-size: 12px; color: var(--r500); font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;}
+.cacts { display: flex; gap: 8px; flex-shrink: 0; }
+.ibtn { width: 40px; height: 40px; border: none; border-radius: 12px; background: var(--r100); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: var(--r600); }
+.ibtn:hover { background: var(--r200); color: var(--pri); transform: scale(1.05); }
+.ibtn.delete:hover { background: #fef2f2; color: #dc2626; }
+
+.pcode { background: linear-gradient(135deg, var(--sec-l), #fff); color: var(--pri); border-radius: 12px; padding: 8px 6px; font-size: 14px; font-weight: 900; min-width: 70px; text-align: center; border: 1px solid rgba(223, 186, 134, 0.5); box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+.ptyp { font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.ptyp-i { background: #eff6ff; color: #1d4ed8; } 
+.ptyp-g { background: #faf5ff; color: #6b21a8; }
+
+.seclbl { font-size: 13px; font-weight: 900; color: var(--pri); text-transform: uppercase; letter-spacing: 1.5px; margin: 28px 0 16px; display: flex; align-items: center; gap: 10px; }
+.seclbl::before { content: ''; width: 8px; height: 8px; background: var(--sec); border-radius: 50%; }
+.seclbl::after { content: ''; flex: 1; height: 2px; background: linear-gradient(90deg, var(--r200), transparent); border-radius: 2px; }
+
+/* MODALS */
+.overlay { position: fixed; inset: 0; background: rgba(17, 24, 39, 0.7); z-index: 300; display: none; align-items: flex-end; justify-content: center; padding: 0; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.overlay.show { display: flex; animation: fadeInModal 0.2s ease forwards; }
+.modal { background: #fff; border-radius: 28px 28px 0 0; box-shadow: var(--shl); width: 100%; max-width: 500px; display: flex; flex-direction: column; max-height: 90vh; animation: slideUpModal 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; overflow: hidden; }
+@keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+.mhdr { display: flex; align-items: center; justify-content: space-between; padding: 24px 24px 16px; background: #fff; z-index: 10; }
+.mtitle { font-size: 20px; font-weight: 900; color: var(--r800); letter-spacing: -0.5px; }
+.mclose { background: var(--r100); border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--r600); transition: all 0.2s; }
+.mclose:hover { background: var(--r200); transform: rotate(90deg); }
+.mbody { overflow-y: auto; flex: 1; padding: 0 24px 24px; }
+.mfoot { padding: 16px 24px calc(env(safe-area-inset-bottom) + 16px); border-top: 1px solid var(--r100); display: flex; gap: 12px; background: #fff; box-shadow: 0 -4px 20px rgba(0,0,0,0.02); }
+.mfoot button { flex: 1; }
+
+.fld { margin-bottom: 20px; }
+.flbl { font-size: 12px; font-weight: 800; color: var(--r600); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+
+/* REGISTRATION TABLE */
+.reg-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--r200); border-radius: var(--rad); background: #fff; box-shadow: var(--sh); width: 100%; display: block; position: relative; padding-bottom: 5px; }
+.reg-table { border-collapse: separate; border-spacing: 0; font-size: 13px; white-space: nowrap; width: max-content; min-width: 100%; }
+.reg-table th, .reg-table td { border-bottom: 1px solid var(--r100); border-right: 1px solid var(--r100); padding: 0; }
+.col-code { position: sticky; left: 0; z-index: 10; min-width: 60px; width: 60px; background: #fff; }
+.col-name { position: sticky; left: 60px; z-index: 10; min-width: 140px; max-width: 140px; background: #fff; box-shadow: 4px 0 12px -4px rgba(0,0,0,0.08); overflow: hidden; text-overflow: ellipsis; border-right: 2px solid var(--r200) !important; }
+.reg-table thead .col-code, .reg-table thead .col-name { z-index: 15; background: #f8fafc; }
+.th-house { text-align: center; font-size: 12px; font-weight: 900; color: #fff; padding: 10px; letter-spacing: 1px; text-transform: uppercase; box-shadow: inset 0 -2px 0 rgba(0,0,0,0.1); }
+.th-cand { text-align: center; font-size: 11px; font-weight: 900; color: var(--r600); padding: 8px; min-width: 95px; background: var(--r50); text-transform: uppercase; }
+.th-code-hdr, .th-name-hdr { background: #f8fafc; font-size: 12px; font-weight: 900; color: var(--r700); padding: 12px; text-align: left; text-transform: uppercase; letter-spacing: 0.5px; }
+.td-code { font-size: 12px; font-weight: 900; color: var(--pri); text-align: center; padding: 10px; background: #f8fafc; }
+.td-name { font-size: 13px; font-weight: 800; color: var(--r800); padding: 10px; text-align: left; overflow: hidden; text-overflow: ellipsis; }
+.td-cand { padding: 6px; text-align: center; vertical-align: middle; }
+.cand-cell { display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 6px; }
+.cand-chest { width: 80px; border: 2px solid var(--r200); border-radius: 8px; padding: 8px 6px; font-size: 13px; font-weight: 800; text-align: center; font-family: 'Outfit'; text-transform: uppercase; min-height: 38px; background: #fff; transition: all 0.2s; }
+.cand-chest:focus { border-color: var(--sec); box-shadow: 0 0 0 4px rgba(223, 186, 134, 0.15); }
+.cand-chest.filled { border-color: var(--success); background: #f0fdf4; color: #065f46; font-weight: 900; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+.tr-section td { background: linear-gradient(90deg, var(--r100), transparent); font-size: 11px; font-weight: 900; color: var(--pri); padding: 10px 12px; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid var(--r200); }
+
+/* ADMIN PROGRAM LIST */
+.admin-prog-card { background: #fff; border: 1px solid var(--r100); border-radius: var(--rad); padding: 20px; margin-bottom: 14px; box-shadow: var(--sh); transition: all 0.2s; position: relative; }
+.admin-prog-card.disabled-prog { border-color: #fecaca; background: #fff5f5; opacity: 0.9; }
+.admin-prog-header { display: flex; align-items: center; gap: 14px; }
+.admin-prog-info { flex: 1; min-width: 0; }
+.admin-prog-name { font-weight: 900; font-size: 16px; color: var(--r800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: -0.2px; margin-bottom: 4px;}
+.admin-prog-meta { font-size: 12px; color: var(--r500); font-weight: 700; }
+.admin-prog-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+/* TOGGLE */
+.toggle-wrap { display: flex; align-items: center; gap: 10px; background: var(--r50); padding: 6px 8px 6px 12px; border-radius: 99px; border: 1px solid var(--r200); }
+.toggle-lbl { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+.toggle-lbl.on-lbl { color: var(--success); }
+.toggle-lbl.off-lbl { color: var(--danger); }
+.toggle { position: relative; width: 44px; height: 24px; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--r300); transition: .3s; border-radius: 26px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+.toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1); border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+input:checked + .toggle-slider { background-color: var(--success); }
+input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+/* CHIPS */
+.cand-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--r200); }
+.cand-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 99px; font-size: 12px; font-weight: 800; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+.cand-chip.registered { background: #f0fdf4; color: #065f46; border: 1px solid #86efac; }
+.cand-chip.pending { background: #fff; color: var(--pri); border: 1px solid var(--sec); }
+.cand-chip .chip-action { background: none; border: none; cursor: pointer; color: inherit; display: flex; align-items: center; opacity: 0.6; transition: all 0.2s; padding: 0; margin-left: 4px; }
+.cand-chip .chip-action:hover { opacity: 1; transform: scale(1.15); }
+.cand-chip .chip-action .material-symbols-rounded { font-size: 18px; }
+.house-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+
+/* FILTERS */
+.admin-filter { background: #fff; border: 1px solid var(--r100); border-radius: var(--rad); padding: 16px 20px; margin-bottom: 20px; box-shadow: var(--sh); }
+.admin-filter-title { font-size: 12px; font-weight: 900; color: var(--r500); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.filter-chips-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.filter-chip { padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 800; border: 2px solid transparent; background: var(--r100); color: var(--r600); cursor: pointer; transition: all 0.2s; }
+.filter-chip:hover { background: var(--r200); }
+.filter-chip.active { background: var(--sec-l); color: var(--pri); border-color: var(--sec); box-shadow: 0 4px 10px rgba(223, 186, 134, 0.2); }
+
+/* STATS */
+.admin-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.astat { background: #fff; border: 1px solid var(--r100); border-radius: var(--rad); padding: 16px 12px; text-align: center; box-shadow: var(--sh); transition: transform 0.2s; }
+.astat:hover { transform: translateY(-2px); }
+.astat-num { font-size: 26px; font-weight: 900; line-height: 1; margin-bottom: 6px; }
+.astat-lbl { font-size: 11px; font-weight: 800; color: var(--r500); text-transform: uppercase; letter-spacing: 0.5px; }
+.astat.green .astat-num { color: var(--success); }
+.astat.red .astat-num { color: var(--danger); }
+.astat.maroon .astat-num { color: var(--pri); }
+
+/* TOASTS & EMPTY STATES */
+.toasts { position: fixed; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; width: 90%; max-width: 380px; padding-top: 10px; }
+.toast { padding: 14px 20px; border-radius: 16px; font-size: 14px; font-weight: 800; color: #fff; box-shadow: var(--shl); animation: tup 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); width: 100%; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px); }
+.tg { background: rgba(16, 185, 129, 0.95); } .tr { background: rgba(239, 68, 68, 0.95); } .ti { background: rgba(31, 41, 55, 0.95); }
+@keyframes tup { from { opacity: 0; transform: translateY(-20px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+.empty { text-align: center; padding: 60px 20px; color: var(--r400); background: transparent; border-radius: var(--rad); border: 2px dashed var(--r200); margin-top: 10px; }
+.empty-ico { font-size: 56px; margin-bottom: 16px; color: var(--r300); }
+.empty-txt { font-weight: 800; font-size: 16px; color: var(--r500); }
+
+.hint-txt { font-size: 12px; font-weight: 800; margin-top: 6px; padding-left: 4px; min-height: 18px; transition: color 0.2s; display: flex; align-items: center; gap: 4px; }
+.hint-ok { color: var(--success); }
+.hint-err { color: var(--danger); }
+
+/* PRINT SETUPS */
+.print-setup-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+.print-setup-table th { background: var(--r50); padding: 10px; text-align: left; font-weight: 900; border-bottom: 2px solid var(--r200); color: var(--r600); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;}
+.print-setup-table td { padding: 12px 10px; border-bottom: 1px solid var(--r100); font-weight: 700; }
+.print-setup-table .t-code { font-weight: 900; color: var(--pri); font-size: 15px; }
+
+#print-container { display: none; }
+@media print {
+  @page { size: A4 landscape; margin: 8mm 12mm; } 
+  body, html { background: #fff; margin: 0; padding: 0; height: auto !important; overflow: visible !important; font-family: 'Outfit', sans-serif; color: #000; -webkit-print-color-adjust: exact; }
+  #app, .bottom-nav, .hdr, .overlay, .toasts { display: none !important; }
+  #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: #fff; z-index: 9999; }
+  .print-page { width: 100%; display: flex; gap: 20mm; position: relative; box-sizing: border-box; page-break-after: always; height: 190mm; overflow: hidden; padding-bottom: 10px;} 
+  .print-page:last-child { page-break-after: auto; }
+  .print-half { flex: 1; width: 50%; display: flex; flex-direction: column; max-height: 100%; }
+  .print-header { text-align: center; font-weight: 900; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 4px; }
+  .print-header-sub { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; }
+  .print-meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 10px; font-weight: 700; margin-bottom: 8px; border: 1px solid #000; padding: 4px; text-transform: uppercase; }
+  .print-meta-grid > div { border-right: 1px solid #000; padding: 0 4px; }
+  .print-meta-grid > div:last-child { border-right: none; }
+  .print-table { width: 100%; border-collapse: collapse; font-size: 11px; flex-grow: 1; } 
+  .print-table th, .print-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; color: #000; height: 22px; } 
+  .print-table th { font-weight: 800; text-transform: uppercase; font-size: 9px; background: #e5e7eb !important; padding: 6px 2px; }
+  .print-table td.t-left { text-align: left; padding-left: 6px; font-weight: 600;}
+  .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.05; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); place-items: center; padding: 20px; box-sizing: border-box; }
+  .watermark img { width: 220px; filter: grayscale(100%); opacity: 0.8; }
+  .print-footer { margin-top: auto; padding-top: 8px; font-size: 10px; display: flex; justify-content: space-between; font-weight: 600; }
+}
+</style>
+</head>
+<body>
+
+<div id="app-lock">
+  <div class="lock-card" id="lock-card">
+    <img src="kamapng.png" alt="Logo" class="lock-logo" onerror="this.src='https://via.placeholder.com/60/61131c/fff?text=K'">
+    <div class="lock-title">Admin Protected</div>
+    <div class="lock-sub">Enter PIN or Use Biometrics</div>
+    <div class="pin-dots" id="pin-dots"><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div></div>
+    <div class="numpad">
+      <button class="num-btn" onclick="addPin(1)">1</button><button class="num-btn" onclick="addPin(2)">2</button><button class="num-btn" onclick="addPin(3)">3</button>
+      <button class="num-btn" onclick="addPin(4)">4</button><button class="num-btn" onclick="addPin(5)">5</button><button class="num-btn" onclick="addPin(6)">6</button>
+      <button class="num-btn" onclick="addPin(7)">7</button><button class="num-btn" onclick="addPin(8)">8</button><button class="num-btn" onclick="addPin(9)">9</button>
+      <button class="num-btn" onclick="clearPin()"><span class="material-symbols-rounded">backspace</span></button>
+      <button class="num-btn" onclick="addPin(0)">0</button>
+      <button class="num-btn bio-btn" onclick="verifyBiometrics()"><span class="material-symbols-rounded">fingerprint</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="spinner" id="loading">
+  <div class="loader-card">
+    <img src="kamapng.png" alt="KAMA '26 Logo" class="loader-img-logo">
+    <div class="loader-sub">Non-Stage Master Portal</div>
+    <div class="progress-bar-track"><div class="progress-bar-fill" id="pbar-fill"></div></div>
+    <div class="loader-status" id="pbar-status">Fetching Data...</div>
+  </div>
+</div>
+
+<div id="app" style="display:none; opacity: 0; transition: opacity 0.3s ease;">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div class="hdr-left" style="display: flex; align-items: center; gap: 14px;">
+        <img src="kamapng.png" alt="Logo" class="hdr-logo">
+        <div><div class="hdr-title">KAMA '26</div><div class="hdr-sub">Non-Stage Admin Portal</div></div>
+      </div>
+      <div class="hdr-right">
+        <div class="hdr-stats" id="hdr-stats">0 Students · 0 Progs</div>
+        <div class="sync-pill sync-ok" id="sync-pill"><span class="sync-dot sd-ok" id="sync-dot"></span><span id="sync-txt">Syncing</span></div>
+      </div>
+    </div>
+    <div id="bio-setup-banner" class="setup-bio-banner" style="display:none;">
+      <span><span class="material-symbols-rounded" style="font-size:18px; vertical-align:middle; margin-right:4px;">fingerprint</span> Setup Biometrics</span>
+      <button class="btn btn-sm" style="background:#065f46; color:#fff;" onclick="registerBiometrics()">Enable</button>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-item on" id="nav-admin" onclick="switchTab('admin', this)"><span class="material-symbols-rounded nav-icon">admin_panel_settings</span><span class="nav-text">Dashboard</span></button>
+    <button class="nav-item" id="nav-register" onclick="switchTab('register', this)"><span class="material-symbols-rounded nav-icon">list_alt</span><span class="nav-text">Candidates</span></button>
+    <button class="nav-item" id="nav-printing" onclick="switchTab('printing', this)"><span class="material-symbols-rounded nav-icon">print</span><span class="nav-text">Printing</span></button>
+    <button class="nav-item" id="nav-more" onclick="openModal('modal-more')"><span class="material-symbols-rounded nav-icon">menu</span><span class="nav-text">More</span></button>
+  </div>
+
+  <div class="pg on" id="pg-admin">
+    <div class="admin-stats" id="admin-stats-row">
+      <div class="astat green"><div class="astat-num" id="astat-on">0</div><div class="astat-lbl">Active Progs</div></div>
+      <div class="astat red"><div class="astat-num" id="astat-off">0</div><div class="astat-lbl">Disabled</div></div>
+      <div class="astat maroon"><div class="astat-num" id="astat-reg">0</div><div class="astat-lbl">Registered</div></div>
+    </div>
+    <div class="admin-filter">
+      <div class="admin-filter-title">Filter by Section</div>
+      <div class="filter-chips-row" id="admin-sec-chips"><div class="filter-chip active" onclick="adminFilterSec('', this)">All</div></div>
+    </div>
+    <div class="seclbl">Programs & Check-in Control</div>
+    <div style="font-size: 13px; margin-bottom: 16px; color: var(--r500); font-weight:600;">* Use toggle to ON/OFF registration. Click checkmark to change status.</div>
+    <div id="admin-prog-list"></div>
+  </div>
+
+  <div class="pg" id="pg-register">
+    <div class="abar">
+        <select id="reg-sec" onchange="renderRegister()" style="flex:1;"><option value="">All Sections</option></select>
+        <span class="cnt-lbl" id="reg-count"></span>
+    </div>
+    <div style="margin-bottom: 12px; font-size: 13px; color: var(--r500); font-weight:600;">* Enter Chest No. to assign candidates to slots.</div>
+    <div style="margin-bottom: 20px;">
+      <button class="btn btn-out" id="btn-house-check" onclick="checkHouseMismatch()" style="width:100%; border-color: #fcd34d; color: #92400e; background: #fffdf4;"><span class="material-symbols-rounded" style="color:#f59e0b;">rule</span> Check House Mismatch</button>
+      <div id="house-check-result" style="display:none; margin-top: 12px; border-radius: var(--rad); overflow: hidden; border: 1px solid var(--r200); background: #fff; box-shadow: var(--sh);">
+        <div id="house-check-summary" style="padding: 16px 20px; border-bottom: 1px solid var(--r100); display: flex; align-items: center; gap: 14px; flex-wrap: wrap;"></div>
+        <div id="house-check-errors" style="padding: 16px 20px;"></div>
+      </div>
+    </div>
+    <div id="reg-area"></div>
+  </div>
+
+  <div class="pg" id="pg-printing">
+    <div class="card" style="flex-direction:column; align-items:stretch; padding: 24px; margin-bottom: 20px; gap:16px; background: linear-gradient(135deg, var(--pri), var(--pri-l)); color:#fff; border:none; box-shadow: 0 10px 20px rgba(97,19,28,0.2);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div><div style="font-size:18px; font-weight:900; letter-spacing:-0.3px;">Batch Print Center</div><div style="font-size:13px; color:var(--sec); font-weight:700; margin-top:2px;">Select programs to shuffle & print</div></div>
+            <span class="material-symbols-rounded" style="font-size:36px; opacity:0.9; background:rgba(255,255,255,0.1); padding:8px; border-radius:14px;">print</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.25); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <label style="font-size:13px; font-weight:800;">Print Layout:</label>
+            <select id="batch-print-format" style="background: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 800; color: var(--r800); outline: none; min-height:auto;">
+                <option value="both">Both (Name & Judgement)</option>
+                <option value="name">Candidates Only (Name)</option>
+                <option value="judge">Judgement Only (No Name)</option>
+            </select>
+        </div>
+        <button class="btn" style="background:#fff; color:var(--pri); font-size:15px;" onclick="batchPrintSelected()"><span class="material-symbols-rounded">shuffle</span> Auto-Shuffle & Print (<span id="print-sel-count">0</span>)</button>
+    </div>
+    <div class="frow">
+      <div class="input-wrap"><span class="material-symbols-rounded">search</span><input type="text" class="has-icon" id="print-search" placeholder="Search Code or Name..." oninput="renderPrintingList()"></div>
+      <select id="print-sec" onchange="renderPrintingList()"><option value="">All Sections</option></select>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-bottom: 16px; align-items:center; padding:0 8px;">
+        <label style="font-size:13px; font-weight:800; color:var(--r700); display:flex; align-items:center; gap:10px; cursor:pointer;"><input type="checkbox" id="print-select-all" style="width:20px; height:20px;" onchange="toggleSelectAllPrint(this.checked)"> Select All Visible</label>
+        <span style="font-size:12px; font-weight:800; color:var(--r500); background:var(--r200); padding:4px 10px; border-radius:8px;" id="print-list-count"></span>
+    </div>
+    <div id="print-prog-list"></div>
+  </div>
+
+  <div class="pg" id="pg-students">
+    <div class="abar">
+      <button class="btn btn-primary" onclick="openStudentModal()"><span class="material-symbols-rounded">person_add</span> Add Student</button>
+      <span class="cnt-lbl" id="stu-count"></span>
+    </div>
+
+    <div class="card" style="flex-direction:column; align-items:flex-start; padding:20px; margin-bottom:20px; gap: 14px;">
+      <div style="font-size:15px; font-weight:900; color:var(--r800); display:flex; align-items:center; gap:8px;">
+        <span class="material-symbols-rounded" style="color:var(--pri); background:var(--sec-l); padding:6px; border-radius:10px;">group_add</span> Bulk Manage Candidates
+      </div>
+      <div style="font-size:12px; color:var(--r500); font-weight:600; line-height:1.5;">Download existing list or upload new CSV/XLSX. Headers must be: <b style="color:var(--r800);">Chest No, Full Name, Class, Section, House</b></div>
+      <div style="display:flex; gap:12px; width:100%; flex-wrap:wrap; align-items:center; margin-top:4px;">
+        <button class="btn btn-out btn-sm" onclick="exportStudents()" style="flex:1; min-width:100px;"><span class="material-symbols-rounded">download</span> Export</button>
+        <div style="flex:2; min-width:180px; display:flex; align-items:center; background:var(--r50); border: 2px dashed var(--r200); padding:6px 10px; border-radius:12px;">
+          <input type="file" id="stu-import-file" accept=".xlsx, .csv" style="border:none; min-height:auto; padding:0; box-shadow:none; font-size:13px; width:100%; background:transparent;">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="importStudents()" style="flex:1; min-width:100px; background:var(--success);"><span class="material-symbols-rounded">upload</span> Import</button>
+      </div>
+    </div>
+
+    <div class="frow">
+      <div class="input-wrap"><span class="material-symbols-rounded">search</span><input type="text" class="has-icon" id="stu-search" placeholder="Search name or chest no..." oninput="renderStudents()"></div>
+      <select id="stu-sec" onchange="renderStudents()"><option value="">All Sections</option></select>
+    </div>
+    <div id="stu-list"></div>
+  </div>
+
+  <div class="pg" id="pg-programs">
+    <div class="abar">
+      <button class="btn btn-primary" onclick="openProgramModal()"><span class="material-symbols-rounded">add_circle</span> Add Program</button>
+      <span class="cnt-lbl" id="prog-count"></span>
+    </div>
+
+    <div class="card" style="flex-direction:column; align-items:flex-start; padding:20px; margin-bottom:20px; gap: 14px;">
+      <div style="font-size:15px; font-weight:900; color:var(--r800); display:flex; align-items:center; gap:8px;">
+        <span class="material-symbols-rounded" style="color:var(--pri); background:var(--sec-l); padding:6px; border-radius:10px;">post_add</span> Bulk Manage Programs
+      </div>
+      <div style="font-size:12px; color:var(--r500); font-weight:600; line-height:1.5;">Download existing list or upload new CSV/XLSX. Headers must be: <b style="color:var(--r800);">Code, Name, Section, Type, Limit</b></div>
+      <div style="display:flex; gap:12px; width:100%; flex-wrap:wrap; align-items:center; margin-top:4px;">
+        <button class="btn btn-out btn-sm" onclick="exportPrograms()" style="flex:1; min-width:100px;"><span class="material-symbols-rounded">download</span> Export</button>
+        <div style="flex:2; min-width:180px; display:flex; align-items:center; background:var(--r50); border: 2px dashed var(--r200); padding:6px 10px; border-radius:12px;">
+          <input type="file" id="prog-import-file" accept=".xlsx, .csv" style="border:none; min-height:auto; padding:0; box-shadow:none; font-size:13px; width:100%; background:transparent;">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="importPrograms()" style="flex:1; min-width:100px; background:var(--success);"><span class="material-symbols-rounded">upload</span> Import</button>
+      </div>
+    </div>
+
+    <div class="frow"><select id="prog-sec" onchange="renderPrograms()"><option value="">All Sections</option></select></div>
+    <div id="prog-list"></div>
+  </div>
+
+  <div class="pg" id="pg-substitute">
+    <div class="seclbl">Manual Substitution</div>
+    <div class="card" style="flex-direction:column; align-items:stretch; padding:24px; margin-bottom:20px; gap: 16px;">
+        <div style="font-size:13px; color:var(--r600); font-weight:600;">Enter details below to replace a single candidate.</div>
+        <div class="input-wrap"><span class="material-symbols-rounded">tag</span><input type="text" id="man-prog-code" class="has-icon uppercase" placeholder="Program Code (e.g. ATH001)" oninput="checkSubProg()"><div id="man-prog-name" class="hint-txt"></div></div>
+        <div class="input-wrap"><span class="material-symbols-rounded">person_remove</span><input type="text" id="man-old-chest" class="has-icon uppercase" placeholder="Original Chest No" oninput="checkSubOld()"><div id="man-old-name" class="hint-txt"></div></div>
+        <div class="input-wrap"><span class="material-symbols-rounded">person_add</span><input type="text" id="man-new-chest" class="has-icon uppercase" placeholder="Substitute Chest No" oninput="checkSubNew()"><div id="man-new-name" class="hint-txt"></div></div>
+        <button class="btn btn-primary" style="margin-top:8px;" onclick="processManualSub()"><span class="material-symbols-rounded">swap_horiz</span> Replace Candidate</button>
+    </div>
+    <div class="seclbl">Bulk Substitution (Upload)</div>
+    <div class="card" style="flex-direction:column; align-items:stretch; padding:24px; margin-bottom:20px;">
+        <div style="font-size:13px; color:var(--r600); font-weight:600; margin-bottom:16px; line-height:1.5;">Upload Excel (.xlsx) to replace multiple candidates.<br/>Cols: <b style="color:var(--r800);">Program Code</b>, <b style="color:var(--r800);">Original Chest No</b>, <b style="color:var(--r800);">Substitute Chest No</b>.</div>
+        <div style="display:flex; align-items:center; background:var(--r50); border: 2px dashed var(--r200); padding:8px 12px; border-radius:12px; margin-bottom:16px;">
+            <input type="file" id="sub-file-upload" accept=".csv, .xlsx" style="border:none; min-height:auto; padding:0; box-shadow:none; font-size:13px; width:100%; background:transparent;">
+        </div>
+        <button class="btn btn-out" onclick="processBulkSubstitution()"><span class="material-symbols-rounded">upload_file</span> Process File</button>
+        <div id="sub-log" style="margin-top:16px; font-size:13px; width: 100%;"></div>
+    </div>
+  </div>
+
+  <div class="pg" id="pg-locksettings">
+    <div class="seclbl">Change App PIN</div>
+    <div class="card" style="flex-direction:column; align-items:stretch; padding: 24px; gap: 16px;">
+       <div class="input-wrap"><span class="material-symbols-rounded">lock</span><input type="password" class="has-icon" id="set-old-pin" placeholder="Current PIN" maxlength="4" pattern="\d*"></div>
+       <div class="input-wrap"><span class="material-symbols-rounded">pin</span><input type="password" class="has-icon" id="set-new-pin" placeholder="New 4-Digit PIN" maxlength="4" pattern="\d*"></div>
+       <button class="btn btn-primary" onclick="saveNewPin()" style="margin-top: 8px;"><span class="material-symbols-rounded">save</span> Update PIN</button>
+    </div>
+    <div class="seclbl mt-3">Biometrics Management</div>
+    <div class="card" style="flex-direction:column; align-items:stretch; padding: 24px; gap: 16px;">
+       <button class="btn btn-out" onclick="registerBiometrics()" style="border-color:var(--success); color:var(--success);"><span class="material-symbols-rounded">fingerprint</span> Setup Fingerprint / Face</button>
+       <button class="btn btn-red" onclick="clearBiometrics()"><span class="material-symbols-rounded">delete_forever</span> Remove Biometrics</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-more" onclick="closeModal('modal-more')">
+  <div class="side-drawer" onclick="event.stopPropagation()">
+    <div class="drawer-hdr"><div class="drawer-title">Menu Options</div><button class="mclose" onclick="closeModal('modal-more')"><span class="material-symbols-rounded">close</span></button></div>
+    <div class="sheet-item" onclick="switchTab('students'); closeModal('modal-more')"><span class="material-symbols-rounded">group</span> Manage Students</div>
+    <div class="sheet-item" onclick="switchTab('programs'); closeModal('modal-more')"><span class="material-symbols-rounded">emoji_events</span> Manage Programs</div>
+    <div class="sheet-item" onclick="switchTab('substitute'); closeModal('modal-more')"><span class="material-symbols-rounded">find_replace</span> Substitute Candidates</div>
+    <div class="sheet-item" onclick="switchTab('locksettings'); closeModal('modal-more')" style="background:#fff7ed; color:#9a3412; border-color:#ffedd5;"><span class="material-symbols-rounded" style="color:var(--orange); background:transparent; padding:0;">security</span> Security & Lock</div>
+  </div>
+</div>
+
+<datalist id="class-list"></datalist><datalist id="section-list"></datalist><datalist id="house-list"></datalist>
+
+<div class="overlay" id="modal-student">
+  <div class="modal">
+    <div class="mhdr"><span class="mtitle" id="stu-modal-title">Add Student</span><button class="mclose" onclick="closeModal('modal-student')"><span class="material-symbols-rounded">close</span></button></div>
+    <div class="mbody">
+      <input type="hidden" id="stu-id">
+      <div class="fld"><label class="flbl">Chest No</label><div class="input-wrap"><span class="material-symbols-rounded">badge</span><input type="text" id="stu-chest" class="has-icon uppercase" placeholder="e.g. D102"></div></div>
+      <div class="fld"><label class="flbl">Full Name</label><div class="input-wrap"><span class="material-symbols-rounded">person</span><input type="text" id="stu-name" class="has-icon uppercase" placeholder="Student name"></div></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="fld"><label class="flbl">Class</label><div class="input-wrap"><span class="material-symbols-rounded">school</span><input type="text" id="stu-class-input" class="has-icon" list="class-list" placeholder="Class"></div></div>
+        <div class="fld"><label class="flbl">Section</label><div class="input-wrap"><span class="material-symbols-rounded">category</span><input type="text" id="stu-section-input" class="has-icon" list="section-list" placeholder="Section"></div></div>
+      </div>
+      <div class="fld"><label class="flbl">House</label><div class="input-wrap"><span class="material-symbols-rounded">flag</span><input type="text" id="stu-house-input" class="has-icon" list="house-list" placeholder="Enter house..."></div></div>
+    </div>
+    <div class="mfoot"><button class="btn btn-out" onclick="closeModal('modal-student')">Cancel</button><button class="btn btn-primary" onclick="saveStudent()">Save</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="modal-program">
+  <div class="modal">
+    <div class="mhdr"><span class="mtitle" id="prog-modal-title">Add Program</span><button class="mclose" onclick="closeModal('modal-program')"><span class="material-symbols-rounded">close</span></button></div>
+    <div class="mbody">
+      <input type="hidden" id="prog-id">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="fld"><label class="flbl">Code</label><div class="input-wrap"><span class="material-symbols-rounded">tag</span><input type="text" id="prog-code" class="has-icon uppercase" placeholder="ATH001"></div></div>
+        <div class="fld"><label class="flbl">Section</label><div class="input-wrap"><span class="material-symbols-rounded">category</span><input type="text" id="prog-section-input" class="has-icon" list="section-list" placeholder="Section"></div></div>
+      </div>
+      <div class="fld"><label class="flbl">Program Name</label><div class="input-wrap"><span class="material-symbols-rounded">sports_score</span><input type="text" id="prog-name" class="has-icon uppercase" placeholder="Event Name"></div></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="fld"><label class="flbl">Type</label><select id="prog-type"><option value="individual">Individual</option><option value="group">Group</option></select></div>
+        <div class="fld"><label class="flbl">Limit / House</label><input type="number" id="prog-limit" min="1" value="3"></div>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-out" onclick="closeModal('modal-program')">Cancel</button><button class="btn btn-primary" onclick="saveProgram()">Save</button></div>
+  </div>
+</div>
+
+<div id="print-container"></div>
+<div class="overlay" id="modal-print-setup">
+  <div class="modal">
+    <div class="mhdr"><span class="mtitle" id="print-modal-title">Print Setup</span><button class="mclose" onclick="closeModal('modal-print-setup')"><span class="material-symbols-rounded">close</span></button></div>
+    <div class="mbody" id="print-setup-body" style="padding:16px 24px;"></div>
+    <div class="mfoot"><button class="btn btn-out" onclick="closeModal('modal-print-setup')">Cancel</button><button class="btn btn-primary" id="print-save-btn" onclick="triggerPrint()"><span class="material-symbols-rounded">save</span> Save & Print</button></div>
+  </div>
+</div>
+<div class="toasts" id="toasts"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA_vTf6pXP6A19_sKVbdI2D-TfUkvWRQ_4",
+  authDomain: "nonstage-ad2ba.firebaseapp.com",
+  projectId: "nonstage-ad2ba",
+  storageBucket: "nonstage-ad2ba.firebasestorage.app",
+  messagingSenderId: "317081991361",
+  appId: "1:317081991361:web:722a13b00aa21dfea03c40",
+  measurementId: "G-2LFQNWBSSK"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+window.closeModal = id => document.getElementById(id).classList.remove('show');
+window.openModal = id => { document.getElementById(id).classList.add('show'); };
+
+/* ================= SCREEN LOCK & SECURITY LOGIC ================= */
+let MASTER_PIN = localStorage.getItem('kama_admin_pin') || "2456";
+let currentPin = "";
+const lockScreen = document.getElementById('app-lock');
+const lockCard = document.getElementById('lock-card');
+const pinDots = document.querySelectorAll('.pin-dot');
+const bioBanner = document.getElementById('bio-setup-banner');
+
+function bufferDecode(value) { return Uint8Array.from(atob(value), c => c.charCodeAt(0)); }
+function bufferEncode(value) { return btoa(String.fromCharCode.apply(null, new Uint8Array(value))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, ""); }
+window.addPin = function(num) { if(currentPin.length < 4) { currentPin += num; updateDots(); if(currentPin.length === 4) setTimeout(checkPin, 150); } };
+window.clearPin = function() { currentPin = currentPin.slice(0, -1); updateDots(); };
+function updateDots() { pinDots.forEach((dot, idx) => { if(idx < currentPin.length) { dot.classList.add('filled'); dot.classList.remove('err'); } else { dot.classList.remove('filled', 'err'); } }); }
+function checkPin() { if(currentPin === MASTER_PIN) { unlockApp(); } else { lockCard.classList.add('shake'); pinDots.forEach(dot => dot.classList.add('err')); setTimeout(() => { currentPin = ""; updateDots(); lockCard.classList.remove('shake'); }, 400); } }
+function unlockApp() { lockScreen.classList.add('unlocked'); if(!localStorage.getItem('kama_bio_credential')) bioBanner.style.display = 'flex'; }
+window.registerBiometrics = async function() { if (!window.PublicKeyCredential) { toast('Biometrics not supported on this device', 'r'); return; } try { const publicKeyCredentialCreationOptions = { challenge: new Uint8Array(32), rp: { name: "KAMA Admin Portal", id: window.location.hostname }, user: { id: new Uint8Array(16), name: "admin@kamafest.com", displayName: "KAMA Admin" }, pubKeyCredParams: [{alg: -7, type: "public-key"}], authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }, timeout: 60000, attestation: "none" }; const credential = await navigator.credentials.create({ publicKey: publicKeyCredentialCreationOptions }); localStorage.setItem('kama_bio_credential', bufferEncode(credential.rawId)); bioBanner.style.display = 'none'; toast('Biometrics Enabled Successfully!', 'g'); } catch (err) { toast('Setup cancelled or failed.', 'r'); } };
+window.verifyBiometrics = async function() { const savedCred = localStorage.getItem('kama_bio_credential'); if(!savedCred) { toast('Unlock with PIN first to enable Biometrics', 'ti'); lockCard.classList.add('shake'); setTimeout(() => lockCard.classList.remove('shake'), 400); return; } try { const publicKeyCredentialRequestOptions = { challenge: new Uint8Array(32), allowCredentials: [{ id: bufferDecode(savedCred), type: 'public-key', transports: ['internal'] }], userVerification: "required", timeout: 60000 }; const assertion = await navigator.credentials.get({ publicKey: publicKeyCredentialRequestOptions }); if(assertion) { toast('Biometric Match!', 'g'); unlockApp(); } } catch (err) { toast('Biometric verification failed', 'r'); } };
+window.clearBiometrics = function() { localStorage.removeItem('kama_bio_credential'); toast('Biometrics Removed', 'g'); };
+window.saveNewPin = function() { const oldP = document.getElementById('set-old-pin').value; const newP = document.getElementById('set-new-pin').value; if(oldP !== MASTER_PIN) { toast('Current PIN is incorrect', 'r'); return; } if(newP.length !== 4) { toast('New PIN must be exactly 4 digits', 'r'); return; } localStorage.setItem('kama_admin_pin', newP); MASTER_PIN = newP; toast('PIN Changed Successfully!', 'g'); document.getElementById('set-old-pin').value = ''; document.getElementById('set-new-pin').value = ''; };
+window.addEventListener('DOMContentLoaded', () => { if(localStorage.getItem('kama_bio_credential')) setTimeout(verifyBiometrics, 500); });
+
+/* --- STRICT SECTION ORDER ENFORCEMENT --- */
+const ORDERED_SECTIONS = ["Bidaya", "Ula", "Thaniya", "Thanawiyya", "Aliyah", "Kulliyah"];
+const HOUSE_MAP = { "Bosphorus": "#dc2626", "Hormuz": "#eab308", "Gibraltar": "#16a34a", "Malacca": "#2563eb" };
+let SECTIONS = []; let CLASSES = []; let HOUSES = ["Bosphorus", "Hormuz", "Gibraltar", "Malacca"];
+let students = {}; let programs = {}; let regs = {}; let adminSecFilter = '';
+
+function getHouseColor(houseName) { return HOUSE_MAP[toTitle(houseName)] || '#6b7280'; }
+function toTitle(str) { if(!str) return ''; return String(str).trim().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' '); }
+function uid(){ return Math.random().toString(36).slice(2,9)+Date.now().toString(36); }
+function setSyncState(s){ const pill=document.getElementById('sync-pill'); if(!pill) return; pill.className='sync-pill '+(s==='ok'?'sync-ok':s==='ing'?'sync-ing':'sync-err'); document.getElementById('sync-txt').textContent=s==='ok'?'Live':s==='ing'?'Saving…':'Error'; }
+function toast(msg, type='g') { const d = document.createElement('div'); d.className = `toast t${type}`; d.innerHTML = `<span class="material-symbols-rounded">${type==='g'?'check_circle':type==='r'?'error':'info'}</span> ${msg}`; document.getElementById('toasts').appendChild(d); setTimeout(() => d.remove(), 3000); }
+
+window.switchTab = function(tab, el){ document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('on')); if(el) { el.classList.add('on'); } else { document.getElementById('nav-more').classList.add('on'); } document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on')); document.getElementById('pg-'+tab).classList.add('on'); if(tab==='register') renderRegister(); if(tab==='admin') renderAdminPanel(); if(tab==='printing') renderPrintingList(); };
+function updateHeader(){ document.getElementById('hdr-stats').textContent=`${Object.keys(students).length} Students · ${Object.keys(programs).length} Progs`; }
+function updateDynamicFilters() { 
+    let sSet = new Set(); let cSet = new Set(); 
+    Object.values(students).forEach(s => { if(s.section) sSet.add(toTitle(s.section)); if(s.class) cSet.add(String(s.class).trim()); }); 
+    Object.values(programs).forEach(p => { if(p.section) sSet.add(toTitle(p.section)); }); 
+    
+    // Sort sections explicitly by predefined order
+    SECTIONS = Array.from(sSet).sort((a, b) => { 
+        let idxA = ORDERED_SECTIONS.findIndex(s => s.toLowerCase() === a.toLowerCase()); 
+        let idxB = ORDERED_SECTIONS.findIndex(s => s.toLowerCase() === b.toLowerCase()); 
+        return (idxA===-1?999:idxA) - (idxB===-1?999:idxB); 
+    }); 
+    
+    CLASSES = Array.from(cSet).sort((a,b)=> parseInt(a) - parseInt(b)); 
+    document.getElementById('section-list').innerHTML = SECTIONS.map(s => `<option value="${s}">`).join(''); 
+    document.getElementById('house-list').innerHTML = HOUSES.map(h => `<option value="${h}">`).join(''); 
+    document.getElementById('class-list').innerHTML = CLASSES.map(c => `<option value="${c}">`).join(''); 
+    ['stu-sec','prog-sec','reg-sec', 'print-sec'].forEach(id=>{ 
+        const el=document.getElementById(id); if(!el)return; 
+        const cur=el.value; 
+        el.innerHTML='<option value="">All Sections</option>'+SECTIONS.map(s=>`<option value="${s}">${s}</option>`).join(''); 
+        el.value=cur; 
+    }); 
+}
+
+/* ================= NEW BULK STUDENTS IMPORT / EXPORT ================= */
+window.exportStudents = function() {
+    if(Object.keys(students).length === 0) { toast('No students to export', 'r'); return; }
+    const wsData = Object.values(students).map(s => ({
+        'Chest No': s.chestNo, 'Full Name': s.name, 'Class': s.class || '', 'Section': s.section || '', 'House': s.house || ''
+    }));
+    const ws = XLSX.utils.json_to_sheet(wsData); const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Students"); XLSX.writeFile(wb, "Students_List.xlsx");
+};
+window.importStudents = function() {
+    const fileInput = document.getElementById('stu-import-file'); const file = fileInput.files[0];
+    if(!file) { toast('Please select an Excel or CSV file first', 'r'); return; }
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            if(rows.length === 0) { toast('File is empty', 'r'); return; }
+            setSyncState('ing'); const batch = writeBatch(db); let count = 0;
+            rows.forEach(r => {
+                const chestNo = String(r['Chest No'] || '').trim().toUpperCase(); const name = String(r['Full Name'] || '').trim().toUpperCase();
+                if(!chestNo || !name) return;
+                const existing = Object.values(students).find(s => s.chestNo === chestNo); const id = existing ? existing.id : uid();
+                batch.set(doc(db, 'students', id), { id, chestNo, name, class: String(r['Class'] || '').trim(), section: toTitle(r['Section'] || ''), house: toTitle(r['House'] || '') }, {merge:true});
+                count++;
+            });
+            await batch.commit(); setSyncState('ok'); toast(`Successfully imported ${count} students!`, 'g'); fileInput.value = '';
+        } catch(err) { toast('Failed to import. Check file format.', 'r'); setSyncState('err'); }
+    };
+    reader.readAsArrayBuffer(file);
+};
+
+/* ================= NEW BULK PROGRAMS IMPORT / EXPORT ================= */
+window.exportPrograms = function() {
+    if(Object.keys(programs).length === 0) { toast('No programs to export', 'r'); return; }
+    const wsData = Object.values(programs).map(p => ({
+        'Code': p.code, 'Name': p.name, 'Section': p.section || '', 'Type': p.type || 'individual', 'Limit': p.candidateLimit || 3
+    }));
+    const ws = XLSX.utils.json_to_sheet(wsData); const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Programs"); XLSX.writeFile(wb, "Programs_List.xlsx");
+};
+window.importPrograms = function() {
+    const fileInput = document.getElementById('prog-import-file'); const file = fileInput.files[0];
+    if(!file) { toast('Please select an Excel or CSV file first', 'r'); return; }
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            if(rows.length === 0) { toast('File is empty', 'r'); return; }
+            setSyncState('ing'); const batch = writeBatch(db); let count = 0;
+            rows.forEach(r => {
+                const code = String(r['Code'] || '').trim().toUpperCase(); const name = String(r['Name'] || '').trim().toUpperCase();
+                if(!code || !name) return;
+                const existing = Object.values(programs).find(p => p.code === code); const id = existing ? existing.id : uid();
+                batch.set(doc(db, 'programs', id), { id, code, name, section: toTitle(r['Section'] || ''), type: String(r['Type'] || 'individual').toLowerCase(), candidateLimit: parseInt(r['Limit']) || 3, registrationEnabled: true }, {merge:true});
+                count++;
+            });
+            await batch.commit(); setSyncState('ok'); toast(`Successfully imported ${count} programs!`, 'g'); fileInput.value = '';
+        } catch(err) { toast('Failed to import. Check file format.', 'r'); setSyncState('err'); }
+    };
+    reader.readAsArrayBuffer(file);
+};
+
+/* ================= CRUD STUDENTS & PROGRAMS ================= */
+window.renderStudents=function(){ const search=String(document.getElementById('stu-search').value||'').toLowerCase().trim(); const sec=String(document.getElementById('stu-sec').value||'').toLowerCase().trim(); let arr=Object.values(students); if(search) arr=arr.filter(s=>String(s.name||'').toLowerCase().includes(search)||String(s.chestNo||'').toLowerCase().includes(search)); if(sec) arr=arr.filter(s=>toTitle(s.section).toLowerCase() === sec); arr.sort((a,b)=>String(a.chestNo||'').localeCompare(String(b.chestNo||''))); document.getElementById('stu-count').textContent=`${arr.length} Students`; if(!arr.length){document.getElementById('stu-list').innerHTML=`<div class="empty"><span class="material-symbols-rounded empty-ico">person_off</span><div class="empty-txt">No students found</div></div>`;return;} document.getElementById('stu-list').innerHTML=arr.map(s=>{ const hColor = getHouseColor(s.house); return `<div class="card"><div class="chest" style="background:${hColor}">${String(s.chestNo||'')}</div><div class="cinfo"><div class="cname">${String(s.name||'')}</div><div class="cmeta">Class ${String(s.class||'')} &middot; ${toTitle(s.section)} &middot; <span style="color:${hColor};font-weight:900">${toTitle(s.house)}</span></div></div><div class="cacts"><button class="ibtn" onclick="openStudentModal('${s.id}')"><span class="material-symbols-rounded" style="font-size:22px;">edit_square</span></button><button class="ibtn delete" onclick="deleteStudent('${s.id}')"><span class="material-symbols-rounded" style="font-size:22px;">delete</span></button></div></div>` }).join(''); };
+window.openStudentModal=function(id=null){ document.getElementById('stu-modal-title').textContent=id?'Edit Student':'Add Student'; const s=id?students[id]:null; document.getElementById('stu-id').value=id||''; document.getElementById('stu-chest').value=s?s.chestNo:''; document.getElementById('stu-name').value=s?s.name:''; document.getElementById('stu-class-input').value=s?String(s.class):''; document.getElementById('stu-section-input').value=s?toTitle(s.section):''; document.getElementById('stu-house-input').value=s?toTitle(s.house):''; openModal('modal-student'); };
+window.saveStudent=async function(){ const id=document.getElementById('stu-id').value||uid(); const obj={id, chestNo:document.getElementById('stu-chest').value.trim().toUpperCase(), name:document.getElementById('stu-name').value.trim().toUpperCase(), class:document.getElementById('stu-class-input').value.trim(), section:toTitle(document.getElementById('stu-section-input').value), house:toTitle(document.getElementById('stu-house-input').value)}; if(!obj.chestNo||!obj.name||!obj.house){toast('Fill required fields','r');return;} setSyncState('ing'); try{ await setDoc(doc(db,'students',id),obj); closeModal('modal-student'); toast('Saved','g'); }catch(e){setSyncState('err');} };
+window.deleteStudent=async function(id){ if(confirm('Delete?')){ setSyncState('ing'); try{await deleteDoc(doc(db,'students',id));toast('Deleted','g');}catch(e){setSyncState('err');} } };
+
+window.renderPrograms=function(){ const secFilter=String(document.getElementById('prog-sec').value||'').toLowerCase().trim(); let arr=Object.values(programs); if(secFilter) arr=arr.filter(p=>toTitle(p.section).toLowerCase()===secFilter); arr.sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))); document.getElementById('prog-count').textContent=`${arr.length} Programs`; if(!arr.length){document.getElementById('prog-list').innerHTML=`<div class="empty"><span class="material-symbols-rounded empty-ico">event_busy</span><div class="empty-txt">No programs</div></div>`;return;} const grouped={}; arr.forEach(p=>{ const s=toTitle(p.section||'Other'); if(!grouped[s]) grouped[s]=[]; grouped[s].push(p); }); let html=''; SECTIONS.forEach(secName=>{ if(grouped[secName]){ html+=`<div class="seclbl">${secName} Section</div>`+grouped[secName].map(p=>{ const isEnabled = p.registrationEnabled !== false; return `<div class="card" style="${!isEnabled?'border-color:#fecaca;background:#fff5f5;':''}"><div class="pcode">${String(p.code||'')}</div><div class="cinfo"><div class="cname">${String(p.name||'')}</div><div class="cmeta"><span class="ptyp ptyp-${p.type.charAt(0)}">${p.type}</span> &middot; Limit ${p.candidateLimit||3}/house</div></div><div class="cacts" style="flex-direction:column;align-items:center;gap:8px;"><div style="display:flex;gap:8px;"><button class="ibtn" onclick="openProgramModal('${p.id}')"><span class="material-symbols-rounded" style="font-size:20px;">edit_square</span></button><button class="ibtn delete" onclick="deleteProgram('${p.id}')"><span class="material-symbols-rounded" style="font-size:20px;">delete</span></button></div><div class="toggle-wrap"><span class="toggle-lbl ${isEnabled?'on-lbl':'off-lbl'}" style="font-size:9px;">${isEnabled?'ON':'OFF'}</span><label class="toggle" style="margin:0;"><input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)"><span class="toggle-slider"></span></label></div></div></div>`; }).join(''); } }); document.getElementById('prog-list').innerHTML=html; };
+window.openProgramModal=function(id=null){ document.getElementById('prog-modal-title').textContent=id?'Edit Program':'Add Program'; const p=id?programs[id]:null; document.getElementById('prog-id').value=id||''; document.getElementById('prog-code').value=p?p.code:''; document.getElementById('prog-name').value=p?p.name:''; document.getElementById('prog-section-input').value=p?toTitle(p.section):''; document.getElementById('prog-type').value=p?p.type:'individual'; document.getElementById('prog-limit').value=p?p.candidateLimit:3; openModal('modal-program'); };
+window.saveProgram=async function(){ const id=document.getElementById('prog-id').value||uid(); const obj={id, code:document.getElementById('prog-code').value.trim().toUpperCase(), name:document.getElementById('prog-name').value.trim().toUpperCase(), section:toTitle(document.getElementById('prog-section-input').value), type:document.getElementById('prog-type').value, candidateLimit:parseInt(document.getElementById('prog-limit').value)||1}; if(!obj.code||!obj.name){toast('Fill required fields','r');return;} setSyncState('ing'); try{await setDoc(doc(db,'programs',id),obj, {merge:true}); closeModal('modal-program');toast('Saved','g');}catch(e){setSyncState('err');} };
+window.deleteProgram=async function(id){ if(confirm('Delete program?')){ setSyncState('ing'); try{await deleteDoc(doc(db,'programs',id));}catch(e){setSyncState('err');} } };
+
+/* ================= REGISTRATION & DASHBOARD ================= */
+function regKey(pid,house,slot){return `${pid}__${house}__${slot}`;}
+window.renderRegister=function(){ const secFilter=String(document.getElementById('reg-sec').value||'').toLowerCase().trim(); let progs=Object.values(programs); if(secFilter) progs=progs.filter(p=>toTitle(p.section).toLowerCase()===secFilter); progs.sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))); document.getElementById('reg-count').textContent=`${Object.keys(regs).length} Slots Filled`; if(!progs.length){document.getElementById('reg-area').innerHTML=`<div class="empty"><span class="material-symbols-rounded empty-ico">event_busy</span><div class="empty-txt">No programs</div></div>`;return;} let houseHeaderCols=''; let candHeaderCols=''; const maxLimit=Math.max(...progs.map(p=>p.candidateLimit||1)); HOUSES.forEach(house=>{ const hColor=getHouseColor(house); houseHeaderCols+=`<th class="th-house" colspan="${maxLimit}" style="background:${hColor};border-color:${hColor}">${house}</th>`; for(let s=0;s<maxLimit;s++) candHeaderCols+=`<th class="th-cand" style="color:${hColor}">C${s+1}</th>`; }); const bySection={}; progs.forEach(p=>{ const s=toTitle(p.section||'Other'); if(!bySection[s]) bySection[s]=[]; bySection[s].push(p); }); let rows=''; SECTIONS.forEach(sec=>{ if(bySection[sec]){ rows+=`<tr class="tr-section"><td colspan="${2+HOUSES.length*maxLimit}">${sec} Section</td></tr>`; bySection[sec].forEach(p=>{ let tds=''; HOUSES.forEach(house=>{ for(let slot=0;slot<maxLimit;slot++){ if(slot<(p.candidateLimit||1)){ const reg=regs[regKey(p.id,house,slot)]; tds+=`<td class="td-cand"><div class="cand-cell"><input class="cand-chest${reg?' filled':''}" type="text" maxlength="8" placeholder="Chest" value="${reg?String(reg.chestNo||''):''}" data-pid="${p.id}" data-house="${house}" data-slot="${slot}" onblur="onChestBlur(this)"><span class="${reg?'cand-name ok':'cand-name'}" style="font-size:10px; font-weight:800; letter-spacing:-0.2px;">${reg?String(reg.name||''):''}</span></div></td>`; } else tds+=`<td style="background:var(--r50);"></td>`; } }); rows+=`<tr><td class="td-code col-code">${p.code}</td><td class="td-name col-name">${p.name}</td>${tds}</tr>`; }); } }); document.getElementById('reg-area').innerHTML=`<div class="reg-wrap"><table class="reg-table"><thead><tr><th class="th-code-hdr col-code" rowspan="2">Code</th><th class="th-name-hdr col-name" rowspan="2">Program</th>${houseHeaderCols}</tr><tr>${candHeaderCols}</tr></thead><tbody>${rows}</tbody></table></div>`; };
+window.onChestBlur=async function(el){ const val=el.value.trim().toUpperCase(); const pid=el.dataset.pid,house=el.dataset.house,slot=parseInt(el.dataset.slot); const key=regKey(pid,house,slot); if(!val){ if(regs[key]){ setSyncState('ing'); await deleteDoc(doc(db,'registrations',key)); } return; } const stu=Object.values(students).find(s=>String(s.chestNo||'').toUpperCase()===val); if(!stu){toast('Chest No not found','r');el.value='';return;} setSyncState('ing'); const prog=programs[pid]; await setDoc(doc(db,'registrations',key),{programId:pid,house,slot,studentId:stu.id,chestNo:stu.chestNo,name:stu.name,programCode:prog?prog.code:'',programName:prog?prog.name:'',isRegistered:false}); toast(`Assigned ${stu.name}`,'g'); };
+
+window.adminFilterSec = function(sec, chipEl) { adminSecFilter = sec; document.querySelectorAll('#admin-sec-chips .filter-chip').forEach(c => c.classList.remove('active')); if(chipEl) chipEl.classList.add('active'); renderAdminProgList(); };
+window.renderAdminPanel = function() { const chipsEl = document.getElementById('admin-sec-chips'); if(chipsEl.innerHTML.length < 100) { chipsEl.innerHTML = `<div class="filter-chip active" onclick="adminFilterSec('', this)">All</div>` + SECTIONS.map(s => `<div class="filter-chip" onclick="adminFilterSec('${s}', this)">${s}</div>`).join(''); } const allProgs = Object.values(programs); document.getElementById('astat-on').textContent = allProgs.filter(p => p.registrationEnabled !== false).length; document.getElementById('astat-off').textContent = allProgs.filter(p => p.registrationEnabled === false).length; document.getElementById('astat-reg').textContent = Object.values(regs).filter(r => r.isRegistered === true).length; renderAdminProgList(); };
+
+function renderAdminProgList() { let progs = Object.values(programs); if(adminSecFilter) progs = progs.filter(p => toTitle(p.section) === adminSecFilter); progs.sort((a,b) => String(a.code||'').localeCompare(String(b.code||''))); const list = document.getElementById('admin-prog-list'); if(!progs.length) { list.innerHTML = `<div class="empty"><span class="material-symbols-rounded empty-ico">event_busy</span><div class="empty-txt">No programs found</div></div>`; return; } const grouped = {}; progs.forEach(p => { const sec = toTitle(p.section || 'Other'); if(!grouped[sec]) grouped[sec] = []; grouped[sec].push(p); }); let html = ''; SECTIONS.forEach(sec => { if(grouped[sec]) { html += `<div class="seclbl">${sec} Section</div>`; grouped[sec].forEach(p => { const isEnabled = p.registrationEnabled !== false; const progRegs = Object.values(regs).filter(r => r.programId === p.id); const registeredCount = progRegs.filter(r => r.isRegistered).length; let chipsHtml = ''; if(progRegs.length > 0) { chipsHtml = `<div class="cand-chips">` + progRegs.sort((a,b) => String(a.house||'').localeCompare(String(b.house||''))).map(r => { const isReg = r.isRegistered; return `<div class="cand-chip ${isReg ? 'registered' : 'pending'}"><span class="house-dot" style="background:${getHouseColor(r.house)}"></span>${r.chestNo} ${r.name}<button class="chip-action" onclick="toggleStatus('${p.id}','${r.house}',${r.slot}, ${isReg})"><span class="material-symbols-rounded" style="color:${isReg ? 'var(--danger)' : 'var(--success)'}">${isReg ? 'cancel' : 'check_circle'}</span></button></div>`; }).join('') + `</div>`; } html += `<div class="admin-prog-card ${!isEnabled ? 'disabled-prog' : ''}"><div class="admin-prog-header"><div class="pcode" style="background:var(--r100); color:var(--r800); border-color:var(--r200); box-shadow:none;">${String(p.code||'')}</div><div class="admin-prog-info"><div class="admin-prog-name">${String(p.name||'')}</div><div class="admin-prog-meta">${toTitle(p.section)} &middot; <span style="color:var(--pri); font-weight:900;">${registeredCount} registered</span></div></div><div class="admin-prog-actions"><button class="ibtn" onclick="openPrintSetup('${p.id}')" title="Print Sheet"><span class="material-symbols-rounded">print</span></button><div class="toggle-wrap"><span class="toggle-lbl ${isEnabled?'on-lbl':'off-lbl'}">${isEnabled?'ON':'OFF'}</span><label class="toggle"><input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)"><span class="toggle-slider"></span></label></div></div></div>${chipsHtml}</div>`; }); } }); list.innerHTML = html; }
+
+window.toggleProgramReg = async function(pid, enabled) { setSyncState('ing'); try { await setDoc(doc(db, 'programs', pid), { registrationEnabled: enabled }, { merge: true }); toast(`Registration ${enabled ? 'ON' : 'OFF'}`, 'g'); } catch(e) { setSyncState('err'); } };
+window.toggleStatus = async function(pid, house, slot, currentStatus) { const key = regKey(pid, house, slot); const newStatus = !currentStatus; if(!confirm(`Change status to ${newStatus ? 'REGISTERED' : 'PENDING'}?`)) return; setSyncState('ing'); try { await setDoc(doc(db, 'registrations', key), { isRegistered: newStatus }, { merge: true }); toast(`Status Updated`, 'g'); } catch(e) { setSyncState('err'); } };
+
+/* ================= PRINTING & CODES ================= */
+window.renderPrintingList = function() { const search = String(document.getElementById('print-search').value||'').toLowerCase().trim(); const secFilter = String(document.getElementById('print-sec').value||'').toLowerCase().trim(); let progs = Object.values(programs); if(secFilter) progs = progs.filter(p => toTitle(p.section).toLowerCase() === secFilter); if(search) progs = progs.filter(p => (p.code||'').toLowerCase().includes(search) || (p.name||'').toLowerCase().includes(search)); progs.sort((a,b) => String(a.code||'').localeCompare(String(b.code||''))); const listContainer = document.getElementById('print-prog-list'); document.getElementById('print-list-count').textContent = `${progs.length} found`; if(progs.length === 0) { listContainer.innerHTML = `<div class="empty"><span class="material-symbols-rounded empty-ico">print_disabled</span><div class="empty-txt">No programs match</div></div>`; return; } let html = ''; progs.forEach(p => { const progRegs = Object.values(regs).filter(r => r.programId === p.id); const hasCodes = progRegs.some(r => r.codeLetter); html += `<div class="card" onclick="togglePrintSelect(event, '${p.id}')" style="cursor:pointer; padding: 14px 16px;"><input type="checkbox" class="print-cb" value="${p.id}" id="cb-${p.id}" style="width:20px; height:20px; margin-right:4px;" onclick="event.stopPropagation(); updatePrintSelectedCount()"><div class="pcode" style="background:var(--r100); color:var(--r800); border:none;">${p.code}</div><div class="cinfo"><div class="cname" style="font-size: 15px;">${p.name}</div><div class="cmeta">${toTitle(p.section)} &middot; ${progRegs.length} cands ${hasCodes ? '&middot; <b style="color:var(--success)">Locked</b>' : ''}</div></div><button class="ibtn" style="background:#fff; box-shadow:var(--sh);" onclick="event.stopPropagation(); openPrintSetup('${p.id}')"><span class="material-symbols-rounded">settings</span></button></div>`; }); listContainer.innerHTML = html; updatePrintSelectedCount(); };
+window.togglePrintSelect = function(e, pid) { if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return; const cb = document.getElementById(`cb-${pid}`); if(cb) { cb.checked = !cb.checked; updatePrintSelectedCount(); } };
+window.toggleSelectAllPrint = function(isChecked) { document.querySelectorAll('.print-cb').forEach(cb => cb.checked = isChecked); updatePrintSelectedCount(); };
+window.updatePrintSelectedCount = function() { document.getElementById('print-sel-count').textContent = document.querySelectorAll('.print-cb:checked').length; };
+
+function processPrintData(prog, progRegs, batch) {
+    let isGroup = prog.type === 'group';
+    let formattedRegs = [];
+    if (isGroup) {
+        let grouped = {};
+        progRegs.forEach(r => {
+            if(!grouped[r.house]) grouped[r.house] = [];
+            grouped[r.house].push(r);
+        });
+        for(let h in grouped) {
+            if(grouped[h].length > 0) {
+                formattedRegs.push({...grouped[h][0], name: grouped[h][0].name + " & TEAM", isGroup: true});
+            }
+        }
+    } else {
+        formattedRegs = [...progRegs];
+    }
+    let hasSaved = formattedRegs.some(r => r.codeLetter);
+    if (!hasSaved && formattedRegs.length > 0) {
+        let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
+        for (let i = houses.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [houses[i], houses[j]] = [houses[j], houses[i]];
+        }
+        let groupedByHouse = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] };
+        formattedRegs.forEach(r => {
+            let h = toTitle(r.house);
+            if(groupedByHouse[h]) groupedByHouse[h].push(r);
+            else { let k = Object.keys(groupedByHouse)[0]; groupedByHouse[k].push(r); }
+        });
+        houses.forEach(h => {
+            if(groupedByHouse[h]) groupedByHouse[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo)));
+        });
+        let finalOrder = [];
+        let loopActive = true;
+        while(loopActive) {
+            loopActive = false;
+            for(let i=0; i<houses.length; i++) {
+                let hName = houses[i];
+                if(groupedByHouse[hName] && groupedByHouse[hName].length > 0) {
+                    finalOrder.push(groupedByHouse[hName].shift());
+                    loopActive = true;
+                }
+            }
+        }
+        formattedRegs = finalOrder.map((r, idx) => {
+            let codeLetter = String.fromCharCode(65 + idx);
+            r.codeLetter = codeLetter;
+            if(!isGroup) {
+                batch.set(doc(db, 'registrations', r.id), { codeLetter: codeLetter }, { merge: true });
+            } else {
+                progRegs.forEach(origR => {
+                    if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: codeLetter }, { merge: true });
+                });
+            }
+            return r;
+        });
+    } else {
+        formattedRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z')));
+    }
+    return formattedRegs;
+}
+
+function generatePrintHalf(prog, formattedRegs, type) {
+    const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+    const totalRows = Math.max(formattedRegs.length, 12);
+    let rowsHtml = '';
+    for(let i = 0; i < totalRows; i++) {
+        const r = formattedRegs[i];
+        if(r) {
+            const cls = r.isGroup ? 'TEAM' : (students[r.studentId]?.class || '');
+            const houseShort = r.house.substring(0, 4).toUpperCase();
+            if(type === 'name') {
+                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td><td>${houseShort}</td><td>${cls}</td><td></td><td></td><td></td></tr>`;
+            } else {
+                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+            }
+        } else {
+            rowsHtml += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+        }
+    }
+    const title = type === 'name' ? 'NON-STAGE CANDIDATES' : 'JUDGEMENT SHEET';
+    let tableHead = '';
+    if(type === 'name') {
+        tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
+    } else {
+        tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
+    }
+    let extraInfo = type === 'judge' ? `<div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>` : '';
+    let footerSign = type === 'name' ? `<span style="margin-left:auto;">Sign of completion: __________________</span>` : `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
+    
+    return `<div class="print-half"><div class="print-header">KAMA 2K26${type==='judge'?' - NON-STAGE FEST':''}<br><span class="print-header-sub">${title}</span></div><div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div><table class="print-table"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table>${extraInfo}<div class="print-footer" style="${type==='judge'?'margin-top:15px;':''}"><div style="display:flex; flex-direction:column; gap:10px; width:100%;"><div style="display:flex; align-items:center; width:100%;"><span>Printed on: ${printDate}</span>${type==='name'?footerSign:''}</div>${type==='judge'?footerSign:''}</div></div></div>`;
+}
+
+function wrapInPage(half1, half2) {
+    let watermark = `<div class="watermark"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"></div>`;
+    return `<div class="print-page">${watermark}${half1 || '<div class="print-half"></div>'}${half2 || '<div class="print-half"></div>'}</div>`;
+}
+
+window.batchPrintSelected = async function() {
+    const selectedCbs = document.querySelectorAll('.print-cb:checked');
+    if(selectedCbs.length === 0) { toast("Select at least one program to print", "r"); return; }
+    const format = document.getElementById('batch-print-format').value;
+    setSyncState('ing');
+    const batch = writeBatch(db);
+    let allHalves = [];
+    
+    for(let i=0; i<selectedCbs.length; i++) {
+        const pid = selectedCbs[i].value;
+        const prog = programs[pid];
+        const progRegs = Object.values(regs).filter(r => r.programId === pid);
+        const formattedRegs = processPrintData(prog, progRegs, batch);
+        
+        if (format === 'both') {
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge'));
+        } else {
+            allHalves.push(generatePrintHalf(prog, formattedRegs, format));
+        }
+    }
+    
+    let printHtmlAgg = '';
+    for(let i=0; i<allHalves.length; i+=2) {
+        printHtmlAgg += wrapInPage(allHalves[i], allHalves[i+1]);
+    }
+    
+    try {
+        await batch.commit();
+        setSyncState('ok');
+        document.getElementById('print-container').innerHTML = printHtmlAgg;
+        toast('Generation Complete. Opening Printer...', 'g');
+        setTimeout(() => window.print(), 800);
+    } catch(e) {
+        setSyncState('err');
+        toast("Failed to save codes", "r");
+    }
+};
+
+let currentPrintData = null; window.customOrder = ["", "", "", ""]; 
+window.openPrintSetup = function(pid) { const prog = programs[pid]; if(!prog) return; let progRegs = Object.values(regs).filter(r => r.programId === pid); if(prog.type === 'group') { const grouped = {}; progRegs.forEach(r => { if(!grouped[r.house]) grouped[r.house] = []; grouped[r.house].push(r); }); progRegs = []; for(const house in grouped) { if(grouped[house].length > 0) { const rep = grouped[house][0]; progRegs.push({ ...rep, name: rep.name + " & TEAM", isGroup: true }); } } } let hasSaved = progRegs.some(r => r.codeLetter); if (hasSaved) { progRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z'))); } currentPrintData = { prog, regs: hasSaved ? [...progRegs] : [], rawRegs: [...progRegs], isLocked: hasSaved }; window.customOrder = ["", "", "", ""]; renderPrintSetup(); openModal('modal-print-setup'); };
+function assignCodeLetters(arr) { return arr.map((r, idx) => ({ ...r, codeLetter: String.fromCharCode(65 + idx) })); }
+window.updateManualOrder = function(index, val) { window.customOrder[index] = val; const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; let filled = window.customOrder.filter(x => x !== ""); if (filled.length === 3) { let missing = fixedHouses.find(h => !window.customOrder.includes(h)); let emptyIndex = window.customOrder.findIndex(x => x === ""); if(emptyIndex !== -1 && missing) { window.customOrder[emptyIndex] = missing; } } if (window.customOrder.filter(x => x !== "").length === 4) { applyDistinctHouseOrder(window.customOrder); } else { currentPrintData.regs = []; renderPrintSetup(); } };
+window.autoRandomizeCodes = function() { let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; for (let i = houses.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [houses[i], houses[j]] = [houses[j], houses[i]]; } window.customOrder = houses; applyDistinctHouseOrder(window.customOrder); };
+function applyDistinctHouseOrder(orderArray) { let availableRegs = currentPrintData.rawRegs.map(r => ({...r})); let grouped = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] }; availableRegs.forEach(r => { let h = toTitle(r.house); if(grouped[h] !== undefined) { grouped[h].push(r); } else { let firstKey = Object.keys(grouped)[0]; grouped[firstKey].push(r); } }); orderArray.forEach(h => { if(grouped[h]) grouped[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo))); }); let finalOrder = []; let loopActive = true; while (loopActive) { loopActive = false; for (let i = 0; i < orderArray.length; i++) { let hName = orderArray[i]; if (grouped[hName] && grouped[hName].length > 0) { finalOrder.push(grouped[hName].shift()); loopActive = true; } } } Object.keys(grouped).forEach(h => { if(grouped[h] && grouped[h].length > 0) { finalOrder.push(...grouped[h]); } }); currentPrintData.regs = assignCodeLetters(finalOrder); renderPrintSetup(); }
+window.unlockCodes = function() { currentPrintData.isLocked = false; currentPrintData.regs = []; window.customOrder = ["", "", "", ""]; renderPrintSetup(); }
+function renderPrintSetup() { 
+    const { prog, regs, isLocked } = currentPrintData; 
+    if(!window.customOrder) window.customOrder = ["", "", "", ""]; 
+    const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; 
+    let selectsHtml = ''; 
+    for(let i=0; i<4; i++) { 
+        let letter = String.fromCharCode(65+i); 
+        let options = `<option value="">-- House --</option>`; 
+        fixedHouses.forEach(h => { 
+            let isSelected = window.customOrder[i] === h; 
+            let isSelectedElsewhere = window.customOrder.includes(h) && !isSelected; 
+            let disabled = isSelectedElsewhere ? 'disabled' : ''; 
+            let selected = isSelected ? 'selected' : ''; 
+            options += `<option value="${h}" ${selected} ${disabled}>${h}</option>`; 
+        }); 
+        selectsHtml += `<div style="display:flex; flex-direction:column; gap:6px; flex:1;"><label style="font-size:11px; font-weight:900; color:var(--r600); text-align:center;">CODE ${letter}</label><select onchange="updateManualOrder(${i}, this.value)" style="min-height:40px; padding:6px; font-size:13px; font-weight:800; text-align:center; border-radius:10px; border:2px solid var(--r200); background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.02);">${options}</select></div>`; 
+    } 
+    let isReady = window.customOrder.filter(x => x !== "").length === 4; 
+    let html = `<div style="font-size:16px; font-weight:900; color:var(--r800); margin-bottom:16px; display:flex; align-items:center; gap:8px;"><span class="pcode" style="padding:4px 8px; font-size:12px;">${prog.code}</span> ${prog.name} (${prog.type.toUpperCase()})</div>`; 
+    if(isLocked) { 
+        html += `<div style="background:#f0fdf4; border:1px solid #86efac; padding:16px; border-radius:14px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 12px rgba(16,185,129,0.1);"><div style="font-size:13px; font-weight:900; color:#065f46; display:flex; align-items:center;"><span class="material-symbols-rounded icon-filled" style="font-size:22px; margin-right:8px;">lock</span> Code Letters are Fixed</div><button class="btn btn-out btn-sm" onclick="unlockCodes()" style="border-color:var(--success); color:var(--success); background:#fff; font-weight:900;">Change Codes</button></div>`; 
+    } else { 
+        html += `<div style="background:var(--r50); border:1px solid var(--r200); padding:20px; border-radius:16px; margin-bottom:20px; box-shadow:inset 0 2px 10px rgba(0,0,0,0.02);"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;"><div style="font-size:13px; font-weight:900; color:var(--pri); text-transform:uppercase; letter-spacing:0.5px;">Manual Code Setup</div><button class="btn btn-out btn-sm" onclick="autoRandomizeCodes()" style="padding:6px 12px; font-size:12px; border-color:var(--purple); color:var(--purple); background:#faf5ff; box-shadow:none;"><span class="material-symbols-rounded" style="font-size:16px; margin-right:6px;">casino</span> Auto Random</button></div><div style="display:flex; gap:10px;">${selectsHtml}</div>${!isReady ? `<div style="font-size:12px; color:var(--danger); margin-top:14px; font-weight:800;">* Select houses for A, B, and C. Code D will auto-fill.</div>` : `<div style="font-size:12px; color:var(--success); margin-top:14px; font-weight:900; display:flex; align-items:center; gap:6px;"><span class="material-symbols-rounded icon-filled" style="font-size:18px;">check_circle</span> Code order applied successfully!</div>`}</div>`; 
+    } 
+    html += `<div style="max-height: 38vh; overflow-y:auto; border:1px solid var(--r200); border-radius:12px; box-shadow:inset 0 0 10px rgba(0,0,0,0.02);"><table class="print-setup-table" style="margin-top:0;"><thead style="position:sticky; top:0; z-index:10; background:var(--r100);"><tr><th>Lot</th><th>Chest</th><th>Name</th><th>House</th></tr></thead><tbody>${regs.length === 0 && !isReady && !isLocked ? `<tr><td colspan="4" style="text-align:center; padding:40px 20px; color:var(--r400); font-weight:700; font-size:14px;">Set house order above to generate codes</td></tr>` : ''}${regs.length === 0 && isReady && currentPrintData.rawRegs.length === 0 ? `<tr><td colspan="4" style="text-align:center; padding:40px 20px; color:var(--danger); font-weight:800;">No pending candidates available for this program.</td></tr>` : ''}${regs.map(r => `<tr><td class="t-code">${r.codeLetter}</td><td>${r.chestNo}</td><td>${r.name}</td><td><span style="display:inline-block; width:8px; height:8px; background:${getHouseColor(r.house)}; border-radius:50%; margin-right:6px;"></span>${r.house}</td></tr>`).join('')}</tbody></table></div>`; 
+    
+    html += `<div style="margin-top: 20px; padding: 16px; background: var(--r50); border: 2px dashed var(--r200); border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size:13px; font-weight:900; color:var(--r800); display:flex; align-items:center;"><span class="material-symbols-rounded" style="margin-right:8px; color:var(--r500);">dashboard</span> Print Layout:</span>
+        <select id="single-print-format" style="width:auto; min-height:36px; padding:6px 12px; font-size:13px; font-weight:800; border-radius:8px; border:1px solid var(--r300); outline:none; color: var(--r800); background:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+            <option value="both">Both (Name & Judgement)</option>
+            <option value="name">Candidates Only</option>
+            <option value="judge">Judgement Only</option>
+        </select>
+    </div>`;
+    
+    document.getElementById('print-setup-body').innerHTML = html; 
+    
+    const btn = document.getElementById('print-save-btn'); 
+    if(isLocked || prog.type === 'group') { 
+        btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:22px; margin-right:6px;">print</span> Print Sheet`; 
+    } else { 
+        btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:22px; margin-right:6px;">save</span> Save & Print`; 
+    } 
+}
+
+window.triggerPrint = async function() { 
+    const { prog, regs, rawRegs, isLocked } = currentPrintData; 
+    if (regs.length === 0 && rawRegs.length > 0) { toast("Please complete the Manual Code Letter setup first!", "r"); return; } 
+    
+    const format = document.getElementById('single-print-format').value;
+    
+    const printNow = () => {
+        let printHtmlAgg = '';
+        if (format === 'both') {
+            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge'));
+        } else {
+            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, format), '');
+        }
+        document.getElementById('print-container').innerHTML = printHtmlAgg;
+        window.print();
+    };
+
+    if (!isLocked && regs.length > 0) { 
+        setSyncState('ing'); 
+        try { 
+            const batch = writeBatch(db); 
+            regs.forEach(r => { 
+                if(prog.type === 'group') { 
+                    rawRegs.forEach(origR => { 
+                        if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: r.codeLetter }, { merge: true }); 
+                    }); 
+                } else { 
+                    batch.set(doc(db, 'registrations', r.id), { codeLetter: r.codeLetter }, { merge: true }); 
+                } 
+            }); 
+            await batch.commit(); 
+            setSyncState('ok'); 
+            toast('Code Letters Saved!', 'g'); 
+            currentPrintData.isLocked = true; 
+            renderPrintSetup(); 
+            setTimeout(() => { printNow(); }, 500); 
+        } catch(e) { 
+            setSyncState('err'); 
+            toast('Failed to save code letters', 'r'); 
+        } 
+    } else { 
+        printNow(); 
+    } 
+};
+
+/* ================= SUBSTITUTION SCRIPTS ================= */
+window.checkSubProg = function() { const val = document.getElementById('man-prog-code').value.trim().toUpperCase(); const el = document.getElementById('man-prog-name'); if(!val) { el.textContent = ''; return; } const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === val); el.textContent = prog ? `✓ ${prog.name}` : '✗ Program code not found'; el.className = prog ? 'hint-txt hint-ok' : 'hint-txt hint-err'; if(document.getElementById('man-old-chest').value) checkSubOld(); };
+window.checkSubOld = function() { const pCode = document.getElementById('man-prog-code').value.trim().toUpperCase(); const val = document.getElementById('man-old-chest').value.trim().toUpperCase(); const el = document.getElementById('man-old-name'); if(!val) { el.textContent = ''; return; } const stu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val); if(!stu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; } if(pCode) { const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode); if(prog) { const isRegistered = Object.values(regs).some(r => r.programId === prog.id && String(r.chestNo||'').toUpperCase() === val); if(!isRegistered) { el.textContent = `✗ Not registered in ${pCode}`; el.className = 'hint-txt hint-err'; return; } } } el.textContent = `✓ ${stu.name} (${stu.house})`; el.className = 'hint-txt hint-ok'; if(document.getElementById('man-new-chest').value) checkSubNew(); };
+window.checkSubNew = function() { const oldVal = document.getElementById('man-old-chest').value.trim().toUpperCase(); const val = document.getElementById('man-new-chest').value.trim().toUpperCase(); const el = document.getElementById('man-new-name'); if(!val) { el.textContent = ''; return; } const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val); if(!newStu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; } if(oldVal) { const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldVal); if(oldStu && oldStu.house !== newStu.house) { el.textContent = `✗ House Mismatch! (New is ${newStu.house})`; el.className = 'hint-txt hint-err'; return; } } el.textContent = `✓ ${newStu.name} (${newStu.house})`; el.className = 'hint-txt hint-ok'; };
+window.processManualSub = async function() { const pCode = document.getElementById('man-prog-code').value.trim().toUpperCase(); const oldChest = document.getElementById('man-old-chest').value.trim().toUpperCase(); const newChest = document.getElementById('man-new-chest').value.trim().toUpperCase(); if(!pCode || !oldChest || !newChest) { toast('Please fill all 3 fields', 'r'); return; } const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode); if(!prog) { toast(`Program Code '${pCode}' not found`, 'r'); return; } const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldChest); if(!oldStu) { toast(`Original Candidate '${oldChest}' not found`, 'r'); return; } const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === newChest); if(!newStu) { toast(`Substitute Candidate '${newChest}' not found`, 'r'); return; } if(oldStu.house !== newStu.house) { toast(`House mismatch! Old: ${oldStu.house}, New: ${newStu.house}`, 'r'); return; } let targetRegKey = null; for(const [key, r] of Object.entries(regs)) { if(r.programId === prog.id && String(r.chestNo||'').toUpperCase() === oldChest) { targetRegKey = key; break; } } if(!targetRegKey) { toast(`'${oldChest}' is NOT registered in '${pCode}'`, 'r'); return; } if(!confirm(`Confirm replacement?\n\nReplace: ${oldChest} (${oldStu.house})\nWith: ${newChest} (${newStu.house})\nIn Program: ${prog.name}`)) return; setSyncState('ing'); try { await setDoc(doc(db, 'registrations', targetRegKey), { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true }); toast('Substitution Successful!', 'g'); document.getElementById('man-prog-code').value = ''; document.getElementById('man-old-chest').value = ''; document.getElementById('man-new-chest').value = ''; checkSubProg(); checkSubOld(); checkSubNew(); } catch(err) { setSyncState('err'); toast('Failed to substitute', 'r'); } };
+window.processBulkSubstitution = async function() { const fileInput = document.getElementById('sub-file-upload'); const logDiv = document.getElementById('sub-log'); logDiv.innerHTML = ''; if(!fileInput.files.length) { toast('Please select a CSV or XLSX file first', 'r'); return; } const file = fileInput.files[0]; const reader = new FileReader(); reader.onload = async function(e) { try { const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'}); const firstSheetName = workbook.SheetNames[0]; const worksheet = workbook.Sheets[firstSheetName]; const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""}); if(rows.length < 2) { toast('Invalid file format or empty file.', 'r'); return; } const headers = rows[0].map(h => String(h).trim().toLowerCase()); const pIdx = headers.indexOf('program code'); const oIdx = headers.indexOf('original chest no'); const nIdx = headers.indexOf('substitute chest no'); if(pIdx === -1 || oIdx === -1 || nIdx === -1) { logDiv.innerHTML = `<div style="padding:12px; background:#fef2f2; border:2px solid #fecaca; border-radius:12px; color:var(--danger); font-weight:800; font-size:13px;"><span style="font-weight:900; font-size:14px; display:block; margin-bottom:4px;">Invalid column headers!</span>The file must have these exact column names:<br><code style="background:#fee2e2; padding:4px 8px; border-radius:6px; display:inline-block; margin-top:6px;">Program Code</code> <code style="background:#fee2e2; padding:4px 8px; border-radius:6px; display:inline-block; margin-top:6px;">Original Chest No</code> <code style="background:#fee2e2; padding:4px 8px; border-radius:6px; display:inline-block; margin-top:6px;">Substitute Chest No</code></div>`; return; } let errorLogs = []; let successLogs = []; let successCount = 0; setSyncState('ing'); const batch = writeBatch(db); for(let i=1; i<rows.length; i++) { if(!rows[i] || rows[i].length === 0) continue; const pVal = rows[i][pIdx]; const oVal = rows[i][oIdx]; const nVal = rows[i][nIdx]; if(!pVal && !oVal && !nVal) continue; const pCode = String(pVal || '').trim().toUpperCase(); const oldChest = String(oVal || '').trim().toUpperCase(); const newChest = String(nVal || '').trim().toUpperCase(); if(!pCode || !oldChest || !newChest) { errorLogs.push(`Row ${i+1}: Missing data — all three columns must be filled.`); continue; } const prog = Object.values(programs).find(p => String(p.code||'').trim().toUpperCase() === pCode); if(!prog) { errorLogs.push(`Row ${i+1}: Program Code '${pCode}' not found in the database.`); continue; } const oldStu = Object.values(students).find(s => String(s.chestNo||'').trim().toUpperCase() === oldChest); if(!oldStu) { errorLogs.push(`Row ${i+1}: Original Chest No '${oldChest}' not found in the students list.`); continue; } const newStu = Object.values(students).find(s => String(s.chestNo||'').trim().toUpperCase() === newChest); if(!newStu) { errorLogs.push(`Row ${i+1}: Substitute Chest No '${newChest}' not found in the students list.`); continue; } if(oldStu.house !== newStu.house) { errorLogs.push(`Row ${i+1}: House mismatch! Original '${oldChest}' is ${oldStu.house}, but substitute '${newChest}' is ${newStu.house}.`); continue; } let targetRegKey = null; for(const [key, r] of Object.entries(regs)) { if(r.programId === prog.id && String(r.chestNo||'').trim().toUpperCase() === oldChest) { targetRegKey = key; break; } } if(!targetRegKey) { errorLogs.push(`Row ${i+1}: '${oldChest}' is not registered in program '${pCode}'.`); continue; } const docRef = doc(db, 'registrations', targetRegKey); batch.set(docRef, { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true }); successLogs.push(`Row ${i+1}: '${oldChest}' (${oldStu.name}) → '${newChest}' (${newStu.name}) in ${pCode} — substituted successfully.`); successCount++; } if (successCount > 0) { try { await batch.commit(); toast(`Successfully substituted ${successCount} candidate(s)!`, 'g'); fileInput.value = ""; } catch (batchErr) { errorLogs.push("Database update failed. Please try again."); } } else { toast('No valid substitutions found to process.', 'ti'); } setSyncState('ok'); if (errorLogs.length > 0 || successLogs.length > 0) { let html = ''; if (successLogs.length > 0) { html += `<div style="font-size:12px; font-weight:900; color:var(--success); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">✓ Success (${successLogs.length})</div>`; html += successLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:#f0fdf4; border:1px solid #86efac; border-radius:10px; margin-bottom:8px; font-size:13px; color:#065f46; font-weight:700;"><span class="material-symbols-rounded icon-filled" style="font-size:18px;">check_circle</span><span>${msg}</span></div>`).join(''); } if (errorLogs.length > 0) { html += `<div style="font-size:12px; font-weight:900; color:var(--danger); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; ${successLogs.length?'margin-top:16px;':''}">✗ Errors (${errorLogs.length})</div>`; html += errorLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:#fef2f2; border:1px solid #fecaca; border-radius:10px; margin-bottom:8px; font-size:13px; color:#991b1b; font-weight:700;"><span class="material-symbols-rounded icon-filled" style="font-size:18px;">error</span><span>${msg}</span></div>`).join(''); } logDiv.innerHTML = html; } } catch(error) { toast('Error reading file. Please check if it is a valid Excel or CSV file.', 'r'); setSyncState('err'); } }; reader.readAsArrayBuffer(file); };
+window.checkHouseMismatch = function() { const btn = document.getElementById('btn-house-check'); const resultBox = document.getElementById('house-check-result'); const summaryEl = document.getElementById('house-check-summary'); const errorsEl = document.getElementById('house-check-errors'); btn.innerHTML = `<span class="material-symbols-rounded" style="color:#f59e0b; animation: pulse 0.8s infinite;">rule</span> Checking...`; btn.disabled = true; const allRegs = Object.values(regs); const total = allRegs.length; let checked = 0; const errors = []; allRegs.forEach(r => { const chestNo = String(r.chestNo || '').trim().toUpperCase(); const slotHouse = toTitle(r.house || ''); const progCode = String(r.programCode || r.programId || ''); const progName = String(r.programName || ''); const stu = Object.values(students).find(s => String(s.chestNo || '').toUpperCase() === chestNo); checked++; if (!stu) { errors.push({ type: 'not_found', chestNo, slotHouse, progCode, progName, msg: `Student not found in database` }); return; } const actualHouse = toTitle(stu.house || ''); if (actualHouse !== slotHouse) { errors.push({ type: 'mismatch', chestNo, name: stu.name, slotHouse, actualHouse, progCode, progName }); } }); const pct = total > 0 ? Math.round((checked / total) * 100) : 0; const hasErrors = errors.length > 0; summaryEl.innerHTML = `<div style="display:flex; align-items:center; gap:10px; flex:1; min-width:180px;"><span class="material-symbols-rounded icon-filled" style="color:${hasErrors?'var(--danger)':'var(--success)'}; font-size:32px;">${hasErrors ? 'warning' : 'verified'}</span><div><div style="font-size:15px; font-weight:900; color:${hasErrors?'var(--danger)':'var(--success)'};">${hasErrors ? errors.length + ' Mismatch' + (errors.length>1?'es':'') + ' Found' : 'All Clear!'}</div><div style="font-size:12px; color:var(--r500); font-weight:800;">${checked} / ${total} slots checked</div></div></div><div style="text-align:right; flex-shrink:0;"><div style="font-size:32px; font-weight:900; color:var(--pri); line-height:1;">${pct}%</div><div style="font-size:11px; color:var(--r500); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Checked</div></div><div style="width:100%; height:8px; background:var(--r100); border-radius:99px; overflow:hidden; flex-basis:100; margin-top:4px;"><div style="height:100%; width:${pct}%; background:${hasErrors?'var(--danger)':'var(--success)'}; border-radius:99px; transition:width 0.5s ease;"></div></div>`; if (!hasErrors) { errorsEl.innerHTML = `<div style="text-align:center; padding:20px 0; color:var(--success); font-weight:900; font-size:15px;"><span class="material-symbols-rounded icon-filled" style="font-size:48px; display:block; margin-bottom:8px;">check_circle</span>No house mismatches found!</div>`; } else { errorsEl.innerHTML = `<div style="font-size:12px; font-weight:900; color:var(--r500); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">Mismatch Details</div>` + errors.map(e => { if (e.type === 'not_found') { return `<div style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; margin-bottom:10px;"><span class="material-symbols-rounded icon-filled" style="color:var(--danger); flex-shrink:0; font-size:24px;">person_off</span><div style="flex:1; min-width:0;"><div style="font-size:14px; font-weight:900; color:var(--r800);">${e.chestNo} — ${e.msg}</div><div style="font-size:12px; color:var(--r500); font-weight:700; margin-top:2px;">${e.progCode}${e.progName ? ' · ' + e.progName : ''} · Slot House: <b>${e.slotHouse}</b></div></div></div>`; } return `<div style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; margin-bottom:10px;"><div class="chest" style="background:${getHouseColor(e.slotHouse)}; min-width:60px; font-size:14px; padding:6px;">${e.chestNo}</div><div style="flex:1; min-width:0;"><div style="font-size:14px; font-weight:900; color:var(--r800); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.name}</div><div style="font-size:12px; color:var(--r500); font-weight:700; margin-top:2px;">${e.progCode}${e.progName ? ' · ' + e.progName : ''}</div></div><div style="flex-shrink:0; text-align:right;"><div style="font-size:11px; color:var(--r500); font-weight:800;">Slot</div><div style="font-size:13px; font-weight:900; color:${getHouseColor(e.slotHouse)};">${e.slotHouse}</div><div style="font-size:18px; color:var(--r400); line-height:1; margin:2px 0;">↕</div><div style="font-size:11px; color:var(--r500); font-weight:800;">Actual</div><div style="font-size:13px; font-weight:900; color:${getHouseColor(e.actualHouse)};">${e.actualHouse}</div></div></div>`; }).join(''); } resultBox.style.display = 'block'; btn.innerHTML = `<span class="material-symbols-rounded" style="color:#f59e0b;">rule</span> Check House Mismatch`; btn.disabled = false; };
+
+let loadedStreams = { students: false, programs: false, registrations: false };
+function updateProgressBar(streamName) { loadedStreams[streamName] = true; const fill = document.getElementById('pbar-fill'); const status = document.getElementById('pbar-status'); let totalLoaded = Object.values(loadedStreams).filter(Boolean).length; let percent = Math.floor((totalLoaded / 3) * 100); if(fill) fill.style.width = percent + '%'; if(status) status.textContent = `Assembling Dashboard (${percent}%)`; if(totalLoaded === 3) { setTimeout(() => { const loadingEl = document.getElementById('loading'); const appEl = document.getElementById('app'); if(loadingEl) loadingEl.style.opacity = '0'; setTimeout(() => { if(loadingEl) loadingEl.style.display = 'none'; if(appEl) { appEl.style.display = 'block'; setTimeout(() => appEl.style.opacity = '1', 50); } }, 300); }, 500); } }
+
+onSnapshot(collection(db,'students'),snap=>{ students={}; snap.forEach(d=>{students[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderStudents(); updateProgressBar('students'); }, e => setSyncState('err'));
+onSnapshot(collection(db,'programs'),snap=>{ programs={}; snap.forEach(d=>{programs[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderPrograms(); renderAdminPanel(); renderRegister(); if(document.getElementById('pg-printing').classList.contains('on')) renderPrintingList(); updateProgressBar('programs'); }, e => setSyncState('err'));
+onSnapshot(collection(db,'registrations'),snap=>{ regs={}; snap.forEach(d=>{regs[d.id]={...d.data(), id:d.id};}); setSyncState('ok'); renderRegister(); renderAdminPanel(); if(document.getElementById('pg-printing').classList.contains('on')) renderPrintingList(); updateProgressBar('registrations'); }, e => setSyncState('err'));
+</script>
+</body>
+</html>
