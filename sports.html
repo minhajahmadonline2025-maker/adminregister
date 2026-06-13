@@ -323,6 +323,14 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
             <div><div style="font-size:16px; font-weight:900;">Batch Print Center</div><div style="font-size:12px; color:var(--sec); font-weight:600;">Select programs to shuffle & print together</div></div>
             <span class="material-symbols-rounded" style="font-size:32px; opacity:0.8;">print</span>
         </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 8px;">
+            <label style="font-size:12px; font-weight:700;">Print Layout:</label>
+            <select id="batch-print-format" style="background: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; color: var(--r800); outline: none;">
+                <option value="both">Both (Name & Judgement)</option>
+                <option value="name">Candidates Only (Name)</option>
+                <option value="judge">Judgement Only (No Name)</option>
+            </select>
+        </div>
         <button class="btn" style="background:#fff; color:var(--pri);" onclick="batchPrintSelected()"><span class="material-symbols-rounded">shuffle</span> Auto-Shuffle & Print Selected (<span id="print-sel-count">0</span>)</button>
     </div>
     <div class="frow">
@@ -356,7 +364,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
         <button class="btn btn-primary btn-sm" onclick="importStudents()" style="min-width:120px; background:var(--success); border-color:var(--success);"><span class="material-symbols-rounded">upload</span> Import</button>
       </div>
     </div>
-    <!-- END BULK IMPORT/EXPORT FEATURE (STUDENTS) -->
 
     <div class="frow">
       <div class="input-wrap"><span class="material-symbols-rounded">search</span><input type="text" class="has-icon" id="stu-search" placeholder="Search name or chest no..." oninput="renderStudents()"></div>
@@ -385,7 +392,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
         <button class="btn btn-primary btn-sm" onclick="importPrograms()" style="min-width:120px; background:var(--success); border-color:var(--success);"><span class="material-symbols-rounded">upload</span> Import</button>
       </div>
     </div>
-    <!-- END BULK PROGRAMS IMPORT/EXPORT FEATURE -->
 
     <div class="frow"><select id="prog-sec" onchange="renderPrograms()"><option value="">All Sections</option></select></div>
     <div id="prog-list"></div>
@@ -625,9 +631,145 @@ window.renderPrintingList = function() { const search = String(document.getEleme
 window.togglePrintSelect = function(e, pid) { if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return; const cb = document.getElementById(`cb-${pid}`); if(cb) { cb.checked = !cb.checked; updatePrintSelectedCount(); } };
 window.toggleSelectAllPrint = function(isChecked) { document.querySelectorAll('.print-cb').forEach(cb => cb.checked = isChecked); updatePrintSelectedCount(); };
 window.updatePrintSelectedCount = function() { document.getElementById('print-sel-count').textContent = document.querySelectorAll('.print-cb:checked').length; };
-window.batchPrintSelected = async function() { const selectedCbs = document.querySelectorAll('.print-cb:checked'); if(selectedCbs.length === 0) { toast("Select at least one program to print", "r"); return; } setSyncState('ing'); const batch = writeBatch(db); let printHtmlAgg = ''; for(let i=0; i<selectedCbs.length; i++) { const pid = selectedCbs[i].value; const prog = programs[pid]; const progRegs = Object.values(regs).filter(r => r.programId === pid); printHtmlAgg += generateProgramPrintHTML(prog, progRegs, batch); } try { await batch.commit(); setSyncState('ok'); document.getElementById('print-container').innerHTML = printHtmlAgg; toast('Generation Complete. Opening Printer...', 'g'); setTimeout(() => window.print(), 800); } catch(e) { setSyncState('err'); toast("Failed to save codes", "r"); } };
-function generateProgramPrintHTML(prog, progRegs, batch) { let isGroup = prog.type === 'group'; let formattedRegs = []; if (isGroup) { let grouped = {}; progRegs.forEach(r => { if(!grouped[r.house]) grouped[r.house] = []; grouped[r.house].push(r); }); for(let h in grouped) { if(grouped[h].length > 0) { formattedRegs.push({...grouped[h][0], name: grouped[h][0].name + " & TEAM", isGroup: true}); } } } else { formattedRegs = [...progRegs]; } let hasSaved = formattedRegs.some(r => r.codeLetter); if (!hasSaved && formattedRegs.length > 0) { let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; for (let i = houses.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [houses[i], houses[j]] = [houses[j], houses[i]]; } let groupedByHouse = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] }; formattedRegs.forEach(r => { let h = toTitle(r.house); if(groupedByHouse[h]) groupedByHouse[h].push(r); else { let k = Object.keys(groupedByHouse)[0]; groupedByHouse[k].push(r); } }); houses.forEach(h => { if(groupedByHouse[h]) groupedByHouse[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo))); }); let finalOrder = []; let loopActive = true; while(loopActive) { loopActive = false; for(let i=0; i<houses.length; i++) { let hName = houses[i]; if(groupedByHouse[hName] && groupedByHouse[hName].length > 0) { finalOrder.push(groupedByHouse[hName].shift()); loopActive = true; } } } formattedRegs = finalOrder.map((r, idx) => { let codeLetter = String.fromCharCode(65 + idx); r.codeLetter = codeLetter; if(!isGroup) { batch.set(doc(db, 'registrations', r.id), { codeLetter: codeLetter }, { merge: true }); } else { progRegs.forEach(origR => { if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: codeLetter }, { merge: true }); }); } return r; }); } else { formattedRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z'))); } return buildPrintPageHtml(prog, formattedRegs); }
-function buildPrintPageHtml(prog, formattedRegs) { const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true }); const totalRows = Math.max(formattedRegs.length, 12); let leftRows = '', rightRows = ''; for(let i = 0; i < totalRows; i++) { const r = formattedRegs[i]; if(r) { const cls = r.isGroup ? 'TEAM' : (students[r.studentId]?.class || ''); const houseShort = r.house.substring(0, 4).toUpperCase(); leftRows += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td><td>${houseShort}</td><td>${cls}</td><td></td><td></td><td></td></tr>`; rightRows += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`; } else { leftRows += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`; rightRows += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`; } } return `<div class="print-page"><div class="watermark"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"></div><div class="print-half"><div class="print-header">KAMA 2K26<br><span class="print-header-sub">SPORTS CANDIDATES</span></div><div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div><table class="print-table"><thead><tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr></thead><tbody>${leftRows}</tbody></table><div class="print-footer"><span>Printed on: ${printDate}</span><span>Sign of completion: __________________</span></div></div><div class="print-half"><div class="print-header">KAMA 2K26 - SPORTS FEST<br><span class="print-header-sub">JUDGEMENT SHEET</span></div><div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div><table class="print-table"><thead><tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr></thead><tbody>${rightRows}</tbody></table><div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div><div class="print-footer" style="margin-top:15px;"><div style="display:flex; flex-direction:column; gap:10px; width:100%;"><div>Printed on: ${printDate}</div><div style="display:flex; justify-content:space-between;"><span>Name of Judge: ________________________</span><span>Sign: _________ Date: _________</span></div></div></div></div></div>`; }
+
+function processPrintData(prog, progRegs, batch) {
+    let isGroup = prog.type === 'group';
+    let formattedRegs = [];
+    if (isGroup) {
+        let grouped = {};
+        progRegs.forEach(r => {
+            if(!grouped[r.house]) grouped[r.house] = [];
+            grouped[r.house].push(r);
+        });
+        for(let h in grouped) {
+            if(grouped[h].length > 0) {
+                formattedRegs.push({...grouped[h][0], name: grouped[h][0].name + " & TEAM", isGroup: true});
+            }
+        }
+    } else {
+        formattedRegs = [...progRegs];
+    }
+    let hasSaved = formattedRegs.some(r => r.codeLetter);
+    if (!hasSaved && formattedRegs.length > 0) {
+        let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
+        for (let i = houses.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [houses[i], houses[j]] = [houses[j], houses[i]];
+        }
+        let groupedByHouse = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] };
+        formattedRegs.forEach(r => {
+            let h = toTitle(r.house);
+            if(groupedByHouse[h]) groupedByHouse[h].push(r);
+            else { let k = Object.keys(groupedByHouse)[0]; groupedByHouse[k].push(r); }
+        });
+        houses.forEach(h => {
+            if(groupedByHouse[h]) groupedByHouse[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo)));
+        });
+        let finalOrder = [];
+        let loopActive = true;
+        while(loopActive) {
+            loopActive = false;
+            for(let i=0; i<houses.length; i++) {
+                let hName = houses[i];
+                if(groupedByHouse[hName] && groupedByHouse[hName].length > 0) {
+                    finalOrder.push(groupedByHouse[hName].shift());
+                    loopActive = true;
+                }
+            }
+        }
+        formattedRegs = finalOrder.map((r, idx) => {
+            let codeLetter = String.fromCharCode(65 + idx);
+            r.codeLetter = codeLetter;
+            if(!isGroup) {
+                batch.set(doc(db, 'registrations', r.id), { codeLetter: codeLetter }, { merge: true });
+            } else {
+                progRegs.forEach(origR => {
+                    if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: codeLetter }, { merge: true });
+                });
+            }
+            return r;
+        });
+    } else {
+        formattedRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z')));
+    }
+    return formattedRegs;
+}
+
+function generatePrintHalf(prog, formattedRegs, type) {
+    const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
+    const totalRows = Math.max(formattedRegs.length, 12);
+    let rowsHtml = '';
+    for(let i = 0; i < totalRows; i++) {
+        const r = formattedRegs[i];
+        if(r) {
+            const cls = r.isGroup ? 'TEAM' : (students[r.studentId]?.class || '');
+            const houseShort = r.house.substring(0, 4).toUpperCase();
+            if(type === 'name') {
+                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td><td>${houseShort}</td><td>${cls}</td><td></td><td></td><td></td></tr>`;
+            } else {
+                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+            }
+        } else {
+            rowsHtml += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+        }
+    }
+    const title = type === 'name' ? 'SPORTS CANDIDATES' : 'JUDGEMENT SHEET';
+    let tableHead = '';
+    if(type === 'name') {
+        tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
+    } else {
+        tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
+    }
+    let extraInfo = type === 'judge' ? `<div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>` : '';
+    let footerSign = type === 'name' ? `<span style="margin-left:auto;">Sign of completion: __________________</span>` : `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
+    
+    return `<div class="print-half"><div class="print-header">KAMA 2K26${type==='judge'?' - SPORTS FEST':''}<br><span class="print-header-sub">${title}</span></div><div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div><table class="print-table"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table>${extraInfo}<div class="print-footer" style="${type==='judge'?'margin-top:15px;':''}"><div style="display:flex; flex-direction:column; gap:10px; width:100%;"><div style="display:flex; align-items:center; width:100%;"><span>Printed on: ${printDate}</span>${type==='name'?footerSign:''}</div>${type==='judge'?footerSign:''}</div></div></div>`;
+}
+
+function wrapInPage(half1, half2) {
+    let watermark = `<div class="watermark"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"></div>`;
+    return `<div class="print-page">${watermark}${half1 || '<div class="print-half"></div>'}${half2 || '<div class="print-half"></div>'}</div>`;
+}
+
+window.batchPrintSelected = async function() {
+    const selectedCbs = document.querySelectorAll('.print-cb:checked');
+    if(selectedCbs.length === 0) { toast("Select at least one program to print", "r"); return; }
+    const format = document.getElementById('batch-print-format').value;
+    setSyncState('ing');
+    const batch = writeBatch(db);
+    let allHalves = [];
+    
+    for(let i=0; i<selectedCbs.length; i++) {
+        const pid = selectedCbs[i].value;
+        const prog = programs[pid];
+        const progRegs = Object.values(regs).filter(r => r.programId === pid);
+        const formattedRegs = processPrintData(prog, progRegs, batch);
+        
+        if (format === 'both') {
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge'));
+        } else {
+            allHalves.push(generatePrintHalf(prog, formattedRegs, format));
+        }
+    }
+    
+    let printHtmlAgg = '';
+    for(let i=0; i<allHalves.length; i+=2) {
+        printHtmlAgg += wrapInPage(allHalves[i], allHalves[i+1]);
+    }
+    
+    try {
+        await batch.commit();
+        setSyncState('ok');
+        document.getElementById('print-container').innerHTML = printHtmlAgg;
+        toast('Generation Complete. Opening Printer...', 'g');
+        setTimeout(() => window.print(), 800);
+    } catch(e) {
+        setSyncState('err');
+        toast("Failed to save codes", "r");
+    }
+};
+
 let currentPrintData = null; window.customOrder = ["", "", "", ""]; 
 window.openPrintSetup = function(pid) { const prog = programs[pid]; if(!prog) return; let progRegs = Object.values(regs).filter(r => r.programId === pid); if(prog.type === 'group') { const grouped = {}; progRegs.forEach(r => { if(!grouped[r.house]) grouped[r.house] = []; grouped[r.house].push(r); }); progRegs = []; for(const house in grouped) { if(grouped[house].length > 0) { const rep = grouped[house][0]; progRegs.push({ ...rep, name: rep.name + " & TEAM", isGroup: true }); } } } let hasSaved = progRegs.some(r => r.codeLetter); if (hasSaved) { progRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z'))); } currentPrintData = { prog, regs: hasSaved ? [...progRegs] : [], rawRegs: [...progRegs], isLocked: hasSaved }; window.customOrder = ["", "", "", ""]; renderPrintSetup(); openModal('modal-print-setup'); };
 function assignCodeLetters(arr) { return arr.map((r, idx) => ({ ...r, codeLetter: String.fromCharCode(65 + idx) })); }
@@ -635,8 +777,96 @@ window.updateManualOrder = function(index, val) { window.customOrder[index] = va
 window.autoRandomizeCodes = function() { let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; for (let i = houses.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [houses[i], houses[j]] = [houses[j], houses[i]]; } window.customOrder = houses; applyDistinctHouseOrder(window.customOrder); };
 function applyDistinctHouseOrder(orderArray) { let availableRegs = currentPrintData.rawRegs.map(r => ({...r})); let grouped = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] }; availableRegs.forEach(r => { let h = toTitle(r.house); if(grouped[h] !== undefined) { grouped[h].push(r); } else { let firstKey = Object.keys(grouped)[0]; grouped[firstKey].push(r); } }); orderArray.forEach(h => { if(grouped[h]) grouped[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo))); }); let finalOrder = []; let loopActive = true; while (loopActive) { loopActive = false; for (let i = 0; i < orderArray.length; i++) { let hName = orderArray[i]; if (grouped[hName] && grouped[hName].length > 0) { finalOrder.push(grouped[hName].shift()); loopActive = true; } } } Object.keys(grouped).forEach(h => { if(grouped[h] && grouped[h].length > 0) { finalOrder.push(...grouped[h]); } }); currentPrintData.regs = assignCodeLetters(finalOrder); renderPrintSetup(); }
 window.unlockCodes = function() { currentPrintData.isLocked = false; currentPrintData.regs = []; window.customOrder = ["", "", "", ""]; renderPrintSetup(); }
-function renderPrintSetup() { const { prog, regs, isLocked } = currentPrintData; if(!window.customOrder) window.customOrder = ["", "", "", ""]; const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; let selectsHtml = ''; for(let i=0; i<4; i++) { let letter = String.fromCharCode(65+i); let options = `<option value="">-- House --</option>`; fixedHouses.forEach(h => { let isSelected = window.customOrder[i] === h; let isSelectedElsewhere = window.customOrder.includes(h) && !isSelected; let disabled = isSelectedElsewhere ? 'disabled' : ''; let selected = isSelected ? 'selected' : ''; options += `<option value="${h}" ${selected} ${disabled}>${h}</option>`; }); selectsHtml += `<div style="display:flex; flex-direction:column; gap:4px; flex:1;"><label style="font-size:11px; font-weight:800; color:var(--r500); text-align:center;">CODE ${letter}</label><select onchange="updateManualOrder(${i}, this.value)" style="min-height:36px; padding:6px; font-size:13px; font-weight:700; text-align:center; cursor:pointer; outline:none; border-radius:6px; border:1px solid var(--r300);">${options}</select></div>`; } let isReady = window.customOrder.filter(x => x !== "").length === 4; let html = `<div style="font-size:14px; font-weight:800; color:var(--r800); margin-bottom:12px;">${prog.code} - ${prog.name} (${prog.type.toUpperCase()})</div>`; if(isLocked) { html += `<div style="background:#f0fdf4; border:1px solid #86efac; padding:14px; border-radius:10px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:13px; font-weight:800; color:#065f46;"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:18px; margin-right:6px;">lock</span> Code Letters are Fixed</div><button class="btn btn-out btn-sm" onclick="unlockCodes()" style="border-color:var(--success); color:var(--success); background:#fff;">Change Codes</button></div>`; } else { html += `<div style="background:var(--r50); border:1px solid var(--r200); padding:14px; border-radius:10px; margin-bottom:16px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><div style="font-size:12px; font-weight:900; color:var(--pri); text-transform:uppercase;">Manual Code Setup</div><button class="btn btn-out btn-sm" onclick="autoRandomizeCodes()" style="min-height:28px; padding:4px 10px; font-size:11px; border-color:var(--purple); color:var(--purple); background:#faf5ff; box-shadow:none; cursor:pointer;"><span class="material-symbols-rounded" style="font-size:14px; margin-right:4px;">casino</span> Auto Random</button></div><div style="display:flex; gap:8px;">${selectsHtml}</div>${!isReady ? `<div style="font-size:11px; color:var(--danger); margin-top:10px; font-weight:700;">* Select houses for A, B, and C. Code D will auto-fill.</div>` : `<div style="font-size:11px; color:var(--success); margin-top:10px; font-weight:800; display:flex; align-items:center; gap:4px;"><span class="material-symbols-rounded" style="font-size:14px;">check_circle</span> Code order applied successfully!</div>`}</div>`; } html += `<div style="max-height: 38vh; overflow-y:auto; border:1px solid var(--r200); border-radius:8px;"><table class="print-setup-table" style="margin-top:0;"><thead style="position:sticky; top:0; z-index:10;"><tr><th>Lot</th><th>Chest</th><th>Name</th><th>House</th></tr></thead><tbody>${regs.length === 0 && !isReady && !isLocked ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--r400); font-weight:600;">Set house order above to generate codes</td></tr>` : ''}${regs.length === 0 && isReady && currentPrintData.rawRegs.length === 0 ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--danger); font-weight:600;">No pending candidates available for this program.</td></tr>` : ''}${regs.map(r => `<tr><td class="t-code">${r.codeLetter}</td><td>${r.chestNo}</td><td>${r.name}</td><td>${r.house}</td></tr>`).join('')}</tbody></table></div>`; document.getElementById('print-setup-body').innerHTML = html; const btn = document.getElementById('print-save-btn'); if(isLocked || prog.type === 'group') { btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">print</span> Print Sheet`; } else { btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">save</span> Save & Print`; } }
-window.triggerPrint = async function() { const { prog, regs, rawRegs, isLocked } = currentPrintData; if (regs.length === 0 && rawRegs.length > 0) { toast("Please complete the Manual Code Letter setup first!", "r"); return; } if (!isLocked && regs.length > 0) { setSyncState('ing'); try { const batch = writeBatch(db); regs.forEach(r => { if(prog.type === 'group') { rawRegs.forEach(origR => { if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: r.codeLetter }, { merge: true }); }); } else { batch.set(doc(db, 'registrations', r.id), { codeLetter: r.codeLetter }, { merge: true }); } }); await batch.commit(); setSyncState('ok'); toast('Code Letters Saved!', 'g'); currentPrintData.isLocked = true; renderPrintSetup(); setTimeout(() => { document.getElementById('print-container').innerHTML = buildPrintPageHtml(prog, regs); window.print(); }, 500); } catch(e) { setSyncState('err'); toast('Failed to save code letters', 'r'); } } else { document.getElementById('print-container').innerHTML = buildPrintPageHtml(prog, regs); window.print(); } };
+function renderPrintSetup() { 
+    const { prog, regs, isLocked } = currentPrintData; 
+    if(!window.customOrder) window.customOrder = ["", "", "", ""]; 
+    const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; 
+    let selectsHtml = ''; 
+    for(let i=0; i<4; i++) { 
+        let letter = String.fromCharCode(65+i); 
+        let options = `<option value="">-- House --</option>`; 
+        fixedHouses.forEach(h => { 
+            let isSelected = window.customOrder[i] === h; 
+            let isSelectedElsewhere = window.customOrder.includes(h) && !isSelected; 
+            let disabled = isSelectedElsewhere ? 'disabled' : ''; 
+            let selected = isSelected ? 'selected' : ''; 
+            options += `<option value="${h}" ${selected} ${disabled}>${h}</option>`; 
+        }); 
+        selectsHtml += `<div style="display:flex; flex-direction:column; gap:4px; flex:1;"><label style="font-size:11px; font-weight:800; color:var(--r500); text-align:center;">CODE ${letter}</label><select onchange="updateManualOrder(${i}, this.value)" style="min-height:36px; padding:6px; font-size:13px; font-weight:700; text-align:center; cursor:pointer; outline:none; border-radius:6px; border:1px solid var(--r300);">${options}</select></div>`; 
+    } 
+    let isReady = window.customOrder.filter(x => x !== "").length === 4; 
+    let html = `<div style="font-size:14px; font-weight:800; color:var(--r800); margin-bottom:12px;">${prog.code} - ${prog.name} (${prog.type.toUpperCase()})</div>`; 
+    if(isLocked) { 
+        html += `<div style="background:#f0fdf4; border:1px solid #86efac; padding:14px; border-radius:10px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;"><div style="font-size:13px; font-weight:800; color:#065f46;"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:18px; margin-right:6px;">lock</span> Code Letters are Fixed</div><button class="btn btn-out btn-sm" onclick="unlockCodes()" style="border-color:var(--success); color:var(--success); background:#fff;">Change Codes</button></div>`; 
+    } else { 
+        html += `<div style="background:var(--r50); border:1px solid var(--r200); padding:14px; border-radius:10px; margin-bottom:16px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><div style="font-size:12px; font-weight:900; color:var(--pri); text-transform:uppercase;">Manual Code Setup</div><button class="btn btn-out btn-sm" onclick="autoRandomizeCodes()" style="min-height:28px; padding:4px 10px; font-size:11px; border-color:var(--purple); color:var(--purple); background:#faf5ff; box-shadow:none; cursor:pointer;"><span class="material-symbols-rounded" style="font-size:14px; margin-right:4px;">casino</span> Auto Random</button></div><div style="display:flex; gap:8px;">${selectsHtml}</div>${!isReady ? `<div style="font-size:11px; color:var(--danger); margin-top:10px; font-weight:700;">* Select houses for A, B, and C. Code D will auto-fill.</div>` : `<div style="font-size:11px; color:var(--success); margin-top:10px; font-weight:800; display:flex; align-items:center; gap:4px;"><span class="material-symbols-rounded" style="font-size:14px;">check_circle</span> Code order applied successfully!</div>`}</div>`; 
+    } 
+    html += `<div style="max-height: 38vh; overflow-y:auto; border:1px solid var(--r200); border-radius:8px;"><table class="print-setup-table" style="margin-top:0;"><thead style="position:sticky; top:0; z-index:10;"><tr><th>Lot</th><th>Chest</th><th>Name</th><th>House</th></tr></thead><tbody>${regs.length === 0 && !isReady && !isLocked ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--r400); font-weight:600;">Set house order above to generate codes</td></tr>` : ''}${regs.length === 0 && isReady && currentPrintData.rawRegs.length === 0 ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--danger); font-weight:600;">No pending candidates available for this program.</td></tr>` : ''}${regs.map(r => `<tr><td class="t-code">${r.codeLetter}</td><td>${r.chestNo}</td><td>${r.name}</td><td>${r.house}</td></tr>`).join('')}</tbody></table></div>`; 
+    
+    // Puthiya Layout Format Select Dropdown
+    html += `<div style="margin-top: 16px; padding: 12px; background: var(--r50); border: 1px solid var(--r200); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size:12px; font-weight:800; color:var(--r800);">Print Layout:</span>
+        <select id="single-print-format" style="width:auto; min-height:30px; padding:4px 8px; font-size:12px; font-weight:700; border-radius:6px; border:1px solid var(--r300); outline:none; color: var(--r800); background:#fff;">
+            <option value="both">Both (Name & Judgement)</option>
+            <option value="name">Candidates Only</option>
+            <option value="judge">Judgement Only</option>
+        </select>
+    </div>`;
+    
+    document.getElementById('print-setup-body').innerHTML = html; 
+    
+    const btn = document.getElementById('print-save-btn'); 
+    if(isLocked || prog.type === 'group') { 
+        btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">print</span> Print Sheet`; 
+    } else { 
+        btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:18px; margin-right:4px;">save</span> Save & Print`; 
+    } 
+}
+
+window.triggerPrint = async function() { 
+    const { prog, regs, rawRegs, isLocked } = currentPrintData; 
+    if (regs.length === 0 && rawRegs.length > 0) { toast("Please complete the Manual Code Letter setup first!", "r"); return; } 
+    
+    const format = document.getElementById('single-print-format').value;
+    
+    const printNow = () => {
+        let printHtmlAgg = '';
+        if (format === 'both') {
+            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge'));
+        } else {
+            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, format), ''); // Only one half
+        }
+        document.getElementById('print-container').innerHTML = printHtmlAgg;
+        window.print();
+    };
+
+    if (!isLocked && regs.length > 0) { 
+        setSyncState('ing'); 
+        try { 
+            const batch = writeBatch(db); 
+            regs.forEach(r => { 
+                if(prog.type === 'group') { 
+                    rawRegs.forEach(origR => { 
+                        if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: r.codeLetter }, { merge: true }); 
+                    }); 
+                } else { 
+                    batch.set(doc(db, 'registrations', r.id), { codeLetter: r.codeLetter }, { merge: true }); 
+                } 
+            }); 
+            await batch.commit(); 
+            setSyncState('ok'); 
+            toast('Code Letters Saved!', 'g'); 
+            currentPrintData.isLocked = true; 
+            renderPrintSetup(); 
+            setTimeout(() => { printNow(); }, 500); 
+        } catch(e) { 
+            setSyncState('err'); 
+            toast('Failed to save code letters', 'r'); 
+        } 
+    } else { 
+        printNow(); 
+    } 
+};
 
 /* ================= SUBSTITUTION SCRIPTS ================= */
 window.checkSubProg = function() { const val = document.getElementById('man-prog-code').value.trim().toUpperCase(); const el = document.getElementById('man-prog-name'); if(!val) { el.textContent = ''; return; } const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === val); el.textContent = prog ? `✓ ${prog.name}` : '✗ Program code not found'; el.className = prog ? 'hint-txt hint-ok' : 'hint-txt hint-err'; if(document.getElementById('man-old-chest').value) checkSubOld(); };
