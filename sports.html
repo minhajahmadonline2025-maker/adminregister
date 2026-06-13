@@ -342,7 +342,7 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
       <span class="cnt-lbl" id="stu-count"></span>
     </div>
 
-    <!-- NEW BULK IMPORT/EXPORT FEATURE -->
+    <!-- BULK IMPORT/EXPORT FEATURE (STUDENTS) -->
     <div class="card" style="flex-direction:column; align-items:flex-start; padding:16px; margin-bottom:16px; gap: 12px; border: 1.5px solid var(--r200);">
       <div style="font-size:13px; font-weight:800; color:var(--r800); display:flex; align-items:center; gap:6px;">
         <span class="material-symbols-rounded" style="color:var(--pri);">group_add</span> Bulk Import / Export Candidates
@@ -356,7 +356,7 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
         <button class="btn btn-primary btn-sm" onclick="importStudents()" style="min-width:120px; background:var(--success); border-color:var(--success);"><span class="material-symbols-rounded">upload</span> Import</button>
       </div>
     </div>
-    <!-- END NEW BULK IMPORT/EXPORT FEATURE -->
+    <!-- END BULK IMPORT/EXPORT FEATURE (STUDENTS) -->
 
     <div class="frow">
       <div class="input-wrap"><span class="material-symbols-rounded">search</span><input type="text" class="has-icon" id="stu-search" placeholder="Search name or chest no..." oninput="renderStudents()"></div>
@@ -370,6 +370,23 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
       <button class="btn btn-primary" onclick="openProgramModal()"><span class="material-symbols-rounded">add_circle</span> Add Program</button>
       <span class="cnt-lbl" id="prog-count"></span>
     </div>
+
+    <!-- BULK PROGRAMS IMPORT/EXPORT FEATURE -->
+    <div class="card" style="flex-direction:column; align-items:flex-start; padding:16px; margin-bottom:16px; gap: 12px; border: 1.5px solid var(--r200);">
+      <div style="font-size:13px; font-weight:800; color:var(--r800); display:flex; align-items:center; gap:6px;">
+        <span class="material-symbols-rounded" style="color:var(--pri);">post_add</span> Bulk Import / Export Programs
+      </div>
+      <div style="font-size:11px; color:var(--r500);">Download your existing program list or upload a new CSV/XLSX file to add multiple programs at once. Headers must be: <b style="color:var(--r700);">Code, Name, Section, Type, Limit</b></div>
+      <div style="display:flex; gap:10px; width:100%; flex-wrap:wrap; align-items:center; margin-top:4px;">
+        <button class="btn btn-out btn-sm" onclick="exportPrograms()" style="min-width:120px;"><span class="material-symbols-rounded">download</span> Export</button>
+        <div style="flex:1; min-width:200px; display:flex; align-items:center; border: 1.5px dashed var(--r300); padding:4px 8px; border-radius:var(--rads);">
+          <input type="file" id="prog-import-file" accept=".xlsx, .csv" style="border:none; min-height:auto; padding:0; box-shadow:none; font-size:12px; width:100%;">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="importPrograms()" style="min-width:120px; background:var(--success); border-color:var(--success);"><span class="material-symbols-rounded">upload</span> Import</button>
+      </div>
+    </div>
+    <!-- END BULK PROGRAMS IMPORT/EXPORT FEATURE -->
+
     <div class="frow"><select id="prog-sec" onchange="renderPrograms()"><option value="">All Sections</option></select></div>
     <div id="prog-list"></div>
   </div>
@@ -546,6 +563,38 @@ window.importStudents = function() {
                 count++;
             });
             await batch.commit(); setSyncState('ok'); toast(`Successfully imported ${count} students!`, 'g'); fileInput.value = '';
+        } catch(err) { toast('Failed to import. Check file format.', 'r'); setSyncState('err'); }
+    };
+    reader.readAsArrayBuffer(file);
+};
+
+/* ================= NEW BULK PROGRAMS IMPORT / EXPORT ================= */
+window.exportPrograms = function() {
+    if(Object.keys(programs).length === 0) { toast('No programs to export', 'r'); return; }
+    const wsData = Object.values(programs).map(p => ({
+        'Code': p.code, 'Name': p.name, 'Section': p.section || '', 'Type': p.type || 'individual', 'Limit': p.candidateLimit || 3
+    }));
+    const ws = XLSX.utils.json_to_sheet(wsData); const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Programs"); XLSX.writeFile(wb, "Programs_List.xlsx");
+};
+window.importPrograms = function() {
+    const fileInput = document.getElementById('prog-import-file'); const file = fileInput.files[0];
+    if(!file) { toast('Please select an Excel or CSV file first', 'r'); return; }
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            if(rows.length === 0) { toast('File is empty', 'r'); return; }
+            setSyncState('ing'); const batch = writeBatch(db); let count = 0;
+            rows.forEach(r => {
+                const code = String(r['Code'] || '').trim().toUpperCase(); const name = String(r['Name'] || '').trim().toUpperCase();
+                if(!code || !name) return;
+                const existing = Object.values(programs).find(p => p.code === code); const id = existing ? existing.id : uid();
+                batch.set(doc(db, 'programs', id), { id, code, name, section: toTitle(r['Section'] || ''), type: String(r['Type'] || 'individual').toLowerCase(), candidateLimit: parseInt(r['Limit']) || 3, registrationEnabled: true }, {merge:true});
+                count++;
+            });
+            await batch.commit(); setSyncState('ok'); toast(`Successfully imported ${count} programs!`, 'g'); fileInput.value = '';
         } catch(err) { toast('Failed to import. Check file format.', 'r'); setSyncState('err'); }
     };
     reader.readAsArrayBuffer(file);
