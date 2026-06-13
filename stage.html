@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>KAMA Arts Fest '26 - Sports Admin</title>
+<title>KAMA Arts Fest '26 - Stage Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -316,7 +316,7 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
 <div class="spinner" id="loading">
   <div class="loader-card">
     <img src="kamapng.png" alt="KAMA '26 Logo" class="loader-img-logo">
-    <div class="loader-sub">Sports Master Portal</div>
+    <div class="loader-sub">Stage Master Portal</div>
     <div class="progress-bar-track"><div class="progress-bar-fill" id="pbar-fill"></div></div>
     <div class="loader-status" id="pbar-status">Fetching Data...</div>
   </div>
@@ -327,7 +327,7 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
     <div class="hdr-row">
       <div class="hdr-left" style="display: flex; align-items: center; gap: 14px;">
         <img src="kamapng.png" alt="Logo" class="hdr-logo">
-        <div><div class="hdr-title">KAMA '26</div><div class="hdr-sub">Sports Admin Portal</div></div>
+        <div><div class="hdr-title">KAMA '26</div><div class="hdr-sub">Stage Admin Portal</div></div>
       </div>
       <div class="hdr-right">
         <div class="hdr-stats" id="hdr-stats">0 Students · 0 Progs</div>
@@ -411,7 +411,6 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
       <span class="cnt-lbl" id="stu-count"></span>
     </div>
 
-    <!-- BULK IMPORT/EXPORT FEATURE (STUDENTS) -->
     <div class="card" style="flex-direction:column; align-items:flex-start; padding:20px; margin-bottom:20px; gap: 14px;">
       <div style="font-size:15px; font-weight:900; color:var(--r800); display:flex; align-items:center; gap:8px;">
         <span class="material-symbols-rounded" style="color:var(--pri); background:var(--sec-l); padding:6px; border-radius:10px;">group_add</span> Bulk Manage Candidates
@@ -439,7 +438,6 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
       <span class="cnt-lbl" id="prog-count"></span>
     </div>
 
-    <!-- BULK PROGRAMS IMPORT/EXPORT FEATURE -->
     <div class="card" style="flex-direction:column; align-items:flex-start; padding:20px; margin-bottom:20px; gap: 14px;">
       <div style="font-size:15px; font-weight:900; color:var(--r800); display:flex; align-items:center; gap:8px;">
         <span class="material-symbols-rounded" style="color:var(--pri); background:var(--sec-l); padding:6px; border-radius:10px;">post_add</span> Bulk Manage Programs
@@ -493,7 +491,6 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
   </div>
 </div>
 
-<!-- SIDE MENU -->
 <div class="overlay" id="modal-more" onclick="closeModal('modal-more')">
   <div class="side-drawer" onclick="event.stopPropagation()">
     <div class="drawer-hdr"><div class="drawer-title">Menu Options</div><button class="mclose" onclick="closeModal('modal-more')"><span class="material-symbols-rounded">close</span></button></div>
@@ -506,7 +503,6 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
 
 <datalist id="class-list"></datalist><datalist id="section-list"></datalist><datalist id="house-list"></datalist>
 
-<!-- STUDENT MODAL -->
 <div class="overlay" id="modal-student">
   <div class="modal">
     <div class="mhdr"><span class="mtitle" id="stu-modal-title">Add Student</span><button class="mclose" onclick="closeModal('modal-student')"><span class="material-symbols-rounded">close</span></button></div>
@@ -524,7 +520,6 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
   </div>
 </div>
 
-<!-- PROGRAM MODAL -->
 <div class="overlay" id="modal-program">
   <div class="modal">
     <div class="mhdr"><span class="mtitle" id="prog-modal-title">Add Program</span><button class="mclose" onclick="closeModal('modal-program')"><span class="material-symbols-rounded">close</span></button></div>
@@ -544,7 +539,6 @@ input:checked + .toggle-slider:before { transform: translateX(20px); }
   </div>
 </div>
 
-<!-- PRINT SETUP MODAL -->
 <div id="print-container"></div>
 <div class="overlay" id="modal-print-setup">
   <div class="modal">
@@ -560,12 +554,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey:"AIzaSyDwRDCGHQEuZ09zkHm-TUVJHH2r2Mx15c8",
-  authDomain:"fest26-69c8b.firebaseapp.com",
-  projectId:"fest26-69c8b",
-  storageBucket:"fest26-69c8b.firebasestorage.app",
-  messagingSenderId:"255981759475",
-  appId:"1:255981759475:web:9501380e6b654b30960086"
+  apiKey: "AIzaSyDTHYMRYcLw7S39zzQ7t2NEDs7PdVK8d-0",
+  authDomain: "stage-daa6a.firebaseapp.com",
+  projectId: "stage-daa6a",
+  storageBucket: "stage-daa6a.firebasestorage.app",
+  messagingSenderId: "138171637501",
+  appId: "1:138171637501:web:469b5f60dd22effaa6e894"
 };
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
@@ -702,279 +696,4 @@ window.openStudentModal=function(id=null){ document.getElementById('stu-modal-ti
 window.saveStudent=async function(){ const id=document.getElementById('stu-id').value||uid(); const obj={id, chestNo:document.getElementById('stu-chest').value.trim().toUpperCase(), name:document.getElementById('stu-name').value.trim().toUpperCase(), class:document.getElementById('stu-class-input').value.trim(), section:toTitle(document.getElementById('stu-section-input').value), house:toTitle(document.getElementById('stu-house-input').value)}; if(!obj.chestNo||!obj.name||!obj.house){toast('Fill required fields','r');return;} setSyncState('ing'); try{ await setDoc(doc(db,'students',id),obj); closeModal('modal-student'); toast('Saved','g'); }catch(e){setSyncState('err');} };
 window.deleteStudent=async function(id){ if(confirm('Delete?')){ setSyncState('ing'); try{await deleteDoc(doc(db,'students',id));toast('Deleted','g');}catch(e){setSyncState('err');} } };
 
-window.renderPrograms=function(){ const secFilter=String(document.getElementById('prog-sec').value||'').toLowerCase().trim(); let arr=Object.values(programs); if(secFilter) arr=arr.filter(p=>toTitle(p.section).toLowerCase()===secFilter); arr.sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))); document.getElementById('prog-count').textContent=`${arr.length} Programs`; if(!arr.length){document.getElementById('prog-list').innerHTML=`<div class="empty"><span class="material-symbols-rounded empty-ico">event_busy</span><div class="empty-txt">No programs</div></div>`;return;} const grouped={}; arr.forEach(p=>{ const s=toTitle(p.section||'Other'); if(!grouped[s]) grouped[s]=[]; grouped[s].push(p); }); let html=''; SECTIONS.forEach(secName=>{ if(grouped[secName]){ html+=`<div class="seclbl">${secName} Section</div>`+grouped[secName].map(p=>{ const isEnabled = p.registrationEnabled !== false; return `<div class="card" style="${!isEnabled?'border-color:#fecaca;background:#fff5f5;':''}"><div class="pcode">${String(p.code||'')}</div><div class="cinfo"><div class="cname">${String(p.name||'')}</div><div class="cmeta"><span class="ptyp ptyp-${p.type.charAt(0)}">${p.type}</span> &middot; Limit ${p.candidateLimit||3}/house</div></div><div class="cacts" style="flex-direction:column;align-items:center;gap:8px;"><div style="display:flex;gap:8px;"><button class="ibtn" onclick="openProgramModal('${p.id}')"><span class="material-symbols-rounded" style="font-size:20px;">edit_square</span></button><button class="ibtn delete" onclick="deleteProgram('${p.id}')"><span class="material-symbols-rounded" style="font-size:20px;">delete</span></button></div><div class="toggle-wrap"><span class="toggle-lbl ${isEnabled?'on-lbl':'off-lbl'}" style="font-size:9px;">${isEnabled?'ON':'OFF'}</span><label class="toggle" style="margin:0;"><input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)"><span class="toggle-slider"></span></label></div></div></div>`; }).join(''); } }); document.getElementById('prog-list').innerHTML=html; };
-window.openProgramModal=function(id=null){ document.getElementById('prog-modal-title').textContent=id?'Edit Program':'Add Program'; const p=id?programs[id]:null; document.getElementById('prog-id').value=id||''; document.getElementById('prog-code').value=p?p.code:''; document.getElementById('prog-name').value=p?p.name:''; document.getElementById('prog-section-input').value=p?toTitle(p.section):''; document.getElementById('prog-type').value=p?p.type:'individual'; document.getElementById('prog-limit').value=p?p.candidateLimit:3; openModal('modal-program'); };
-window.saveProgram=async function(){ const id=document.getElementById('prog-id').value||uid(); const obj={id, code:document.getElementById('prog-code').value.trim().toUpperCase(), name:document.getElementById('prog-name').value.trim().toUpperCase(), section:toTitle(document.getElementById('prog-section-input').value), type:document.getElementById('prog-type').value, candidateLimit:parseInt(document.getElementById('prog-limit').value)||1}; if(!obj.code||!obj.name){toast('Fill required fields','r');return;} setSyncState('ing'); try{await setDoc(doc(db,'programs',id),obj, {merge:true}); closeModal('modal-program');toast('Saved','g');}catch(e){setSyncState('err');} };
-window.deleteProgram=async function(id){ if(confirm('Delete program?')){ setSyncState('ing'); try{await deleteDoc(doc(db,'programs',id));}catch(e){setSyncState('err');} } };
-
-/* ================= REGISTRATION & DASHBOARD ================= */
-function regKey(pid,house,slot){return `${pid}__${house}__${slot}`;}
-window.renderRegister=function(){ const secFilter=String(document.getElementById('reg-sec').value||'').toLowerCase().trim(); let progs=Object.values(programs); if(secFilter) progs=progs.filter(p=>toTitle(p.section).toLowerCase()===secFilter); progs.sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))); document.getElementById('reg-count').textContent=`${Object.keys(regs).length} Slots Filled`; if(!progs.length){document.getElementById('reg-area').innerHTML=`<div class="empty"><span class="material-symbols-rounded empty-ico">event_busy</span><div class="empty-txt">No programs</div></div>`;return;} let houseHeaderCols=''; let candHeaderCols=''; const maxLimit=Math.max(...progs.map(p=>p.candidateLimit||1)); HOUSES.forEach(house=>{ const hColor=getHouseColor(house); houseHeaderCols+=`<th class="th-house" colspan="${maxLimit}" style="background:${hColor};border-color:${hColor}">${house}</th>`; for(let s=0;s<maxLimit;s++) candHeaderCols+=`<th class="th-cand" style="color:${hColor}">C${s+1}</th>`; }); const bySection={}; progs.forEach(p=>{ const s=toTitle(p.section||'Other'); if(!bySection[s]) bySection[s]=[]; bySection[s].push(p); }); let rows=''; SECTIONS.forEach(sec=>{ if(bySection[sec]){ rows+=`<tr class="tr-section"><td colspan="${2+HOUSES.length*maxLimit}">${sec} Section</td></tr>`; bySection[sec].forEach(p=>{ let tds=''; HOUSES.forEach(house=>{ for(let slot=0;slot<maxLimit;slot++){ if(slot<(p.candidateLimit||1)){ const reg=regs[regKey(p.id,house,slot)]; tds+=`<td class="td-cand"><div class="cand-cell"><input class="cand-chest${reg?' filled':''}" type="text" maxlength="8" placeholder="Chest" value="${reg?String(reg.chestNo||''):''}" data-pid="${p.id}" data-house="${house}" data-slot="${slot}" onblur="onChestBlur(this)"><span class="${reg?'cand-name ok':'cand-name'}" style="font-size:10px; font-weight:800; letter-spacing:-0.2px;">${reg?String(reg.name||''):''}</span></div></td>`; } else tds+=`<td style="background:var(--r50);"></td>`; } }); rows+=`<tr><td class="td-code col-code">${p.code}</td><td class="td-name col-name">${p.name}</td>${tds}</tr>`; }); } }); document.getElementById('reg-area').innerHTML=`<div class="reg-wrap"><table class="reg-table"><thead><tr><th class="th-code-hdr col-code" rowspan="2">Code</th><th class="th-name-hdr col-name" rowspan="2">Program</th>${houseHeaderCols}</tr><tr>${candHeaderCols}</tr></thead><tbody>${rows}</tbody></table></div>`; };
-window.onChestBlur=async function(el){ const val=el.value.trim().toUpperCase(); const pid=el.dataset.pid,house=el.dataset.house,slot=parseInt(el.dataset.slot); const key=regKey(pid,house,slot); if(!val){ if(regs[key]){ setSyncState('ing'); await deleteDoc(doc(db,'registrations',key)); } return; } const stu=Object.values(students).find(s=>String(s.chestNo||'').toUpperCase()===val); if(!stu){toast('Chest No not found','r');el.value='';return;} setSyncState('ing'); const prog=programs[pid]; await setDoc(doc(db,'registrations',key),{programId:pid,house,slot,studentId:stu.id,chestNo:stu.chestNo,name:stu.name,programCode:prog?prog.code:'',programName:prog?prog.name:'',isRegistered:false}); toast(`Assigned ${stu.name}`,'g'); };
-
-window.adminFilterSec = function(sec, chipEl) { adminSecFilter = sec; document.querySelectorAll('#admin-sec-chips .filter-chip').forEach(c => c.classList.remove('active')); if(chipEl) chipEl.classList.add('active'); renderAdminProgList(); };
-window.renderAdminPanel = function() { const chipsEl = document.getElementById('admin-sec-chips'); if(chipsEl.innerHTML.length < 100) { chipsEl.innerHTML = `<div class="filter-chip active" onclick="adminFilterSec('', this)">All</div>` + SECTIONS.map(s => `<div class="filter-chip" onclick="adminFilterSec('${s}', this)">${s}</div>`).join(''); } const allProgs = Object.values(programs); document.getElementById('astat-on').textContent = allProgs.filter(p => p.registrationEnabled !== false).length; document.getElementById('astat-off').textContent = allProgs.filter(p => p.registrationEnabled === false).length; document.getElementById('astat-reg').textContent = Object.values(regs).filter(r => r.isRegistered === true).length; renderAdminProgList(); };
-
-function renderAdminProgList() { let progs = Object.values(programs); if(adminSecFilter) progs = progs.filter(p => toTitle(p.section) === adminSecFilter); progs.sort((a,b) => String(a.code||'').localeCompare(String(b.code||''))); const list = document.getElementById('admin-prog-list'); if(!progs.length) { list.innerHTML = `<div class="empty"><span class="material-symbols-rounded empty-ico">event_busy</span><div class="empty-txt">No programs found</div></div>`; return; } const grouped = {}; progs.forEach(p => { const sec = toTitle(p.section || 'Other'); if(!grouped[sec]) grouped[sec] = []; grouped[sec].push(p); }); let html = ''; SECTIONS.forEach(sec => { if(grouped[sec]) { html += `<div class="seclbl">${sec} Section</div>`; grouped[sec].forEach(p => { const isEnabled = p.registrationEnabled !== false; const progRegs = Object.values(regs).filter(r => r.programId === p.id); const registeredCount = progRegs.filter(r => r.isRegistered).length; let chipsHtml = ''; if(progRegs.length > 0) { chipsHtml = `<div class="cand-chips">` + progRegs.sort((a,b) => String(a.house||'').localeCompare(String(b.house||''))).map(r => { const isReg = r.isRegistered; return `<div class="cand-chip ${isReg ? 'registered' : 'pending'}"><span class="house-dot" style="background:${getHouseColor(r.house)}"></span>${r.chestNo} ${r.name}<button class="chip-action" onclick="toggleStatus('${p.id}','${r.house}',${r.slot}, ${isReg})"><span class="material-symbols-rounded" style="color:${isReg ? 'var(--danger)' : 'var(--success)'}">${isReg ? 'cancel' : 'check_circle'}</span></button></div>`; }).join('') + `</div>`; } html += `<div class="admin-prog-card ${!isEnabled ? 'disabled-prog' : ''}"><div class="admin-prog-header"><div class="pcode" style="background:var(--r100); color:var(--r800); border-color:var(--r200); box-shadow:none;">${String(p.code||'')}</div><div class="admin-prog-info"><div class="admin-prog-name">${String(p.name||'')}</div><div class="admin-prog-meta">${toTitle(p.section)} &middot; <span style="color:var(--pri); font-weight:900;">${registeredCount} registered</span></div></div><div class="admin-prog-actions"><button class="ibtn" onclick="openPrintSetup('${p.id}')" title="Print Sheet"><span class="material-symbols-rounded">print</span></button><div class="toggle-wrap"><span class="toggle-lbl ${isEnabled?'on-lbl':'off-lbl'}">${isEnabled?'ON':'OFF'}</span><label class="toggle"><input type="checkbox" ${isEnabled?'checked':''} onchange="toggleProgramReg('${p.id}', this.checked)"><span class="toggle-slider"></span></label></div></div></div>${chipsHtml}</div>`; }); } }); list.innerHTML = html; }
-
-window.toggleProgramReg = async function(pid, enabled) { setSyncState('ing'); try { await setDoc(doc(db, 'programs', pid), { registrationEnabled: enabled }, { merge: true }); toast(`Registration ${enabled ? 'ON' : 'OFF'}`, 'g'); } catch(e) { setSyncState('err'); } };
-window.toggleStatus = async function(pid, house, slot, currentStatus) { const key = regKey(pid, house, slot); const newStatus = !currentStatus; if(!confirm(`Change status to ${newStatus ? 'REGISTERED' : 'PENDING'}?`)) return; setSyncState('ing'); try { await setDoc(doc(db, 'registrations', key), { isRegistered: newStatus }, { merge: true }); toast(`Status Updated`, 'g'); } catch(e) { setSyncState('err'); } };
-
-/* ================= PRINTING & CODES ================= */
-window.renderPrintingList = function() { const search = String(document.getElementById('print-search').value||'').toLowerCase().trim(); const secFilter = String(document.getElementById('print-sec').value||'').toLowerCase().trim(); let progs = Object.values(programs); if(secFilter) progs = progs.filter(p => toTitle(p.section).toLowerCase() === secFilter); if(search) progs = progs.filter(p => (p.code||'').toLowerCase().includes(search) || (p.name||'').toLowerCase().includes(search)); progs.sort((a,b) => String(a.code||'').localeCompare(String(b.code||''))); const listContainer = document.getElementById('print-prog-list'); document.getElementById('print-list-count').textContent = `${progs.length} found`; if(progs.length === 0) { listContainer.innerHTML = `<div class="empty"><span class="material-symbols-rounded empty-ico">print_disabled</span><div class="empty-txt">No programs match</div></div>`; return; } let html = ''; progs.forEach(p => { const progRegs = Object.values(regs).filter(r => r.programId === p.id); const hasCodes = progRegs.some(r => r.codeLetter); html += `<div class="card" onclick="togglePrintSelect(event, '${p.id}')" style="cursor:pointer; padding: 14px 16px;"><input type="checkbox" class="print-cb" value="${p.id}" id="cb-${p.id}" style="width:20px; height:20px; margin-right:4px;" onclick="event.stopPropagation(); updatePrintSelectedCount()"><div class="pcode" style="background:var(--r100); color:var(--r800); border:none;">${p.code}</div><div class="cinfo"><div class="cname" style="font-size: 15px;">${p.name}</div><div class="cmeta">${toTitle(p.section)} &middot; ${progRegs.length} cands ${hasCodes ? '&middot; <b style="color:var(--success)">Locked</b>' : ''}</div></div><button class="ibtn" style="background:#fff; box-shadow:var(--sh);" onclick="event.stopPropagation(); openPrintSetup('${p.id}')"><span class="material-symbols-rounded">settings</span></button></div>`; }); listContainer.innerHTML = html; updatePrintSelectedCount(); };
-window.togglePrintSelect = function(e, pid) { if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return; const cb = document.getElementById(`cb-${pid}`); if(cb) { cb.checked = !cb.checked; updatePrintSelectedCount(); } };
-window.toggleSelectAllPrint = function(isChecked) { document.querySelectorAll('.print-cb').forEach(cb => cb.checked = isChecked); updatePrintSelectedCount(); };
-window.updatePrintSelectedCount = function() { document.getElementById('print-sel-count').textContent = document.querySelectorAll('.print-cb:checked').length; };
-
-function processPrintData(prog, progRegs, batch) {
-    let isGroup = prog.type === 'group';
-    let formattedRegs = [];
-    if (isGroup) {
-        let grouped = {};
-        progRegs.forEach(r => {
-            if(!grouped[r.house]) grouped[r.house] = [];
-            grouped[r.house].push(r);
-        });
-        for(let h in grouped) {
-            if(grouped[h].length > 0) {
-                formattedRegs.push({...grouped[h][0], name: grouped[h][0].name + " & TEAM", isGroup: true});
-            }
-        }
-    } else {
-        formattedRegs = [...progRegs];
-    }
-    let hasSaved = formattedRegs.some(r => r.codeLetter);
-    if (!hasSaved && formattedRegs.length > 0) {
-        let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"];
-        for (let i = houses.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [houses[i], houses[j]] = [houses[j], houses[i]];
-        }
-        let groupedByHouse = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] };
-        formattedRegs.forEach(r => {
-            let h = toTitle(r.house);
-            if(groupedByHouse[h]) groupedByHouse[h].push(r);
-            else { let k = Object.keys(groupedByHouse)[0]; groupedByHouse[k].push(r); }
-        });
-        houses.forEach(h => {
-            if(groupedByHouse[h]) groupedByHouse[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo)));
-        });
-        let finalOrder = [];
-        let loopActive = true;
-        while(loopActive) {
-            loopActive = false;
-            for(let i=0; i<houses.length; i++) {
-                let hName = houses[i];
-                if(groupedByHouse[hName] && groupedByHouse[hName].length > 0) {
-                    finalOrder.push(groupedByHouse[hName].shift());
-                    loopActive = true;
-                }
-            }
-        }
-        formattedRegs = finalOrder.map((r, idx) => {
-            let codeLetter = String.fromCharCode(65 + idx);
-            r.codeLetter = codeLetter;
-            if(!isGroup) {
-                batch.set(doc(db, 'registrations', r.id), { codeLetter: codeLetter }, { merge: true });
-            } else {
-                progRegs.forEach(origR => {
-                    if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: codeLetter }, { merge: true });
-                });
-            }
-            return r;
-        });
-    } else {
-        formattedRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z')));
-    }
-    return formattedRegs;
-}
-
-function generatePrintHalf(prog, formattedRegs, type) {
-    const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
-    const totalRows = Math.max(formattedRegs.length, 12);
-    let rowsHtml = '';
-    for(let i = 0; i < totalRows; i++) {
-        const r = formattedRegs[i];
-        if(r) {
-            const cls = r.isGroup ? 'TEAM' : (students[r.studentId]?.class || '');
-            const houseShort = r.house.substring(0, 4).toUpperCase();
-            if(type === 'name') {
-                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td><td>${houseShort}</td><td>${cls}</td><td></td><td></td><td></td></tr>`;
-            } else {
-                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
-            }
-        } else {
-            rowsHtml += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
-        }
-    }
-    const title = type === 'name' ? 'SPORTS CANDIDATES' : 'JUDGEMENT SHEET';
-    let tableHead = '';
-    if(type === 'name') {
-        tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
-    } else {
-        tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
-    }
-    let extraInfo = type === 'judge' ? `<div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>` : '';
-    let footerSign = type === 'name' ? `<span style="margin-left:auto;">Sign of completion: __________________</span>` : `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
-    
-    return `<div class="print-half"><div class="print-header">KAMA 2K26${type==='judge'?' - SPORTS FEST':''}<br><span class="print-header-sub">${title}</span></div><div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div><table class="print-table"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table>${extraInfo}<div class="print-footer" style="${type==='judge'?'margin-top:15px;':''}"><div style="display:flex; flex-direction:column; gap:10px; width:100%;"><div style="display:flex; align-items:center; width:100%;"><span>Printed on: ${printDate}</span>${type==='name'?footerSign:''}</div>${type==='judge'?footerSign:''}</div></div></div>`;
-}
-
-function wrapInPage(half1, half2) {
-    let watermark = `<div class="watermark"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"><img src="kamapng.png" alt="Logo"></div>`;
-    return `<div class="print-page">${watermark}${half1 || '<div class="print-half"></div>'}${half2 || '<div class="print-half"></div>'}</div>`;
-}
-
-window.batchPrintSelected = async function() {
-    const selectedCbs = document.querySelectorAll('.print-cb:checked');
-    if(selectedCbs.length === 0) { toast("Select at least one program to print", "r"); return; }
-    const format = document.getElementById('batch-print-format').value;
-    setSyncState('ing');
-    const batch = writeBatch(db);
-    let allHalves = [];
-    
-    for(let i=0; i<selectedCbs.length; i++) {
-        const pid = selectedCbs[i].value;
-        const prog = programs[pid];
-        const progRegs = Object.values(regs).filter(r => r.programId === pid);
-        const formattedRegs = processPrintData(prog, progRegs, batch);
-        
-        if (format === 'both') {
-            allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
-            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge'));
-        } else {
-            allHalves.push(generatePrintHalf(prog, formattedRegs, format));
-        }
-    }
-    
-    let printHtmlAgg = '';
-    for(let i=0; i<allHalves.length; i+=2) {
-        printHtmlAgg += wrapInPage(allHalves[i], allHalves[i+1]);
-    }
-    
-    try {
-        await batch.commit();
-        setSyncState('ok');
-        document.getElementById('print-container').innerHTML = printHtmlAgg;
-        toast('Generation Complete. Opening Printer...', 'g');
-        setTimeout(() => window.print(), 800);
-    } catch(e) {
-        setSyncState('err');
-        toast("Failed to save codes", "r");
-    }
-};
-
-let currentPrintData = null; window.customOrder = ["", "", "", ""]; 
-window.openPrintSetup = function(pid) { const prog = programs[pid]; if(!prog) return; let progRegs = Object.values(regs).filter(r => r.programId === pid); if(prog.type === 'group') { const grouped = {}; progRegs.forEach(r => { if(!grouped[r.house]) grouped[r.house] = []; grouped[r.house].push(r); }); progRegs = []; for(const house in grouped) { if(grouped[house].length > 0) { const rep = grouped[house][0]; progRegs.push({ ...rep, name: rep.name + " & TEAM", isGroup: true }); } } } let hasSaved = progRegs.some(r => r.codeLetter); if (hasSaved) { progRegs.sort((a,b) => String(a.codeLetter||'Z').localeCompare(String(b.codeLetter||'Z'))); } currentPrintData = { prog, regs: hasSaved ? [...progRegs] : [], rawRegs: [...progRegs], isLocked: hasSaved }; window.customOrder = ["", "", "", ""]; renderPrintSetup(); openModal('modal-print-setup'); };
-function assignCodeLetters(arr) { return arr.map((r, idx) => ({ ...r, codeLetter: String.fromCharCode(65 + idx) })); }
-window.updateManualOrder = function(index, val) { window.customOrder[index] = val; const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; let filled = window.customOrder.filter(x => x !== ""); if (filled.length === 3) { let missing = fixedHouses.find(h => !window.customOrder.includes(h)); let emptyIndex = window.customOrder.findIndex(x => x === ""); if(emptyIndex !== -1 && missing) { window.customOrder[emptyIndex] = missing; } } if (window.customOrder.filter(x => x !== "").length === 4) { applyDistinctHouseOrder(window.customOrder); } else { currentPrintData.regs = []; renderPrintSetup(); } };
-window.autoRandomizeCodes = function() { let houses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; for (let i = houses.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [houses[i], houses[j]] = [houses[j], houses[i]]; } window.customOrder = houses; applyDistinctHouseOrder(window.customOrder); };
-function applyDistinctHouseOrder(orderArray) { let availableRegs = currentPrintData.rawRegs.map(r => ({...r})); let grouped = { "Bosphorus": [], "Gibraltar": [], "Hormuz": [], "Malacca": [] }; availableRegs.forEach(r => { let h = toTitle(r.house); if(grouped[h] !== undefined) { grouped[h].push(r); } else { let firstKey = Object.keys(grouped)[0]; grouped[firstKey].push(r); } }); orderArray.forEach(h => { if(grouped[h]) grouped[h].sort((a,b) => String(a.chestNo).localeCompare(String(b.chestNo))); }); let finalOrder = []; let loopActive = true; while (loopActive) { loopActive = false; for (let i = 0; i < orderArray.length; i++) { let hName = orderArray[i]; if (grouped[hName] && grouped[hName].length > 0) { finalOrder.push(grouped[hName].shift()); loopActive = true; } } } Object.keys(grouped).forEach(h => { if(grouped[h] && grouped[h].length > 0) { finalOrder.push(...grouped[h]); } }); currentPrintData.regs = assignCodeLetters(finalOrder); renderPrintSetup(); }
-window.unlockCodes = function() { currentPrintData.isLocked = false; currentPrintData.regs = []; window.customOrder = ["", "", "", ""]; renderPrintSetup(); }
-function renderPrintSetup() { 
-    const { prog, regs, isLocked } = currentPrintData; 
-    if(!window.customOrder) window.customOrder = ["", "", "", ""]; 
-    const fixedHouses = ["Bosphorus", "Gibraltar", "Hormuz", "Malacca"]; 
-    let selectsHtml = ''; 
-    for(let i=0; i<4; i++) { 
-        let letter = String.fromCharCode(65+i); 
-        let options = `<option value="">-- House --</option>`; 
-        fixedHouses.forEach(h => { 
-            let isSelected = window.customOrder[i] === h; 
-            let isSelectedElsewhere = window.customOrder.includes(h) && !isSelected; 
-            let disabled = isSelectedElsewhere ? 'disabled' : ''; 
-            let selected = isSelected ? 'selected' : ''; 
-            options += `<option value="${h}" ${selected} ${disabled}>${h}</option>`; 
-        }); 
-        selectsHtml += `<div style="display:flex; flex-direction:column; gap:6px; flex:1;"><label style="font-size:11px; font-weight:900; color:var(--r600); text-align:center;">CODE ${letter}</label><select onchange="updateManualOrder(${i}, this.value)" style="min-height:40px; padding:6px; font-size:13px; font-weight:800; text-align:center; border-radius:10px; border:2px solid var(--r200); background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.02);">${options}</select></div>`; 
-    } 
-    let isReady = window.customOrder.filter(x => x !== "").length === 4; 
-    let html = `<div style="font-size:16px; font-weight:900; color:var(--r800); margin-bottom:16px; display:flex; align-items:center; gap:8px;"><span class="pcode" style="padding:4px 8px; font-size:12px;">${prog.code}</span> ${prog.name} (${prog.type.toUpperCase()})</div>`; 
-    if(isLocked) { 
-        html += `<div style="background:#f0fdf4; border:1px solid #86efac; padding:16px; border-radius:14px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 12px rgba(16,185,129,0.1);"><div style="font-size:13px; font-weight:900; color:#065f46; display:flex; align-items:center;"><span class="material-symbols-rounded icon-filled" style="font-size:22px; margin-right:8px;">lock</span> Code Letters are Fixed</div><button class="btn btn-out btn-sm" onclick="unlockCodes()" style="border-color:var(--success); color:var(--success); background:#fff; font-weight:900;">Change Codes</button></div>`; 
-    } else { 
-        html += `<div style="background:var(--r50); border:1px solid var(--r200); padding:20px; border-radius:16px; margin-bottom:20px; box-shadow:inset 0 2px 10px rgba(0,0,0,0.02);"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;"><div style="font-size:13px; font-weight:900; color:var(--pri); text-transform:uppercase; letter-spacing:0.5px;">Manual Code Setup</div><button class="btn btn-out btn-sm" onclick="autoRandomizeCodes()" style="padding:6px 12px; font-size:12px; border-color:var(--purple); color:var(--purple); background:#faf5ff; box-shadow:none;"><span class="material-symbols-rounded" style="font-size:16px; margin-right:6px;">casino</span> Auto Random</button></div><div style="display:flex; gap:10px;">${selectsHtml}</div>${!isReady ? `<div style="font-size:12px; color:var(--danger); margin-top:14px; font-weight:800;">* Select houses for A, B, and C. Code D will auto-fill.</div>` : `<div style="font-size:12px; color:var(--success); margin-top:14px; font-weight:900; display:flex; align-items:center; gap:6px;"><span class="material-symbols-rounded icon-filled" style="font-size:18px;">check_circle</span> Code order applied successfully!</div>`}</div>`; 
-    } 
-    html += `<div style="max-height: 38vh; overflow-y:auto; border:1px solid var(--r200); border-radius:12px; box-shadow:inset 0 0 10px rgba(0,0,0,0.02);"><table class="print-setup-table" style="margin-top:0;"><thead style="position:sticky; top:0; z-index:10; background:var(--r100);"><tr><th>Lot</th><th>Chest</th><th>Name</th><th>House</th></tr></thead><tbody>${regs.length === 0 && !isReady && !isLocked ? `<tr><td colspan="4" style="text-align:center; padding:40px 20px; color:var(--r400); font-weight:700; font-size:14px;">Set house order above to generate codes</td></tr>` : ''}${regs.length === 0 && isReady && currentPrintData.rawRegs.length === 0 ? `<tr><td colspan="4" style="text-align:center; padding:40px 20px; color:var(--danger); font-weight:800;">No pending candidates available for this program.</td></tr>` : ''}${regs.map(r => `<tr><td class="t-code">${r.codeLetter}</td><td>${r.chestNo}</td><td>${r.name}</td><td><span style="display:inline-block; width:8px; height:8px; background:${getHouseColor(r.house)}; border-radius:50%; margin-right:6px;"></span>${r.house}</td></tr>`).join('')}</tbody></table></div>`; 
-    
-    html += `<div style="margin-top: 20px; padding: 16px; background: var(--r50); border: 2px dashed var(--r200); border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size:13px; font-weight:900; color:var(--r800); display:flex; align-items:center;"><span class="material-symbols-rounded" style="margin-right:8px; color:var(--r500);">dashboard</span> Print Layout:</span>
-        <select id="single-print-format" style="width:auto; min-height:36px; padding:6px 12px; font-size:13px; font-weight:800; border-radius:8px; border:1px solid var(--r300); outline:none; color: var(--r800); background:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
-            <option value="both">Both (Name & Judgement)</option>
-            <option value="name">Candidates Only</option>
-            <option value="judge">Judgement Only</option>
-        </select>
-    </div>`;
-    
-    document.getElementById('print-setup-body').innerHTML = html; 
-    
-    const btn = document.getElementById('print-save-btn'); 
-    if(isLocked || prog.type === 'group') { 
-        btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:22px; margin-right:6px;">print</span> Print Sheet`; 
-    } else { 
-        btn.innerHTML = `<span class="material-symbols-rounded" style="font-size:22px; margin-right:6px;">save</span> Save & Print`; 
-    } 
-}
-
-window.triggerPrint = async function() { 
-    const { prog, regs, rawRegs, isLocked } = currentPrintData; 
-    if (regs.length === 0 && rawRegs.length > 0) { toast("Please complete the Manual Code Letter setup first!", "r"); return; } 
-    
-    const format = document.getElementById('single-print-format').value;
-    
-    const printNow = () => {
-        let printHtmlAgg = '';
-        if (format === 'both') {
-            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge'));
-        } else {
-            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, format), '');
-        }
-        document.getElementById('print-container').innerHTML = printHtmlAgg;
-        window.print();
-    };
-
-    if (!isLocked && regs.length > 0) { 
-        setSyncState('ing'); 
-        try { 
-            const batch = writeBatch(db); 
-            regs.forEach(r => { 
-                if(prog.type === 'group') { 
-                    rawRegs.forEach(origR => { 
-                        if(origR.house === r.house) batch.set(doc(db, 'registrations', origR.id), { codeLetter: r.codeLetter }, { merge: true }); 
-                    }); 
-                } else { 
-                    batch.set(doc(db, 'registrations', r.id), { codeLetter: r.codeLetter }, { merge: true }); 
-                } 
-            }); 
-            await batch.commit(); 
-            setSyncState('ok'); 
-            toast('Code Letters Saved!', 'g'); 
-            currentPrintData.isLocked = true; 
-            renderPrintSetup(); 
-            setTimeout(() => { printNow(); }, 500); 
-        } catch(e) { 
-            setSyncState('err'); 
-            toast('Failed to save code letters', 'r'); 
-        } 
-    } else { 
-        printNow(); 
-    } 
-};
-
-/* ================= SUBSTITUTION SCRIPTS ================= */
-window.checkSubProg = function() { const val = document.getElementById('man-prog-code').value.trim().toUpperCase(); const el = document.getElementById('man-prog-name'); if(!val) { el.textContent = ''; return; } const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === val); el.textContent = prog ? `✓ ${prog.name}` : '✗ Program code not found'; el.className = prog ? 'hint-txt hint-ok' : 'hint-txt hint-err'; if(document.getElementById('man-old-chest').value) checkSubOld(); };
-window.checkSubOld = function() { const pCode = document.getElementById('man-prog-code').value.trim().toUpperCase(); const val = document.getElementById('man-old-chest').value.trim().toUpperCase(); const el = document.getElementById('man-old-name'); if(!val) { el.textContent = ''; return; } const stu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val); if(!stu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; } if(pCode) { const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode); if(prog) { const isRegistered = Object.values(regs).some(r => r.programId === prog.id && String(r.chestNo||'').toUpperCase() === val); if(!isRegistered) { el.textContent = `✗ Not registered in ${pCode}`; el.className = 'hint-txt hint-err'; return; } } } el.textContent = `✓ ${stu.name} (${stu.house})`; el.className = 'hint-txt hint-ok'; if(document.getElementById('man-new-chest').value) checkSubNew(); };
-window.checkSubNew = function() { const oldVal = document.getElementById('man-old-chest').value.trim().toUpperCase(); const val = document.getElementById('man-new-chest').value.trim().toUpperCase(); const el = document.getElementById('man-new-name'); if(!val) { el.textContent = ''; return; } const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val); if(!newStu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; } if(oldVal) { const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldVal); if(oldStu && oldStu.house !== newStu.house) { el.textContent = `✗ House Mismatch! (New is ${newStu.house})`; el.className = 'hint-txt hint-err'; return; } } el.textContent = `✓ ${newStu.name} (${newStu.house})`; el.className = 'hint-txt hint-ok'; };
-window.processManualSub = async function() { const pCode = document.getElementById('man-prog-code').value.trim().toUpperCase(); const oldChest = document.getElementById('man-old-chest').value.trim().toUpperCase(); const newChest = document.getElementById('man-new-chest').value.trim().toUpperCase(); if(!pCode || !oldChest || !newChest) { toast('Please fill all 3 fields', 'r'); return; } const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode); if(!prog) { toast(`Program Code '${pCode}' not found`, 'r'); return; } const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldChest); if(!oldStu) { toast(`Original Candidate '${oldChest}' not found`, 'r'); return; } const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === newChest); if(!newStu) { toast(`Substitute Candidate '${newChest}' not found`, 'r'); return; } if(oldStu.house !== newStu.house) { toast(`House mismatch! Old: ${oldStu.house}, New: ${newStu.house}`, 'r'); return; } let targetRegKey = null; for(const [key, r] of Object.entries(regs)) { if(r.programId === prog.id && String(r.chestNo||'').toUpperCase() === oldChest) { targetRegKey = key; break; } } if(!targetRegKey) { toast(`'${oldChest}' is NOT registered in '${pCode}'`, 'r'); return; } if(!confirm(`Confirm replacement?\n\nReplace: ${oldChest} (${oldStu.house})\nWith: ${newChest} (${newStu.house})\nIn Program: ${prog.name}`)) return; setSyncState('ing'); try { await setDoc(doc(db, 'registrations', targetRegKey), { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true }); toast('Substitution Successful!', 'g'); document.getElementById('man-prog-code').value = ''; document.getElementById('man-old-chest').value = ''; document.getElementById('man-new-chest').value = ''; checkSubProg(); checkSubOld(); checkSubNew(); } catch(err) { setSyncState('err'); toast('Failed to substitute', 'r'); } };
-window.processBulkSubstitution = async function() { const fileInput = document.getElementById('sub-file-upload'); const logDiv = document.getElementById('sub-log'); logDiv.innerHTML = ''; if(!fileInput.files.length) { toast('Please select a CSV or XLSX file first', 'r'); return; } const file = fileInput.files[0]; const reader = new FileReader(); reader.onload = async function(e) { try { const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'}); const firstSheetName = workbook.SheetNames[0]; const worksheet = workbook.Sheets[firstSheetName]; const rows = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""}); if(rows.length < 2) { toast('Invalid file format or empty file.', 'r'); return; } const headers = rows[0].map(h => String(h).trim().toLowerCase()); const pIdx = headers.indexOf('program code'); const oIdx = headers.indexOf('original chest no'); const nIdx = headers.indexOf('substitute chest no'); if(pIdx === -1 || oIdx === -1 || nIdx === -1) { logDiv.innerHTML = `<div style="padding:12px; background:#fef2f2; border:2px solid #fecaca; border-radius:12px; color:var(--danger); font-weight:800; font-size:13px;"><span style="font-weight:900; font-size:14px; display:block; margin-bottom:4px;">Invalid column headers!</span>The file must have these exact column names:<br><code style="background:#fee2e2; padding:4px 8px; border-radius:6px; display:inline-block; margin-top:6px;">Program Code</code> <code style="background:#fee2e2; padding:4px 8px; border-radius:6px; display:inline-block; margin-top:6px;">Original Chest No</code> <code style="background:#fee2e2; padding:4px 8px; border-radius:6px; display:inline-block; margin-top:6px;">Substitute Chest No</code></div>`; return; } let errorLogs = []; let successLogs = []; let successCount = 0; setSyncState('ing'); const batch = writeBatch(db); for(let i=1; i<rows.length; i++) { if(!rows[i] || rows[i].length === 0) continue; const pVal = rows[i][pIdx]; const oVal = rows[i][oIdx]; const nVal = rows[i][nIdx]; if(!pVal && !oVal && !nVal) continue; const pCode = String(pVal || '').trim().toUpperCase(); const oldChest = String(oVal || '').trim().toUpperCase(); const newChest = String(nVal || '').trim().toUpperCase(); if(!pCode || !oldChest || !newChest) { errorLogs.push(`Row ${i+1}: Missing data — all three columns must be filled.`); continue; } const prog = Object.values(programs).find(p => String(p.code||'').trim().toUpperCase() === pCode); if(!prog) { errorLogs.push(`Row ${i+1}: Program Code '${pCode}' not found in the database.`); continue; } const oldStu = Object.values(students).find(s => String(s.chestNo||'').trim().toUpperCase() === oldChest); if(!oldStu) { errorLogs.push(`Row ${i+1}: Original Chest No '${oldChest}' not found in the students list.`); continue; } const newStu = Object.values(students).find(s => String(s.chestNo||'').trim().toUpperCase() === newChest); if(!newStu) { errorLogs.push(`Row ${i+1}: Substitute Chest No '${newChest}' not found in the students list.`); continue; } if(oldStu.house !== newStu.house) { errorLogs.push(`Row ${i+1}: House mismatch! Original '${oldChest}' is ${oldStu.house}, but substitute '${newChest}' is ${newStu.house}.`); continue; } let targetRegKey = null; for(const [key, r] of Object.entries(regs)) { if(r.programId === prog.id && String(r.chestNo||'').trim().toUpperCase() === oldChest) { targetRegKey = key; break; } } if(!targetRegKey) { errorLogs.push(`Row ${i+1}: '${oldChest}' is not registered in program '${pCode}'.`); continue; } const docRef = doc(db, 'registrations', targetRegKey); batch.set(docRef, { studentId: newStu.id, chestNo: newStu.chestNo, name: newStu.name, isRegistered: false }, { merge: true }); successLogs.push(`Row ${i+1}: '${oldChest}' (${oldStu.name}) → '${newChest}' (${newStu.name}) in ${pCode} — substituted successfully.`); successCount++; } if (successCount > 0) { try { await batch.commit(); toast(`Successfully substituted ${successCount} candidate(s)!`, 'g'); fileInput.value = ""; } catch (batchErr) { errorLogs.push("Database update failed. Please try again."); } } else { toast('No valid substitutions found to process.', 'ti'); } setSyncState('ok'); if (errorLogs.length > 0 || successLogs.length > 0) { let html = ''; if (successLogs.length > 0) { html += `<div style="font-size:12px; font-weight:900; color:var(--success); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">✓ Success (${successLogs.length})</div>`; html += successLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:#f0fdf4; border:1px solid #86efac; border-radius:10px; margin-bottom:8px; font-size:13px; color:#065f46; font-weight:700;"><span class="material-symbols-rounded icon-filled" style="font-size:18px;">check_circle</span><span>${msg}</span></div>`).join(''); } if (errorLogs.length > 0) { html += `<div style="font-size:12px; font-weight:900; color:var(--danger); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; ${successLogs.length?'margin-top:16px;':''}">✗ Errors (${errorLogs.length})</div>`; html += errorLogs.map(msg => `<div style="display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:#fef2f2; border:1px solid #fecaca; border-radius:10px; margin-bottom:8px; font-size:13px; color:#991b1b; font-weight:700;"><span class="material-symbols-rounded icon-filled" style="font-size:18px;">error</span><span>${msg}</span></div>`).join(''); } logDiv.innerHTML = html; } } catch(error) { toast('Error reading file. Please check if it is a valid Excel or CSV file.', 'r'); setSyncState('err'); } }; reader.readAsArrayBuffer(file); };
-window.checkHouseMismatch = function() { const btn = document.getElementById('btn-house-check'); const resultBox = document.getElementById('house-check-result'); const summaryEl = document.getElementById('house-check-summary'); const errorsEl = document.getElementById('house-check-errors'); btn.innerHTML = `<span class="material-symbols-rounded" style="color:#f59e0b; animation: pulse 0.8s infinite;">rule</span> Checking...`; btn.disabled = true; const allRegs = Object.values(regs); const total = allRegs.length; let checked = 0; const errors = []; allRegs.forEach(r => { const chestNo = String(r.chestNo || '').trim().toUpperCase(); const slotHouse = toTitle(r.house || ''); const progCode = String(r.programCode || r.programId || ''); const progName = String(r.programName || ''); const stu = Object.values(students).find(s => String(s.chestNo || '').toUpperCase() === chestNo); checked++; if (!stu) { errors.push({ type: 'not_found', chestNo, slotHouse, progCode, progName, msg: `Student not found in database` }); return; } const actualHouse = toTitle(stu.house || ''); if (actualHouse !== slotHouse) { errors.push({ type: 'mismatch', chestNo, name: stu.name, slotHouse, actualHouse, progCode, progName }); } }); const pct = total > 0 ? Math.round((checked / total) * 100) : 0; const hasErrors = errors.length > 0; summaryEl.innerHTML = `<div style="display:flex; align-items:center; gap:10px; flex:1; min-width:180px;"><span class="material-symbols-rounded icon-filled" style="color:${hasErrors?'var(--danger)':'var(--success)'}; font-size:32px;">${hasErrors ? 'warning' : 'verified'}</span><div><div style="font-size:15px; font-weight:900; color:${hasErrors?'var(--danger)':'var(--success)'};">${hasErrors ? errors.length + ' Mismatch' + (errors.length>1?'es':'') + ' Found' : 'All Clear!'}</div><div style="font-size:12px; color:var(--r500); font-weight:800;">${checked} / ${total} slots checked</div></div></div><div style="text-align:right; flex-shrink:0;"><div style="font-size:32px; font-weight:900; color:var(--pri); line-height:1;">${pct}%</div><div style="font-size:11px; color:var(--r500); font-weight:800; text-transform:uppercase; letter-spacing:1px;">Checked</div></div><div style="width:100%; height:8px; background:var(--r100); border-radius:99px; overflow:hidden; flex-basis:100; margin-top:4px;"><div style="height:100%; width:${pct}%; background:${hasErrors?'var(--danger)':'var(--success)'}; border-radius:99px; transition:width 0.5s ease;"></div></div>`; if (!hasErrors) { errorsEl.innerHTML = `<div style="text-align:center; padding:20px 0; color:var(--success); font-weight:900; font-size:15px;"><span class="material-symbols-rounded icon-filled" style="font-size:48px; display:block; margin-bottom:8px;">check_circle</span>No house mismatches found!</div>`; } else { errorsEl.innerHTML = `<div style="font-size:12px; font-weight:900; color:var(--r500); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">Mismatch Details</div>` + errors.map(e => { if (e.type === 'not_found') { return `<div style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; margin-bottom:10px;"><span class="material-symbols-rounded icon-filled" style="color:var(--danger); flex-shrink:0; font-size:24px;">person_off</span><div style="flex:1; min-width:0;"><div style="font-size:14px; font-weight:900; color:var(--r800);">${e.chestNo} — ${e.msg}</div><div style="font-size:12px; color:var(--r500); font-weight:700; margin-top:2px;">${e.progCode}${e.progName ? ' · ' + e.progName : ''} · Slot House: <b>${e.slotHouse}</b></div></div></div>`; } return `<div style="display:flex; align-items:center; gap:12px; padding:12px 16px; background:#fef2f2; border:1px solid #fecaca; border-radius:12px; margin-bottom:10px;"><div class="chest" style="background:${getHouseColor(e.slotHouse)}; min-width:60px; font-size:14px; padding:6px;">${e.chestNo}</div><div style="flex:1; min-width:0;"><div style="font-size:14px; font-weight:900; color:var(--r800); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.name}</div><div style="font-size:12px; color:var(--r500); font-weight:700; margin-top:2px;">${e.progCode}${e.progName ? ' · ' + e.progName : ''}</div></div><div style="flex-shrink:0; text-align:right;"><div style="font-size:11px; color:var(--r500); font-weight:800;">Slot</div><div style="font-size:13px; font-weight:900; color:${getHouseColor(e.slotHouse)};">${e.slotHouse}</div><div style="font-size:18px; color:var(--r400); line-height:1; margin:2px 0;">↕</div><div style="font-size:11px; color:var(--r500); font-weight:800;">Actual</div><div style="font-size:13px; font-weight:900; color:${getHouseColor(e.actualHouse)};">${e.actualHouse}</div></div></div>`; }).join(''); } resultBox.style.display = 'block'; btn.innerHTML = `<span class="material-symbols-rounded" style="color:#f59e0b;">rule</span> Check House Mismatch`; btn.disabled = false; };
-
-let loadedStreams = { students: false, programs: false, registrations: false };
-function updateProgressBar(streamName) { loadedStreams[streamName] = true; const fill = document.getElementById('pbar-fill'); const status = document.getElementById('pbar-status'); let totalLoaded = Object.values(loadedStreams).filter(Boolean).length; let percent = Math.floor((totalLoaded / 3) * 100); if(fill) fill.style.width = percent + '%'; if(status) status.textContent = `Assembling Dashboard (${percent}%)`; if(totalLoaded === 3) { setTimeout(() => { const loadingEl = document.getElementById('loading'); const appEl = document.getElementById('app'); if(loadingEl) loadingEl.style.opacity = '0'; setTimeout(() => { if(loadingEl) loadingEl.style.display = 'none'; if(appEl) { appEl.style.display = 'block'; setTimeout(() => appEl.style.opacity = '1', 50); } }, 300); }, 500); } }
-
-onSnapshot(collection(db,'students'),snap=>{ students={}; snap.forEach(d=>{students[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderStudents(); updateProgressBar('students'); }, e => setSyncState('err'));
-onSnapshot(collection(db,'programs'),snap=>{ programs={}; snap.forEach(d=>{programs[d.id]={...d.data(),id:d.id};}); updateDynamicFilters(); updateHeader(); renderPrograms(); renderAdminPanel(); renderRegister(); if(document.getElementById('pg-printing').classList.contains('on')) renderPrintingList(); updateProgressBar('programs'); }, e => setSyncState('err'));
-onSnapshot(collection(db,'registrations'),snap=>{ regs={}; snap.forEach(d=>{regs[d.id]={...d.data(), id:d.id};}); setSyncState('ok'); renderRegister(); renderAdminPanel(); if(document.getElementById('pg-printing').classList.contains('on')) renderPrintingList(); updateProgressBar('registrations'); }, e => setSyncState('err'));
-</script>
-</body>
-</html>
+window.renderPrograms=function(){ const secFilter=String(document.getElementById('prog-sec').value||'').toLowerCase().trim(); let arr=Object.values(programs); if(secFilter) arr=arr.filter(p=>toTitle(p.section).toLowerCase()===secFilter); arr.sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))); document.getElementById('prog-count').textContent=`${arr.length} Programs`; if(!arr.length){document.getElementById('prog-list').innerHTML=`<div class="empty"><span class="material-symbols-rounded empty-ico">event_busy</span><div class="empty-txt">No programs</div></div>`;return;} const grouped={}; arr.forEach(p=>{ const s=toTitle(p.section||'Other'); if(!grouped[s]) grouped[s]=[]; grouped[s].push(p); }); let html=''; SECTIONS.forEach(secName=>{ if(grouped[secName]){ html+=`<div class="seclbl">${secName} Section</div>`+grouped[secName].map(p=>{ const isEnabled = p.registrationEnabled !== false; return `<div class="card" style="${!isEnabled?'border-color:#fecaca;background:#fff5f5;':''}"><div class="pcode">${String(p.code||'')}</div><div class="cinfo"><div class="cname">${String(p.name||'')}</div><div class="cmeta"><span class="ptyp ptyp-${p.type.charAt(0)}">${p.type}</span> &middot; Limit ${p.candidateLimit||3}/house</div></div><div class="cacts" style="flex-direction:column;align-items:center;gap:8px;"><div style="display:flex;gap:8px;"><button class="ibtn" onclick="openProgramModal('${p.id}')"><span class="material-symbols-rounded" style="font-size:20px;">edit_square</span></button><button class="ibtn delete" onclick="deleteProgram('${
