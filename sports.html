@@ -314,6 +314,21 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
         <div id="house-check-errors" style="padding: 12px 16px;"></div>
       </div>
     </div>
+    
+    <div class="card" style="flex-direction:column; align-items:flex-start; padding:16px; margin-bottom:16px; gap: 12px; border: 1.5px solid var(--sec);">
+      <div style="font-size:13px; font-weight:800; color:var(--r800); display:flex; align-items:center; gap:6px;">
+        <span class="material-symbols-rounded" style="color:var(--pri);">assignment_add</span> Bulk Import / Export Registrations
+      </div>
+      <div style="font-size:11px; color:var(--r500);">Upload an Excel/CSV file to assign candidates to programs instantly. Headers must strictly be: <b style="color:var(--pri);">Program Code, Chest No</b></div>
+      <div style="display:flex; gap:10px; width:100%; flex-wrap:wrap; align-items:center; margin-top:4px;">
+        <button class="btn btn-out btn-sm" onclick="exportRegistrations()" style="min-width:120px;"><span class="material-symbols-rounded">download</span> Export</button>
+        <div style="flex:1; min-width:200px; display:flex; align-items:center; border: 1.5px dashed var(--sec); padding:4px 8px; border-radius:var(--rads); background:var(--sec-l);">
+          <input type="file" id="reg-import-file" accept=".xlsx, .csv" style="border:none; background:transparent; min-height:auto; padding:0; box-shadow:none; font-size:12px; width:100%; color:var(--r800); font-weight:700;">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="importRegistrations()" style="min-width:120px; background:var(--pri); border-color:var(--pri-d);"><span class="material-symbols-rounded">upload</span> Import</button>
+      </div>
+    </div>
+    
     <div id="reg-area"></div>
   </div>
 
@@ -350,7 +365,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
       <span class="cnt-lbl" id="stu-count"></span>
     </div>
 
-    <!-- BULK IMPORT/EXPORT FEATURE (STUDENTS) -->
     <div class="card" style="flex-direction:column; align-items:flex-start; padding:16px; margin-bottom:16px; gap: 12px; border: 1.5px solid var(--r200);">
       <div style="font-size:13px; font-weight:800; color:var(--r800); display:flex; align-items:center; gap:6px;">
         <span class="material-symbols-rounded" style="color:var(--pri);">group_add</span> Bulk Import / Export Candidates
@@ -378,7 +392,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
       <span class="cnt-lbl" id="prog-count"></span>
     </div>
 
-    <!-- BULK PROGRAMS IMPORT/EXPORT FEATURE -->
     <div class="card" style="flex-direction:column; align-items:flex-start; padding:16px; margin-bottom:16px; gap: 12px; border: 1.5px solid var(--r200);">
       <div style="font-size:13px; font-weight:800; color:var(--r800); display:flex; align-items:center; gap:6px;">
         <span class="material-symbols-rounded" style="color:var(--pri);">post_add</span> Bulk Import / Export Programs
@@ -602,6 +615,109 @@ window.importPrograms = function() {
             });
             await batch.commit(); setSyncState('ok'); toast(`Successfully imported ${count} programs!`, 'g'); fileInput.value = '';
         } catch(err) { toast('Failed to import. Check file format.', 'r'); setSyncState('err'); }
+    };
+    reader.readAsArrayBuffer(file);
+};
+
+/* ================= NEW BULK REGISTRATIONS IMPORT / EXPORT ================= */
+window.exportRegistrations = function() {
+    if(Object.keys(regs).length === 0) { toast('No registrations to export', 'r'); return; }
+    const wsData = Object.values(regs).map(r => ({
+        'Program Code': r.programCode || '',
+        'Program Name': r.programName || '',
+        'Chest No': r.chestNo || '',
+        'Candidate Name': r.name || '',
+        'House': r.house || '',
+        'Status': r.isRegistered ? 'Registered' : 'Pending'
+    }));
+    const ws = XLSX.utils.json_to_sheet(wsData); const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Registrations"); XLSX.writeFile(wb, "Registrations_List.xlsx");
+};
+
+window.importRegistrations = async function() {
+    const fileInput = document.getElementById('reg-import-file'); const file = fileInput.files[0];
+    if(!file) { toast('Please select an Excel or CSV file first', 'r'); return; }
+    const reader = new FileReader();
+    
+    reader.onload = async function(e) {
+        try {
+            const data = new Uint8Array(e.target.result); const workbook = XLSX.read(data, {type: 'array'});
+            const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            if(rows.length === 0) { toast('File is empty', 'r'); return; }
+            
+            setSyncState('ing'); 
+            const batch = writeBatch(db); 
+            let successCount = 0; 
+            let errorCount = 0;
+
+            let currentSlots = {};
+            Object.values(regs).forEach(r => {
+                if(!currentSlots[r.programId]) currentSlots[r.programId] = {};
+                if(!currentSlots[r.programId][r.house]) currentSlots[r.programId][r.house] = [];
+                currentSlots[r.programId][r.house].push(r.slot);
+            });
+
+            rows.forEach(r => {
+                const pCode = String(r['Program Code'] || '').trim().toUpperCase();
+                const chestNo = String(r['Chest No'] || '').trim().toUpperCase();
+                if(!pCode || !chestNo) return;
+
+                const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode);
+                const stu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === chestNo);
+
+                if(!prog || !stu) { errorCount++; return; }
+
+                const isAlreadyReg = Object.values(regs).some(reg => reg.programId === prog.id && reg.chestNo === stu.chestNo);
+                if(isAlreadyReg) return; 
+
+                const house = toTitle(stu.house);
+                if(!currentSlots[prog.id]) currentSlots[prog.id] = {};
+                if(!currentSlots[prog.id][house]) currentSlots[prog.id][house] = [];
+
+                const limit = prog.candidateLimit || 3;
+                let assignedSlot = -1;
+                for(let i=0; i<limit; i++) {
+                    if(!currentSlots[prog.id][house].includes(i)) {
+                        assignedSlot = i;
+                        currentSlots[prog.id][house].push(i);
+                        break;
+                    }
+                }
+
+                if(assignedSlot !== -1) {
+                    const key = `${prog.id}__${house}__${assignedSlot}`;
+                    batch.set(doc(db, 'registrations', key), {
+                        programId: prog.id,
+                        house: house,
+                        slot: assignedSlot,
+                        studentId: stu.id,
+                        chestNo: stu.chestNo,
+                        name: stu.name,
+                        programCode: prog.code,
+                        programName: prog.name,
+                        isRegistered: false 
+                    }, {merge: true});
+                    successCount++;
+                } else {
+                    errorCount++;
+                }
+            });
+
+            if(successCount > 0) {
+                await batch.commit();
+                toast(`Successfully assigned ${successCount} candidates!`, 'g');
+                if(errorCount > 0) {
+                    setTimeout(() => alert(`Imported ${successCount} candidates.\nCould not import ${errorCount} rows (Invalid Program Code, wrong Chest No, or House slots are full).`), 1000);
+                }
+            } else {
+                toast('No valid new registrations found in the file.', 'ti');
+            }
+            setSyncState('ok'); fileInput.value = '';
+            
+        } catch(err) {
+            console.error(err);
+            toast('Failed to import. Check file format.', 'r'); setSyncState('err');
+        }
     };
     reader.readAsArrayBuffer(file);
 };
