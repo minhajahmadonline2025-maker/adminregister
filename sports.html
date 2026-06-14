@@ -743,10 +743,68 @@ window.toggleProgramReg = async function(pid, enabled) { setSyncState('ing'); tr
 window.toggleStatus = async function(pid, house, slot, currentStatus) { const key = regKey(pid, house, slot); const newStatus = !currentStatus; if(!confirm(`Change status to ${newStatus ? 'REGISTERED' : 'PENDING'}?`)) return; setSyncState('ing'); try { await setDoc(doc(db, 'registrations', key), { isRegistered: newStatus }, { merge: true }); toast(`Status Updated`, 'g'); } catch(e) { setSyncState('err'); } };
 
 /* ================= PRINTING & CODES ================= */
-window.renderPrintingList = function() { const search = String(document.getElementById('print-search').value||'').toLowerCase().trim(); const secFilter = String(document.getElementById('print-sec').value||'').toLowerCase().trim(); let progs = Object.values(programs); if(secFilter) progs = progs.filter(p => toTitle(p.section).toLowerCase() === secFilter); if(search) progs = progs.filter(p => (p.code||'').toLowerCase().includes(search) || (p.name||'').toLowerCase().includes(search)); progs.sort((a,b) => String(a.code||'').localeCompare(String(b.code||''))); const listContainer = document.getElementById('print-prog-list'); document.getElementById('print-list-count').textContent = `${progs.length} found`; if(progs.length === 0) { listContainer.innerHTML = `<div class="empty"><div class="empty-txt">No programs match</div></div>`; return; } let html = ''; progs.forEach(p => { const progRegs = Object.values(regs).filter(r => r.programId === p.id); const hasCodes = progRegs.some(r => r.codeLetter); html += `<div class="card" onclick="togglePrintSelect(event, '${p.id}')" style="cursor:pointer; padding: 10px 14px;"><input type="checkbox" class="print-cb" value="${p.id}" id="cb-${p.id}" onclick="event.stopPropagation(); updatePrintSelectedCount()"><div class="pcode">${p.code}</div><div class="cinfo" style="margin-left: 4px;"><div class="cname" style="font-size: 14px;">${p.name}</div><div class="cmeta">${toTitle(p.section)} &middot; ${progRegs.length} cands ${hasCodes ? '&middot; <b style="color:var(--success)">Locked</b>' : ''}</div></div><button class="ibtn" onclick="event.stopPropagation(); openPrintSetup('${p.id}')"><span class="material-symbols-rounded">settings</span></button></div>`; }); listContainer.innerHTML = html; updatePrintSelectedCount(); };
-window.togglePrintSelect = function(e, pid) { if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return; const cb = document.getElementById(`cb-${pid}`); if(cb) { cb.checked = !cb.checked; updatePrintSelectedCount(); } };
-window.toggleSelectAllPrint = function(isChecked) { document.querySelectorAll('.print-cb').forEach(cb => cb.checked = isChecked); updatePrintSelectedCount(); };
-window.updatePrintSelectedCount = function() { document.getElementById('print-sel-count').textContent = document.querySelectorAll('.print-cb:checked').length; };
+let selectedPrintPrograms = new Set();
+
+window.renderPrintingList = function() { 
+    const search = String(document.getElementById('print-search').value||'').toLowerCase().trim(); 
+    const secFilter = String(document.getElementById('print-sec').value||'').toLowerCase().trim(); 
+    let progs = Object.values(programs); 
+    if(secFilter) progs = progs.filter(p => toTitle(p.section).toLowerCase() === secFilter); 
+    if(search) progs = progs.filter(p => (p.code||'').toLowerCase().includes(search) || (p.name||'').toLowerCase().includes(search)); 
+    progs.sort((a,b) => String(a.code||'').localeCompare(String(b.code||''))); 
+    const listContainer = document.getElementById('print-prog-list'); 
+    document.getElementById('print-list-count').textContent = `${progs.length} found`; 
+    
+    if(progs.length === 0) { 
+        listContainer.innerHTML = `<div class="empty"><div class="empty-txt">No programs match</div></div>`; 
+        return; 
+    } 
+    
+    let html = ''; 
+    progs.forEach(p => { 
+        const progRegs = Object.values(regs).filter(r => r.programId === p.id); 
+        const hasCodes = progRegs.some(r => r.codeLetter); 
+        html += `<div class="card" onclick="togglePrintSelect(event, '${p.id}')" style="cursor:pointer; padding: 10px 14px;">
+            <input type="checkbox" class="print-cb" value="${p.id}" id="cb-${p.id}" ${selectedPrintPrograms.has(p.id) ? 'checked' : ''} onclick="event.stopPropagation()" onchange="handlePrintSelection('${p.id}', this.checked)">
+            <div class="pcode">${p.code}</div>
+            <div class="cinfo" style="margin-left: 4px;">
+                <div class="cname" style="font-size: 14px;">${p.name}</div>
+                <div class="cmeta">${toTitle(p.section)} &middot; ${progRegs.length} cands ${hasCodes ? '&middot; <b style="color:var(--success)">Locked</b>' : ''}</div>
+            </div>
+            <button class="ibtn" onclick="event.stopPropagation(); openPrintSetup('${p.id}')"><span class="material-symbols-rounded">settings</span></button>
+        </div>`; 
+    }); 
+    listContainer.innerHTML = html; 
+    updatePrintSelectedCount(); 
+};
+
+window.handlePrintSelection = function(pid, isChecked) { 
+    if (isChecked) { selectedPrintPrograms.add(pid); } 
+    else { selectedPrintPrograms.delete(pid); } 
+    updatePrintSelectedCount(); 
+};
+
+window.togglePrintSelect = function(e, pid) { 
+    if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return; 
+    const cb = document.getElementById(`cb-${pid}`); 
+    if(cb) { 
+        cb.checked = !cb.checked; 
+        handlePrintSelection(pid, cb.checked); 
+    } 
+};
+
+window.toggleSelectAllPrint = function(isChecked) { 
+    document.querySelectorAll('.print-cb').forEach(cb => { 
+        cb.checked = isChecked; 
+        if(isChecked) selectedPrintPrograms.add(cb.value); 
+        else selectedPrintPrograms.delete(cb.value); 
+    }); 
+    updatePrintSelectedCount(); 
+};
+
+window.updatePrintSelectedCount = function() { 
+    document.getElementById('print-sel-count').textContent = selectedPrintPrograms.size; 
+};
 
 function processPrintData(prog, progRegs, batch) {
     let isGroup = prog.type === 'group';
@@ -848,16 +906,15 @@ function wrapInPage(half1, half2) {
 }
 
 window.batchPrintSelected = async function() {
-    const selectedCbs = document.querySelectorAll('.print-cb:checked');
-    if(selectedCbs.length === 0) { toast("Select at least one program to print", "r"); return; }
+    if(selectedPrintPrograms.size === 0) { toast("Select at least one program to print", "r"); return; }
     const format = document.getElementById('batch-print-format').value;
     setSyncState('ing');
     const batch = writeBatch(db);
     let allHalves = [];
     
-    for(let i=0; i<selectedCbs.length; i++) {
-        const pid = selectedCbs[i].value;
+    for(let pid of selectedPrintPrograms) {
         const prog = programs[pid];
+        if(!prog) continue;
         const progRegs = Object.values(regs).filter(r => r.programId === pid);
         const formattedRegs = processPrintData(prog, progRegs, batch);
         
