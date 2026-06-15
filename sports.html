@@ -211,22 +211,59 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 
 #print-container { display: none; }
 @media print {
-  @page { size: A4 landscape; margin: 8mm 12mm; } 
-  body, html { background: #fff; margin: 0; padding: 0; height: auto !important; overflow: visible !important; font-family: 'Outfit', sans-serif; color: #000; -webkit-print-color-adjust: exact; }
-  #app, .bottom-nav, .hdr, .overlay, .toasts { display: none !important; }
-  #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: #fff; z-index: 9999; }
-  .print-page { width: 100%; display: flex; gap: 20mm; position: relative; box-sizing: border-box; page-break-after: always; height: 190mm; overflow: hidden; padding-bottom: 10px;} 
+  @page { size: A4 landscape; margin: 8mm; } 
+  body, html { 
+    background: #fff; 
+    margin: 0; 
+    padding: 0; 
+    height: auto !important; 
+    overflow: visible !important; 
+    font-family: 'Outfit', sans-serif; 
+    color: #000; 
+    -webkit-print-color-adjust: exact; 
+    print-color-adjust: exact;
+  }
+  
+  /* Hide UI elements */
+  #app, .bottom-nav, .hdr, .overlay, .toasts, #app-lock { display: none !important; }
+  
+  /* Print Container - Changed to relative & forced width */
+  #print-container { 
+    display: block !important; 
+    position: relative; /* Changed from absolute to relative */
+    width: 100%; 
+    min-width: 1000px; /* Force mobile to scale out for landscape */
+    background: #fff; 
+    z-index: 9999; 
+  }
+  
+  .print-page { 
+    width: 100%; 
+    display: flex; 
+    gap: 15mm; 
+    position: relative; 
+    box-sizing: border-box; 
+    page-break-after: always; 
+    height: 190mm; 
+    overflow: hidden; 
+    padding-bottom: 10px;
+    page-break-inside: avoid; /* Prevent breaking inside a page */
+  } 
   .print-page:last-child { page-break-after: auto; }
+  
   .print-half { flex: 1; width: 50%; display: flex; flex-direction: column; max-height: 100%; }
   .print-header { text-align: center; font-weight: 900; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 4px; }
   .print-header-sub { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; }
+  
   .print-meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 10px; font-weight: 700; margin-bottom: 8px; border: 1px solid #000; padding: 4px; text-transform: uppercase; }
   .print-meta-grid > div { border-right: 1px solid #000; padding: 0 4px; }
   .print-meta-grid > div:last-child { border-right: none; }
+  
   .print-table { width: 100%; border-collapse: collapse; font-size: 11px; flex-grow: 1; } 
   .print-table th, .print-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; color: #000; height: 22px; } 
   .print-table th { font-weight: 800; text-transform: uppercase; font-size: 9px; background: #e5e7eb !important; padding: 6px 2px; }
   .print-table td.t-left { text-align: left; padding-left: 6px; font-weight: 600;}
+  
   .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.05; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); place-items: center; padding: 20px; box-sizing: border-box; }
   .watermark img { width: 220px; filter: grayscale(100%); opacity: 0.8; }
   .print-footer { margin-top: auto; padding-top: 8px; font-size: 10px; display: flex; justify-content: space-between; font-weight: 600; }
@@ -936,7 +973,13 @@ window.batchPrintSelected = async function() {
         setSyncState('ok');
         document.getElementById('print-container').innerHTML = printHtmlAgg;
         toast('Generation Complete. Opening Printer...', 'g');
-        setTimeout(() => window.print(), 800);
+        
+        // Timeout for mobile browsers
+        setTimeout(() => {
+            document.getElementById('print-container').offsetHeight;
+            window.print();
+        }, 1000);
+        
     } catch(e) {
         setSyncState('err');
         toast("Failed to save codes", "r");
@@ -1010,7 +1053,12 @@ window.triggerPrint = async function() {
             printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, format), ''); // Only one half
         }
         document.getElementById('print-container').innerHTML = printHtmlAgg;
-        window.print();
+        
+        // Timeout for mobile browsers
+        setTimeout(() => {
+            document.getElementById('print-container').offsetHeight; // Trigger reflow
+            window.print();
+        }, 800);
     };
 
     if (!isLocked && regs.length > 0) { 
