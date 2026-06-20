@@ -341,9 +341,11 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
         <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 8px;">
             <label style="font-size:12px; font-weight:700;">Print Layout:</label>
             <select id="batch-print-format" style="background: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; color: var(--r800); outline: none;">
+                <option value="full" selected>Full Set (Master + Candidate + 2 Judge Copies)</option>
                 <option value="both">Both (Name & Judgement)</option>
                 <option value="name">Candidates Only (Name)</option>
-                <option value="judge">Judgement Only (No Name)</option>
+                <option value="judge">Judgement Only (Master, w/ Chest)</option>
+                <option value="blind">Judgement Only (Blind, Code Only)</option>
             </select>
         </div>
         <button class="btn" style="background:#fff; color:var(--pri);" onclick="batchPrintSelected()"><span class="material-symbols-rounded">shuffle</span> Auto-Shuffle & Print Selected (<span id="print-sel-count">0</span>)</button>
@@ -882,24 +884,28 @@ function generatePrintHalf(prog, formattedRegs, type) {
             const houseShort = r.house.substring(0, 4).toUpperCase();
             if(type === 'name') {
                 rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td><td>${houseShort}</td><td>${cls}</td><td></td><td></td><td></td></tr>`;
+            } else if(type === 'blind') {
+                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
             } else {
                 rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
             }
         } else {
-            rowsHtml += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+            rowsHtml += type === 'blind' ? `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>` : `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
         }
     }
-    const title = type === 'name' ? 'STAGE CANDIDATES' : 'JUDGEMENT SHEET';
+    const title = type === 'name' ? 'STAGE CANDIDATES' : (type === 'blind' ? 'JUDGEMENT SHEET' : 'JUDGEMENT SHEET (MASTER)');
     let tableHead = '';
     if(type === 'name') {
         tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
+    } else if(type === 'blind') {
+        tableHead = `<tr><th style="width:35px">Code</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
     } else {
         tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
     }
-    let extraInfo = type === 'judge' ? `<div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>` : '';
+    let extraInfo = (type === 'judge' || type === 'blind') ? `<div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>` : '';
     let footerSign = type === 'name' ? `<span style="margin-left:auto;">Sign of completion: __________________</span>` : `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
     
-    return `<div class="print-half"><div class="print-header">KAMA 2K26${type==='judge'?' - STAGE FEST':''}<br><span class="print-header-sub">${title}</span></div><div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div><table class="print-table"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table>${extraInfo}<div class="print-footer" style="${type==='judge'?'margin-top:15px;':''}"><div style="display:flex; flex-direction:column; gap:10px; width:100%;"><div style="display:flex; align-items:center; width:100%;"><span>Printed on: ${printDate}</span>${type==='name'?footerSign:''}</div>${type==='judge'?footerSign:''}</div></div></div>`;
+    return `<div class="print-half"><div class="print-header">KAMA 2K26${type!=='name'?' - STAGE FEST':''}<br><span class="print-header-sub">${title}</span></div><div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div><table class="print-table"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table>${extraInfo}<div class="print-footer" style="${type!=='name'?'margin-top:15px;':''}"><div style="display:flex; flex-direction:column; gap:10px; width:100%;"><div style="display:flex; align-items:center; width:100%;"><span>Printed on: ${printDate}</span>${type==='name'?footerSign:''}</div>${type!=='name'?footerSign:''}</div></div></div>`;
 }
 
 function wrapInPage(half1, half2) {
@@ -923,6 +929,11 @@ window.batchPrintSelected = async function() {
         if (format === 'both') {
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge'));
+        } else if (format === 'full') {
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'blind'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'blind'));
         } else {
             allHalves.push(generatePrintHalf(prog, formattedRegs, format));
         }
@@ -982,9 +993,11 @@ function renderPrintSetup() {
     html += `<div style="margin-top: 16px; padding: 12px; background: var(--r50); border: 1px solid var(--r200); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
         <span style="font-size:12px; font-weight:800; color:var(--r800);">Print Layout:</span>
         <select id="single-print-format" style="width:auto; min-height:30px; padding:4px 8px; font-size:12px; font-weight:700; border-radius:6px; border:1px solid var(--r300); outline:none; color: var(--r800); background:#fff;">
+            <option value="full" selected>Full Set (Master + Candidate + 2 Judge Copies)</option>
             <option value="both">Both (Name & Judgement)</option>
             <option value="name">Candidates Only</option>
-            <option value="judge">Judgement Only</option>
+            <option value="judge">Judgement Only (Master, w/ Chest)</option>
+            <option value="blind">Judgement Only (Blind, Code Only)</option>
         </select>
     </div>`;
     
@@ -1008,6 +1021,9 @@ window.triggerPrint = async function() {
         let printHtmlAgg = '';
         if (format === 'both') {
             printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge'));
+        } else if (format === 'full') {
+            printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'judge'), generatePrintHalf(prog, regs, 'name'));
+            printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'blind'), generatePrintHalf(prog, regs, 'blind'));
         } else {
             printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, format), ''); // Only one half
         }
