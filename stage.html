@@ -878,78 +878,98 @@ function generatePrintHalf(prog, formattedRegs, type) {
             
             if(type === 'name') {
                 rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td><td>${houseShort}</td><td>${cls}</td><td></td><td></td><td></td></tr>`;
-            } else if(type === 'blind') {
-                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
             } else if (type === 'final_judge') {
-                rowsHtml += `<tr style="border-bottom: 1.5px dashed #999;">
-                    <td style="font-size:13px;"><b>${r.codeLetter}</b></td>
-                    <td style="font-size:13px; color:#450c13;"><b>${r.chestNo}</b></td>
-                    <td></td><td></td>
-                    <td style="background:#f3f4f6;"></td>
-                    <td style="background:#f3f4f6;"></td>
+                // Attractive gray/black row styling
+                rowsHtml += `<tr style="border-bottom: 1px solid #9ca3af;">
+                    <td style="font-size:13px; border-right:2px solid #000;"><b>${r.codeLetter}</b></td>
+                    <td style="font-size:13px; color:#000; border-right:2px solid #000;"><b>${r.chestNo}</b></td>
+                    <td></td><td style="border-right:2px solid #000;"></td>
+                    <td style="background:#e5e7eb;"></td>
+                    <td style="background:#e5e7eb; border-right:2px solid #000;"></td>
                     <td></td>
                 </tr>`;
-            } else { // judge, judge1, judge2
-                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+            } else { // judge1, judge2
+                rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td></td><td></td><td></td><td style="background:#f9fafb;"></td><td></td><td></td></tr>`;
             }
         } else {
-            rowsHtml += type === 'blind' ? `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>` : `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+            if(type === 'final_judge') {
+                rowsHtml += `<tr style="border-bottom: 1px solid #9ca3af;"><td style="border-right:2px solid #000;">&nbsp;</td><td style="border-right:2px solid #000;"></td><td></td><td style="border-right:2px solid #000;"></td><td style="background:#e5e7eb;"></td><td style="background:#e5e7eb; border-right:2px solid #000;"></td><td></td></tr>`;
+            } else {
+                rowsHtml += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+            }
         }
     }
 
-    let title = '';
-    if(type === 'name') title = 'STAGE CANDIDATES';
-    else if(type === 'judge1') title = 'JUDGE 1 EVALUATION SHEET';
-    else if(type === 'judge2') title = 'JUDGE 2 EVALUATION SHEET';
-    else if(type === 'final_judge') title = '<span style="color: #000; border-bottom: 3px double #000; padding-bottom: 4px; font-size: 17px; letter-spacing: 1px;">FINAL CONSOLIDATED SHEET</span>';
-    else if(type === 'blind') title = 'JUDGEMENT SHEET (BLIND)';
-    else title = 'JUDGEMENT SHEET (MASTER)';
+    // Dynamic Title Blocks
+    let titleBlock = '';
+    if(type === 'name') {
+        titleBlock = `<div class="print-header">KAMA 2K26<br><span class="print-header-sub">STAGE CANDIDATES</span></div>`;
+    } else if(type === 'final_judge') {
+        // Distinct, highly attractive B&W title for final sheet
+        titleBlock = `<div style="text-align:center; margin-bottom: 12px;">
+            <div style="font-size:18px; font-weight:900; border: 2px solid #000; background:#e5e7eb; padding:6px 0; text-transform:uppercase; letter-spacing:2px; box-shadow: 4px 4px 0px #000; display:inline-block; width:100%;">Final Judgement Sheet</div>
+            <div style="font-size:10px; font-weight:800; margin-top:4px; letter-spacing:1px; text-transform:uppercase;">KAMA 2K26 Stage Fest Consolidation</div>
+        </div>`;
+    } else {
+        const jName = type === 'judge1' ? '1' : (type === 'judge2' ? '2' : '');
+        titleBlock = `<div class="print-header">KAMA 2K26 - STAGE FEST<br><span class="print-header-sub">JUDGE ${jName} EVALUATION SHEET</span></div>`;
+    }
     
+    // Meta Info Grid
+    let metaHtml = `<div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div>`;
+    
+    // NEW: Add Judge Name & Signature box at the TOP for Judge sheets
+    if(type === 'judge1' || type === 'judge2') {
+        metaHtml += `<div style="display:flex; justify-content:space-between; margin: 8px 0; padding: 6px 10px; background: #f3f4f6; border: 1.5px solid #000; border-radius: 6px; font-size:12px; font-weight:800;"><span>Name of Judge: ____________________________________</span><span>Signature: ________________</span></div>`;
+    }
+
+    // Table Headers
     let tableHead = '';
     if(type === 'name') {
         tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
-    } else if(type === 'blind') {
-        tableHead = `<tr><th style="width:35px">Code</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
     } else if (type === 'final_judge') {
-        tableHead = `<tr style="border-bottom: 2px solid #000; background:#e5e7eb;">
-            <th style="width:25px">Cd.</th><th style="width:40px">Chest</th>
-            <th>Judge 1 Total</th><th>Judge 2 Total</th>
-            <th style="width:50px; background:#d1d5db!important; color:#000;">Gr. Total</th>
-            <th style="width:30px; background:#d1d5db!important; color:#000;">Grd.</th>
-            <th style="width:40px">Rank</th>
+        // Distinct, dark-gray headers with bold lines
+        tableHead = `<tr style="border-bottom: 2px solid #000; background:#d1d5db;">
+            <th style="width:25px; border-right:2px solid #000; color:#000;">Cd.</th>
+            <th style="width:40px; border-right:2px solid #000; color:#000;">Chest</th>
+            <th style="color:#000;">Judge 1 Total</th>
+            <th style="border-right:2px solid #000; color:#000;">Judge 2 Total</th>
+            <th style="width:50px; background:#9ca3af!important; color:#000;">Gr. Total</th>
+            <th style="width:30px; background:#9ca3af!important; color:#000; border-right:2px solid #000;">Grd.</th>
+            <th style="width:40px; color:#000; font-size:11px;">Rank</th>
         </tr>`;
-    } else { // judge, judge1, judge2
+    } else { // judge1, judge2
         tableHead = `<tr>
             <th style="width:25px">Cd.</th>
             <th style="width:40px">Chest</th>
             <th>Criteria 1 (  )</th>
             <th>Criteria 2 (  )</th>
             <th>Criteria 3 (  )</th>
-            <th style="width:35px">Total</th>
+            <th style="width:35px; background:#e5e7eb!important;">Total</th>
             <th style="width:30px">Grd.</th>
             <th style="width:40px">Remarks</th>
         </tr>`;
     }
     
-    let extraInfo = (type.includes('judge') || type === 'blind') ? `<div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>` : '';
+    let extraInfo = (type.includes('judge')) ? `<div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>` : '';
     
+    // Footer Logic
     let footerSign = '';
     if(type === 'name') {
         footerSign = `<span style="margin-left:auto;">Sign of completion: __________________</span>`;
     } else if(type === 'final_judge') {
-        footerSign = `<div style="display:flex; justify-content:space-between; width:100%; font-size:11px;"><span>Chief Judge: _______________</span><span>Tabulator: _______________</span><span>Fest Admin: ___________</span></div>`;
-    } else if(type === 'judge1') {
-        footerSign = `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge 1: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
-    } else if(type === 'judge2') {
-        footerSign = `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge 2: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
+        footerSign = `<div style="display:flex; justify-content:space-between; width:100%; font-size:11px; margin-top: 5px; padding-top: 10px; border-top: 2px solid #000;"><span><b>Chief Judge:</b> _______________</span><span><b>Tabulator:</b> _______________</span><span><b>Fest Admin:</b> ___________</span></div>`;
     } else {
-        footerSign = `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
+        // Reduced bottom footer since name is now at the top
+        footerSign = `<span style="margin-left:auto; font-size:9px; color:#6b7280;">Verified by: ________________________</span>`;
     }
     
+    const tableStyle = type === 'final_judge' ? 'border: 2px solid #000;' : '';
+
     return `<div class="print-half">
-        <div class="print-header">KAMA 2K26${type!=='name'?' - STAGE FEST':''}<br><span class="print-header-sub">${title}</span></div>
-        <div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div>
-        <table class="print-table"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table>
+        ${titleBlock}
+        ${metaHtml}
+        <table class="print-table" style="${tableStyle}"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table>
         ${extraInfo}
         <div class="print-footer" style="${type!=='name'?'margin-top:15px;':''}">
             <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
@@ -980,7 +1000,7 @@ window.batchPrintSelected = async function() {
         
         if (format === 'both') {
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
-            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge1'));
         } else if (format === 'full') {
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge1'));
@@ -1071,7 +1091,7 @@ window.triggerPrint = async function() {
     const printNow = () => {
         let printHtmlAgg = '';
         if (format === 'both') {
-            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge'));
+            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge1'));
         } else if (format === 'full') {
             printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge1'));
             printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'judge2'), generatePrintHalf(prog, regs, 'final_judge'));
