@@ -341,7 +341,7 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
         <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 8px;">
             <label style="font-size:12px; font-weight:700;">Print Layout:</label>
             <select id="batch-print-format" style="background: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; color: var(--r800); outline: none;">
-                <option value="full" selected>Full Set (Master + Candidate + 2 Judge Copies)</option>
+                <option value="full" selected>Full Set (Candidate List + 2 Judge Sheets + 1 Final Sheet)</option>
                 <option value="both">Both (Name & Judgement)</option>
                 <option value="name">Candidates Only (Name)</option>
                 <option value="judge">Judgement Only (Master, w/ Chest)</option>
@@ -507,7 +507,6 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Stage Admin Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyDTHYMRYcLw7S39zzQ7t2NEDs7PdVK8d-0",
   authDomain: "stage-daa6a.firebaseapp.com",
@@ -523,7 +522,6 @@ const db  = getFirestore(app);
 window.closeModal = id => document.getElementById(id).classList.remove('show');
 window.openModal = id => { document.getElementById(id).classList.add('show'); };
 
-/* ================= SCREEN LOCK & SECURITY LOGIC ================= */
 let MASTER_PIN = localStorage.getItem('kama_admin_pin') || "2456";
 let currentPin = "";
 const lockScreen = document.getElementById('app-lock');
@@ -559,7 +557,6 @@ window.switchTab = function(tab, el){ document.querySelectorAll('.nav-item').for
 function updateHeader(){ document.getElementById('hdr-stats').textContent=`${Object.keys(students).length} Students · ${Object.keys(programs).length} Programs`; }
 function updateDynamicFilters() { let sSet = new Set(); let cSet = new Set(); Object.values(students).forEach(s => { if(s.section) sSet.add(toTitle(s.section)); if(s.class) cSet.add(String(s.class).trim()); }); Object.values(programs).forEach(p => { if(p.section) sSet.add(toTitle(p.section)); }); SECTIONS = Array.from(sSet).sort((a, b) => { let idxA = ORDERED_SECTIONS.findIndex(s => s.toLowerCase() === a.toLowerCase()); let idxB = ORDERED_SECTIONS.findIndex(s => s.toLowerCase() === b.toLowerCase()); return (idxA===-1?999:idxA) - (idxB===-1?999:idxB); }); CLASSES = Array.from(cSet).sort((a,b)=> parseInt(a) - parseInt(b)); document.getElementById('section-list').innerHTML = SECTIONS.map(s => `<option value="${s}">`).join(''); document.getElementById('house-list').innerHTML = HOUSES.map(h => `<option value="${h}">`).join(''); document.getElementById('class-list').innerHTML = CLASSES.map(c => `<option value="${c}">`).join(''); ['stu-sec','prog-sec','reg-sec', 'print-sec'].forEach(id=>{ const el=document.getElementById(id); if(!el)return; const cur=el.value; el.innerHTML='<option value="">All Sections</option>'+SECTIONS.map(s=>`<option value="${s}">${s}</option>`).join(''); el.value=cur; }); }
 
-/* ================= NEW BULK STUDENTS IMPORT / EXPORT ================= */
 window.exportStudents = function() {
     if(Object.keys(students).length === 0) { toast('No students to export', 'r'); return; }
     const wsData = Object.values(students).map(s => ({
@@ -591,7 +588,6 @@ window.importStudents = function() {
     reader.readAsArrayBuffer(file);
 };
 
-/* ================= NEW BULK PROGRAMS IMPORT / EXPORT ================= */
 window.exportPrograms = function() {
     if(Object.keys(programs).length === 0) { toast('No programs to export', 'r'); return; }
     const wsData = Object.values(programs).map(p => ({
@@ -623,7 +619,6 @@ window.importPrograms = function() {
     reader.readAsArrayBuffer(file);
 };
 
-/* ================= NEW BULK REGISTRATIONS IMPORT / EXPORT ================= */
 window.exportRegistrations = function() {
     if(Object.keys(regs).length === 0) { toast('No registrations to export', 'r'); return; }
     const wsData = Object.values(regs).map(r => ({
@@ -726,7 +721,6 @@ window.importRegistrations = async function() {
     reader.readAsArrayBuffer(file);
 };
 
-/* ================= CRUD STUDENTS & PROGRAMS ================= */
 window.renderStudents=function(){ const search=String(document.getElementById('stu-search').value||'').toLowerCase().trim(); const sec=String(document.getElementById('stu-sec').value||'').toLowerCase().trim(); let arr=Object.values(students); if(search) arr=arr.filter(s=>String(s.name||'').toLowerCase().includes(search)||String(s.chestNo||'').toLowerCase().includes(search)); if(sec) arr=arr.filter(s=>toTitle(s.section).toLowerCase() === sec); arr.sort((a,b)=>String(a.chestNo||'').localeCompare(String(b.chestNo||''))); document.getElementById('stu-count').textContent=`${arr.length} Students`; if(!arr.length){document.getElementById('stu-list').innerHTML=`<div class="empty"><span class="material-symbols-rounded empty-ico">person_off</span><div class="empty-txt">No students</div></div>`;return;} document.getElementById('stu-list').innerHTML=arr.map(s=>{ const hColor = getHouseColor(s.house); return `<div class="card"><div class="chest" style="background:${hColor}">${String(s.chestNo||'')}</div><div class="cinfo"><div class="cname">${String(s.name||'')}</div><div class="cmeta">Class ${String(s.class||'')} &middot; ${toTitle(s.section)} &middot; <span style="color:${hColor};font-weight:800">${toTitle(s.house)}</span></div></div><div class="cacts"><button class="ibtn" onclick="openStudentModal('${s.id}')"><span class="material-symbols-rounded" style="font-size:18px;">edit</span></button><button class="ibtn delete" onclick="deleteStudent('${s.id}')"><span class="material-symbols-rounded" style="font-size:18px;">delete</span></button></div></div>` }).join(''); };
 window.openStudentModal=function(id=null){ document.getElementById('stu-modal-title').textContent=id?'Edit Student':'Add Student'; const s=id?students[id]:null; document.getElementById('stu-id').value=id||''; document.getElementById('stu-chest').value=s?s.chestNo:''; document.getElementById('stu-name').value=s?s.name:''; document.getElementById('stu-class-input').value=s?String(s.class):''; document.getElementById('stu-section-input').value=s?toTitle(s.section):''; document.getElementById('stu-house-input').value=s?toTitle(s.house):''; openModal('modal-student'); };
 window.saveStudent=async function(){ const id=document.getElementById('stu-id').value||uid(); const obj={id, chestNo:document.getElementById('stu-chest').value.trim().toUpperCase(), name:document.getElementById('stu-name').value.trim().toUpperCase(), class:document.getElementById('stu-class-input').value.trim(), section:toTitle(document.getElementById('stu-section-input').value), house:toTitle(document.getElementById('stu-house-input').value)}; if(!obj.chestNo||!obj.name||!obj.house){toast('Fill required fields','r');return;} setSyncState('ing'); try{ await setDoc(doc(db,'students',id),obj); closeModal('modal-student'); toast('Saved','g'); }catch(e){setSyncState('err');} };
@@ -736,7 +730,6 @@ window.openProgramModal=function(id=null){ document.getElementById('prog-modal-t
 window.saveProgram=async function(){ const id=document.getElementById('prog-id').value||uid(); const obj={id, code:document.getElementById('prog-code').value.trim().toUpperCase(), name:document.getElementById('prog-name').value.trim().toUpperCase(), section:toTitle(document.getElementById('prog-section-input').value), type:document.getElementById('prog-type').value, candidateLimit:parseInt(document.getElementById('prog-limit').value)||1}; if(!obj.code||!obj.name){toast('Fill required fields','r');return;} setSyncState('ing'); try{await setDoc(doc(db,'programs',id),obj, {merge:true}); closeModal('modal-program');toast('Saved','g');}catch(e){setSyncState('err');} };
 window.deleteProgram=async function(id){ if(confirm('Delete program?')){ setSyncState('ing'); try{await deleteDoc(doc(db,'programs',id));}catch(e){setSyncState('err');} } };
 
-/* ================= REGISTRATION & DASHBOARD ================= */
 function regKey(pid,house,slot){return `${pid}__${house}__${slot}`;}
 window.renderRegister=function(){ const secFilter=String(document.getElementById('reg-sec').value||'').toLowerCase().trim(); let progs=Object.values(programs); if(secFilter) progs=progs.filter(p=>toTitle(p.section).toLowerCase()===secFilter); progs.sort((a,b)=>String(a.code||'').localeCompare(String(b.code||''))); document.getElementById('reg-count').textContent=`${Object.keys(regs).length} Slots Filled`; if(!progs.length){document.getElementById('reg-area').innerHTML=`<div class="empty">No programs</div>`;return;} let houseHeaderCols=''; let candHeaderCols=''; const maxLimit=Math.max(...progs.map(p=>p.candidateLimit||1)); HOUSES.forEach(house=>{ const hColor=getHouseColor(house); houseHeaderCols+=`<th class="th-house" colspan="${maxLimit}" style="background:${hColor};border-color:${hColor}">${house}</th>`; for(let s=0;s<maxLimit;s++) candHeaderCols+=`<th class="th-cand" style="color:${hColor}">C${s+1}</th>`; }); const bySection={}; progs.forEach(p=>{ const s=toTitle(p.section||'Other'); if(!bySection[s]) bySection[s]=[]; bySection[s].push(p); }); let rows=''; SECTIONS.forEach(sec=>{ if(bySection[sec]){ rows+=`<tr class="tr-section"><td colspan="${2+HOUSES.length*maxLimit}">${sec} Section</td></tr>`; bySection[sec].forEach(p=>{ let tds=''; HOUSES.forEach(house=>{ for(let slot=0;slot<maxLimit;slot++){ if(slot<(p.candidateLimit||1)){ const reg=regs[regKey(p.id,house,slot)]; tds+=`<td class="td-cand"><div class="cand-cell"><input class="cand-chest${reg?' filled':''}" type="text" maxlength="8" placeholder="Chest" value="${reg?String(reg.chestNo||''):''}" data-pid="${p.id}" data-house="${house}" data-slot="${slot}" onblur="onChestBlur(this)"><span class="${reg?'cand-name ok':'cand-name'}" style="font-size:10px; font-weight:700">${reg?String(reg.name||''):''}</span></div></td>`; } else tds+=`<td style="background:#f9fafb;"></td>`; } }); rows+=`<tr><td class="td-code col-code">${p.code}</td><td class="td-name col-name">${p.name}</td>${tds}</tr>`; }); } }); document.getElementById('reg-area').innerHTML=`<div class="reg-wrap"><table class="reg-table"><thead><tr><th class="th-code-hdr col-code" rowspan="2">Code</th><th class="th-name-hdr col-name" rowspan="2">Program</th>${houseHeaderCols}</tr><tr>${candHeaderCols}</tr></thead><tbody>${rows}</tbody></table></div>`; };
 window.onChestBlur=async function(el){ const val=el.value.trim().toUpperCase(); const pid=el.dataset.pid,house=el.dataset.house,slot=parseInt(el.dataset.slot); const key=regKey(pid,house,slot); if(!val){ if(regs[key]){ setSyncState('ing'); await deleteDoc(doc(db,'registrations',key)); } return; } const stu=Object.values(students).find(s=>String(s.chestNo||'').toUpperCase()===val); if(!stu){toast('Chest No not found','r');el.value='';return;} setSyncState('ing'); const prog=programs[pid]; await setDoc(doc(db,'registrations',key),{programId:pid,house,slot,studentId:stu.id,chestNo:stu.chestNo,name:stu.name,programCode:prog?prog.code:'',programName:prog?prog.name:'',isRegistered:false}); toast(`Assigned ${stu.name}`,'g'); };
@@ -746,7 +739,6 @@ function renderAdminProgList() { let progs = Object.values(programs); if(adminSe
 window.toggleProgramReg = async function(pid, enabled) { setSyncState('ing'); try { await setDoc(doc(db, 'programs', pid), { registrationEnabled: enabled }, { merge: true }); toast(`Registration ${enabled ? 'ON' : 'OFF'}`, 'g'); } catch(e) { setSyncState('err'); } };
 window.toggleStatus = async function(pid, house, slot, currentStatus) { const key = regKey(pid, house, slot); const newStatus = !currentStatus; if(!confirm(`Change status to ${newStatus ? 'REGISTERED' : 'PENDING'}?`)) return; setSyncState('ing'); try { await setDoc(doc(db, 'registrations', key), { isRegistered: newStatus }, { merge: true }); toast(`Status Updated`, 'g'); } catch(e) { setSyncState('err'); } };
 
-/* ================= PRINTING & CODES ================= */
 let selectedPrintPrograms = new Set();
 
 window.renderPrintingList = function() { 
@@ -877,35 +869,95 @@ function generatePrintHalf(prog, formattedRegs, type) {
     const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
     const totalRows = Math.max(formattedRegs.length, 12);
     let rowsHtml = '';
+    
     for(let i = 0; i < totalRows; i++) {
         const r = formattedRegs[i];
         if(r) {
             const cls = r.isGroup ? 'TEAM' : (students[r.studentId]?.class || '');
             const houseShort = r.house.substring(0, 4).toUpperCase();
+            
             if(type === 'name') {
                 rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td><td>${houseShort}</td><td>${cls}</td><td></td><td></td><td></td></tr>`;
             } else if(type === 'blind') {
                 rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
-            } else {
+            } else if (type === 'final_judge') {
+                rowsHtml += `<tr style="border-bottom: 1.5px dashed #999;">
+                    <td style="font-size:13px;"><b>${r.codeLetter}</b></td>
+                    <td style="font-size:13px; color:#450c13;"><b>${r.chestNo}</b></td>
+                    <td></td><td></td>
+                    <td style="background:#f3f4f6;"></td>
+                    <td style="background:#f3f4f6;"></td>
+                    <td></td>
+                </tr>`;
+            } else { // judge, judge1, judge2
                 rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
             }
         } else {
             rowsHtml += type === 'blind' ? `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>` : `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
         }
     }
-    const title = type === 'name' ? 'STAGE CANDIDATES' : (type === 'blind' ? 'JUDGEMENT SHEET' : 'JUDGEMENT SHEET (MASTER)');
+
+    let title = '';
+    if(type === 'name') title = 'STAGE CANDIDATES';
+    else if(type === 'judge1') title = 'JUDGE 1 EVALUATION SHEET';
+    else if(type === 'judge2') title = 'JUDGE 2 EVALUATION SHEET';
+    else if(type === 'final_judge') title = '<span style="color: #000; border-bottom: 3px double #000; padding-bottom: 4px; font-size: 17px; letter-spacing: 1px;">FINAL CONSOLIDATED SHEET</span>';
+    else if(type === 'blind') title = 'JUDGEMENT SHEET (BLIND)';
+    else title = 'JUDGEMENT SHEET (MASTER)';
+    
     let tableHead = '';
     if(type === 'name') {
         tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
     } else if(type === 'blind') {
         tableHead = `<tr><th style="width:35px">Code</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
-    } else {
-        tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th></th><th></th><th></th><th style="width:35px">Total</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
+    } else if (type === 'final_judge') {
+        tableHead = `<tr style="border-bottom: 2px solid #000; background:#e5e7eb;">
+            <th style="width:25px">Cd.</th><th style="width:40px">Chest</th>
+            <th>Judge 1 Total</th><th>Judge 2 Total</th>
+            <th style="width:50px; background:#d1d5db!important; color:#000;">Gr. Total</th>
+            <th style="width:30px; background:#d1d5db!important; color:#000;">Grd.</th>
+            <th style="width:40px">Rank</th>
+        </tr>`;
+    } else { // judge, judge1, judge2
+        tableHead = `<tr>
+            <th style="width:25px">Cd.</th>
+            <th style="width:40px">Chest</th>
+            <th>Criteria 1 (  )</th>
+            <th>Criteria 2 (  )</th>
+            <th>Criteria 3 (  )</th>
+            <th style="width:35px">Total</th>
+            <th style="width:30px">Grd.</th>
+            <th style="width:40px">Remarks</th>
+        </tr>`;
     }
-    let extraInfo = (type === 'judge' || type === 'blind') ? `<div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>` : '';
-    let footerSign = type === 'name' ? `<span style="margin-left:auto;">Sign of completion: __________________</span>` : `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
     
-    return `<div class="print-half"><div class="print-header">KAMA 2K26${type!=='name'?' - STAGE FEST':''}<br><span class="print-header-sub">${title}</span></div><div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div><table class="print-table"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table>${extraInfo}<div class="print-footer" style="${type!=='name'?'margin-top:15px;':''}"><div style="display:flex; flex-direction:column; gap:10px; width:100%;"><div style="display:flex; align-items:center; width:100%;"><span>Printed on: ${printDate}</span>${type==='name'?footerSign:''}</div>${type!=='name'?footerSign:''}</div></div></div>`;
+    let extraInfo = (type.includes('judge') || type === 'blind') ? `<div style="margin-top:5px; font-size:9px; font-weight:700;">* Grade A = 80% and above, Grade B = 70-79%, Grade C = 60-69%</div>` : '';
+    
+    let footerSign = '';
+    if(type === 'name') {
+        footerSign = `<span style="margin-left:auto;">Sign of completion: __________________</span>`;
+    } else if(type === 'final_judge') {
+        footerSign = `<div style="display:flex; justify-content:space-between; width:100%; font-size:11px;"><span>Chief Judge: _______________</span><span>Tabulator: _______________</span><span>Fest Admin: ___________</span></div>`;
+    } else if(type === 'judge1') {
+        footerSign = `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge 1: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
+    } else if(type === 'judge2') {
+        footerSign = `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge 2: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
+    } else {
+        footerSign = `<div style="display:flex; justify-content:space-between; width:100%;"><span>Name of Judge: ________________________</span><span>Sign: _________ Date: _________</span></div>`;
+    }
+    
+    return `<div class="print-half">
+        <div class="print-header">KAMA 2K26${type!=='name'?' - STAGE FEST':''}<br><span class="print-header-sub">${title}</span></div>
+        <div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div>
+        <table class="print-table"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table>
+        ${extraInfo}
+        <div class="print-footer" style="${type!=='name'?'margin-top:15px;':''}">
+            <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+                <div style="display:flex; align-items:center; width:100%;"><span>Printed on: ${printDate}</span>${type==='name'?footerSign:''}</div>
+                ${type!=='name'?footerSign:''}
+            </div>
+        </div>
+    </div>`;
 }
 
 function wrapInPage(half1, half2) {
@@ -930,10 +982,10 @@ window.batchPrintSelected = async function() {
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge'));
         } else if (format === 'full') {
-            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge'));
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
-            allHalves.push(generatePrintHalf(prog, formattedRegs, 'blind'));
-            allHalves.push(generatePrintHalf(prog, formattedRegs, 'blind'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge1'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge2'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'final_judge'));
         } else {
             allHalves.push(generatePrintHalf(prog, formattedRegs, format));
         }
@@ -989,11 +1041,10 @@ function renderPrintSetup() {
     } 
     html += `<div style="max-height: 38vh; overflow-y:auto; border:1px solid var(--r200); border-radius:8px;"><table class="print-setup-table" style="margin-top:0;"><thead style="position:sticky; top:0; z-index:10;"><tr><th>Lot</th><th>Chest</th><th>Name</th><th>House</th></tr></thead><tbody>${regs.length === 0 && !isReady && !isLocked ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--r400); font-weight:600;">Set house order above to generate codes</td></tr>` : ''}${regs.length === 0 && isReady && currentPrintData.rawRegs.length === 0 ? `<tr><td colspan="4" style="text-align:center; padding:30px 20px; color:var(--danger); font-weight:600;">No pending candidates available for this program.</td></tr>` : ''}${regs.map(r => `<tr><td class="t-code">${r.codeLetter}</td><td>${r.chestNo}</td><td>${r.name}</td><td>${r.house}</td></tr>`).join('')}</tbody></table></div>`; 
     
-    // Puthiya Layout Format Select Dropdown
     html += `<div style="margin-top: 16px; padding: 12px; background: var(--r50); border: 1px solid var(--r200); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
         <span style="font-size:12px; font-weight:800; color:var(--r800);">Print Layout:</span>
         <select id="single-print-format" style="width:auto; min-height:30px; padding:4px 8px; font-size:12px; font-weight:700; border-radius:6px; border:1px solid var(--r300); outline:none; color: var(--r800); background:#fff;">
-            <option value="full" selected>Full Set (Master + Candidate + 2 Judge Copies)</option>
+            <option value="full" selected>Full Set (Candidate List + 2 Judge Sheets + 1 Final Sheet)</option>
             <option value="both">Both (Name & Judgement)</option>
             <option value="name">Candidates Only</option>
             <option value="judge">Judgement Only (Master, w/ Chest)</option>
@@ -1022,10 +1073,10 @@ window.triggerPrint = async function() {
         if (format === 'both') {
             printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge'));
         } else if (format === 'full') {
-            printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'judge'), generatePrintHalf(prog, regs, 'name'));
-            printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'blind'), generatePrintHalf(prog, regs, 'blind'));
+            printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge1'));
+            printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'judge2'), generatePrintHalf(prog, regs, 'final_judge'));
         } else {
-            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, format), ''); // Only one half
+            printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, format), '');
         }
         document.getElementById('print-container').innerHTML = printHtmlAgg;
         window.print();
@@ -1059,7 +1110,6 @@ window.triggerPrint = async function() {
     } 
 };
 
-/* ================= SUBSTITUTION SCRIPTS ================= */
 window.checkSubProg = function() { const val = document.getElementById('man-prog-code').value.trim().toUpperCase(); const el = document.getElementById('man-prog-name'); if(!val) { el.textContent = ''; return; } const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === val); el.textContent = prog ? `✓ ${prog.name}` : '✗ Program code not found'; el.className = prog ? 'hint-txt hint-ok' : 'hint-txt hint-err'; if(document.getElementById('man-old-chest').value) checkSubOld(); };
 window.checkSubOld = function() { const pCode = document.getElementById('man-prog-code').value.trim().toUpperCase(); const val = document.getElementById('man-old-chest').value.trim().toUpperCase(); const el = document.getElementById('man-old-name'); if(!val) { el.textContent = ''; return; } const stu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val); if(!stu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; } if(pCode) { const prog = Object.values(programs).find(p => String(p.code||'').toUpperCase() === pCode); if(prog) { const isRegistered = Object.values(regs).some(r => r.programId === prog.id && String(r.chestNo||'').toUpperCase() === val); if(!isRegistered) { el.textContent = `✗ Not registered in ${pCode}`; el.className = 'hint-txt hint-err'; return; } } } el.textContent = `✓ ${stu.name} (${stu.house})`; el.className = 'hint-txt hint-ok'; if(document.getElementById('man-new-chest').value) checkSubNew(); };
 window.checkSubNew = function() { const oldVal = document.getElementById('man-old-chest').value.trim().toUpperCase(); const val = document.getElementById('man-new-chest').value.trim().toUpperCase(); const el = document.getElementById('man-new-name'); if(!val) { el.textContent = ''; return; } const newStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === val); if(!newStu) { el.textContent = '✗ Student not found'; el.className = 'hint-txt hint-err'; return; } if(oldVal) { const oldStu = Object.values(students).find(s => String(s.chestNo||'').toUpperCase() === oldVal); if(oldStu && oldStu.house !== newStu.house) { el.textContent = `✗ House Mismatch! (New is ${newStu.house})`; el.className = 'hint-txt hint-err'; return; } } el.textContent = `✓ ${newStu.name} (${newStu.house})`; el.className = 'hint-txt hint-ok'; };
