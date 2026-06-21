@@ -215,7 +215,7 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
   body, html { background: #fff; margin: 0; padding: 0; height: auto !important; overflow: visible !important; font-family: 'Outfit', sans-serif; color: #000; -webkit-print-color-adjust: exact; }
   #app, .bottom-nav, .hdr, .overlay, .toasts { display: none !important; }
   #print-container { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: #fff; z-index: 9999; }
-  .print-page { width: 100%; display: flex; gap: 20mm; position: relative; box-sizing: border-box; page-break-after: always; height: 190mm; overflow: hidden; padding-bottom: 10px;} 
+  .print-page { width: 100%; display: flex; gap: 20mm; position: relative; box-sizing: border-box; page-break-after: always; height: 190mm; overflow: hidden; padding: 20px;} 
   .print-page:last-child { page-break-after: auto; }
   .print-half { flex: 1; width: 50%; display: flex; flex-direction: column; max-height: 100%; }
   .print-header { text-align: center; font-weight: 900; font-size: 16px; margin-bottom: 4px; border-bottom: 2px solid #000; padding-bottom: 4px; }
@@ -227,6 +227,27 @@ input:checked + .toggle-slider:before { transform: translateX(22px); }
   .print-table th, .print-table td { border: 1px solid #000; padding: 6px 4px; text-align: center; color: #000; height: 22px; } 
   .print-table th { font-weight: 800; text-transform: uppercase; font-size: 9px; background: #e5e7eb !important; padding: 6px 2px; }
   .print-table td.t-left { text-align: left; padding-left: 6px; font-weight: 600;}
+
+  /* ── CANDIDATE LIST — black & gold design (pairs with maroon judgement sheet) ── */
+  .cl-half { flex: 1; width: 50%; display: flex; flex-direction: column; max-height: 100%; border: 2.5px solid #111111; border-radius: 6px; overflow: hidden; position: relative; }
+  .cl-crown-bar { background: #111111; color: #fff; padding: 6px 10px 4px; display: flex; align-items: center; justify-content: space-between; }
+  .cl-crown-title { font-size: 9px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #dfba86; }
+  .cl-crown-logo { font-size: 8px; font-weight: 900; color: rgba(255,255,255,0.6); letter-spacing: 1px; }
+  .cl-event-banner { background: #000000; color: #dfba86; text-align: center; padding: 5px 8px 4px; border-bottom: 1.5px solid #111111; }
+  .cl-event-name { font-size: 13px; font-weight: 900; letter-spacing: 0.5px; line-height: 1.1; text-transform: uppercase; }
+  .cl-event-sub { font-size: 8px; font-weight: 700; color: rgba(223,186,134,0.7); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 1px; }
+  .cl-meta-strip { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; font-size: 9px; font-weight: 800; border-bottom: 1.5px solid #111111; background: #f4f4f5; }
+  .cl-meta-cell { padding: 4px 6px; border-right: 1px solid #a1a1aa; text-transform: uppercase; letter-spacing: 0.5px; color: #111111; }
+  .cl-meta-cell:last-child { border-right: none; }
+  .cl-meta-val { font-size: 11px; font-weight: 900; color: #000; }
+  .cl-table { width: 100%; border-collapse: collapse; font-size: 10px; flex-grow: 1; }
+  .cl-table th { font-weight: 900; text-transform: uppercase; font-size: 8px; background: #111111 !important; color: #dfba86; padding: 5px 3px; text-align: center; letter-spacing: 0.5px; border: 1px solid #000; }
+  .cl-table td { border: 1px solid #d4d4d8; padding: 5px 3px; text-align: center; color: #000; height: 22px; }
+  .cl-table tr:nth-child(even) td { background: #fafafa !important; }
+  .cl-code-cell { font-size: 13px; font-weight: 900; color: #111111; background: #f4f4f5 !important; border-right: 2px solid #111111 !important; width: 26px; }
+  .cl-chest-cell { font-size: 10px; font-weight: 800; color: #1f2937; width: 38px; }
+  .cl-name-cell { text-align: left !important; padding-left: 6px !important; font-weight: 700; }
+  .cl-foot-bar { background: #111111; padding: 3px 8px; display: flex; justify-content: space-between; }
   .watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0.05; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); place-items: center; padding: 20px; box-sizing: border-box; }
   .watermark img { width: 220px; filter: grayscale(100%); opacity: 0.8; }
   .print-footer { margin-top: auto; padding-top: 8px; font-size: 10px; display: flex; justify-content: space-between; font-weight: 600; }
@@ -899,10 +920,11 @@ function generatePrintHalf(prog, formattedRegs, type) {
     const printDate = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true });
     const totalRows = Math.max(formattedRegs.length, 12);
 
-    // ── JUDGEMENT SHEET (blind or master) — new attractive design ──
-    if (type === 'blind' || type === 'judge') {
+    // ── JUDGEMENT SHEET (master / judge1 / judge2 / blind) — attractive design ──
+    if (type === 'blind' || type === 'judge' || type === 'judge1' || type === 'judge2') {
         const isBlind = type === 'blind';
-        const sheetLabel = isBlind ? 'BLIND JUDGEMENT SHEET' : 'MASTER JUDGEMENT SHEET';
+        const labelMap = { judge: 'MASTER JUDGEMENT SHEET', judge1: 'JUDGE 1 COPY', judge2: 'JUDGE 2 COPY', blind: 'BLIND JUDGEMENT SHEET' };
+        const sheetLabel = labelMap[type];
         const badgeLabel = isBlind ? '★ CONFIDENTIAL' : '★ WITH CHEST NO';
 
         let rowsHtml = '';
@@ -970,7 +992,7 @@ function generatePrintHalf(prog, formattedRegs, type) {
         </div>`;
     }
 
-    // ── CANDIDATE / NAME SHEET — original design kept ──
+    // ── CANDIDATE LIST — black & gold design (pairs with the maroon judgement sheet) ──
     const totalRowsName = Math.max(formattedRegs.length, 12);
     let rowsHtml = '';
     for(let i = 0; i < totalRowsName; i++) {
@@ -978,13 +1000,60 @@ function generatePrintHalf(prog, formattedRegs, type) {
         if(r) {
             const cls = r.isGroup ? 'TEAM' : (students[r.studentId]?.class || '');
             const houseShort = r.house.substring(0, 4).toUpperCase();
-            rowsHtml += `<tr><td><b>${r.codeLetter}</b></td><td><b>${r.chestNo}</b></td><td class="t-left" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td><td>${houseShort}</td><td>${cls}</td><td></td><td></td><td></td></tr>`;
+            rowsHtml += `<tr>
+                <td class="cl-code-cell"><b>${r.codeLetter}</b></td>
+                <td class="cl-chest-cell">${r.chestNo}</td>
+                <td class="cl-name-cell" style="max-width:120px; overflow:hidden; white-space:nowrap;">${r.name}</td>
+                <td>${houseShort}</td>
+                <td>${cls}</td>
+                <td style="width:30px;"></td>
+                <td style="width:28px;"></td>
+                <td style="width:50px;"></td>
+            </tr>`;
         } else {
-            rowsHtml += `<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`;
+            rowsHtml += `<tr>
+                <td class="cl-code-cell">&nbsp;</td>
+                <td class="cl-chest-cell"></td>
+                <td class="cl-name-cell"></td>
+                <td></td><td></td><td></td><td></td><td></td>
+            </tr>`;
         }
     }
-    const tableHead = `<tr><th style="width:25px">Cd.</th><th style="width:40px">Chest</th><th>Name</th><th style="width:40px">House</th><th style="width:35px">Class</th><th style="width:30px">Pos.</th><th style="width:30px">Grd.</th><th style="width:50px">Remarks</th></tr>`;
-    return `<div class="print-half"><div class="print-header">KAMA 2K26<br><span class="print-header-sub">STAGE CANDIDATES</span></div><div class="print-meta-grid"><div>P.CODE: <b>${prog.code}</b></div><div>SEC: <b>${prog.section}</b></div><div>TYPE: <b>${prog.type}</b></div><div style="grid-column: span 2;">PROG: <b>${prog.name}</b></div><div>CANDI: <b>${formattedRegs.length}</b></div></div><table class="print-table"><thead>${tableHead}</thead><tbody>${rowsHtml}</tbody></table><div class="print-footer"><div style="display:flex; flex-direction:column; gap:10px; width:100%;"><div style="display:flex; align-items:center; width:100%;"><span>Printed on: ${printDate}</span><span style="margin-left:auto;">Sign of completion: __________________</span></div></div></div></div>`;
+    return `<div class="cl-half">
+        <div class="cl-crown-bar">
+            <span class="cl-crown-title">✦ KAMA Arts Fest 2K26 ✦ Stage Candidates</span>
+            <span class="cl-crown-logo">★ CANDIDATE LIST</span>
+        </div>
+        <div class="cl-event-banner">
+            <div class="cl-event-name">${prog.name}</div>
+            <div class="cl-event-sub">${prog.type.toUpperCase()} &middot; CANDIDATE LIST</div>
+        </div>
+        <div class="cl-meta-strip">
+            <div class="cl-meta-cell">Code<br><span class="cl-meta-val">${prog.code}</span></div>
+            <div class="cl-meta-cell">Section<br><span class="cl-meta-val">${prog.section}</span></div>
+            <div class="cl-meta-cell">Type<br><span class="cl-meta-val">${prog.type}</span></div>
+            <div class="cl-meta-cell">Candidates<br><span class="cl-meta-val">${formattedRegs.length}</span></div>
+        </div>
+        <table class="cl-table" style="flex-grow:1;">
+            <thead>
+                <tr>
+                    <th style="width:25px">Cd.</th>
+                    <th style="width:40px">Chest</th>
+                    <th>Name</th>
+                    <th style="width:40px">House</th>
+                    <th style="width:35px">Class</th>
+                    <th style="width:30px">Pos.</th>
+                    <th style="width:28px">Grd.</th>
+                    <th style="width:50px">Remarks</th>
+                </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+        </table>
+        <div class="cl-foot-bar">
+            <span style="font-size:7px; font-weight:700; color:rgba(223,186,134,0.7);">Printed: ${printDate}</span>
+            <span style="font-size:7px; font-weight:900; color:#dfba86; letter-spacing:1px;">KAMA '26 — Stage Admin</span>
+        </div>
+    </div>`;
 }
 
 function wrapInPage(half1, half2) {
@@ -1011,8 +1080,8 @@ window.batchPrintSelected = async function() {
         } else if (format === 'full') {
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge'));
             allHalves.push(generatePrintHalf(prog, formattedRegs, 'name'));
-            allHalves.push(generatePrintHalf(prog, formattedRegs, 'blind'));
-            allHalves.push(generatePrintHalf(prog, formattedRegs, 'blind'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge1'));
+            allHalves.push(generatePrintHalf(prog, formattedRegs, 'judge2'));
         } else {
             allHalves.push(generatePrintHalf(prog, formattedRegs, format));
         }
@@ -1102,7 +1171,7 @@ window.triggerPrint = async function() {
             printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, 'name'), generatePrintHalf(prog, regs, 'judge'));
         } else if (format === 'full') {
             printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'judge'), generatePrintHalf(prog, regs, 'name'));
-            printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'blind'), generatePrintHalf(prog, regs, 'blind'));
+            printHtmlAgg += wrapInPage(generatePrintHalf(prog, regs, 'judge1'), generatePrintHalf(prog, regs, 'judge2'));
         } else {
             printHtmlAgg = wrapInPage(generatePrintHalf(prog, regs, format), ''); // Only one half
         }
